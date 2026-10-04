@@ -140,10 +140,10 @@
       <!-- estado sem nenhum card: honesto, e some sozinho quando as capas
            e as logos entrarem em assets/img/ (ver README) -->
       <div class="aviso" data-grade-vazia hidden>
-        <h2 data-i18n="portp.vazioT">As capas ainda não subiram</h2>
+        <h2 data-i18n="portp.vazioT">As fotos ainda não subiram</h2>
         <p data-i18n="portp.vazioP">
-          Os projetos existem e estão no ar — o que falta é a imagem de capa e o
-          logo de cada um. Enquanto isso, a lista abaixo tem os endereços.
+          As lojas existem e estão no ar — o que falta é a foto e o logo de
+          cada uma. Se quiser ver agora, eu mando os endereços.
         </p>
         <a class="btn btn--marca" data-zap="Olá, Gabriel! Vim pelo site e quero ver seus projetos."
            href="https://wa.me/5532999144851" data-i18n="portp.vazioCta">Pedir o portfólio no WhatsApp</a>
@@ -152,6 +152,16 @@
       <div class="citacoes" data-citacoes hidden>
         <h2 data-i18n="port.tambem">Também passaram por aqui</h2>
         <ul class="citacoes__lista"></ul>
+      </div>
+
+      <!-- Shopify e outras plataformas: o mesmo bloco da home, aqui como parte
+           da página. O render.js remove só este div se não houver loja. -->
+      <div class="outras-bloco" data-outras hidden>
+        <h2 data-i18n="outras.rotulo">Shopify e outras plataformas</h2>
+        <p data-i18n="outras.apoio">
+          Quando a loja já roda em outra plataforma, eu trabalho onde ela está.
+        </p>
+        <div class="outras__lista"></div>
       </div>
 
     </div>

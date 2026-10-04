@@ -234,7 +234,8 @@ window.SCRender = (function () {
     if (p.bloqueio) return false;
     if (p.status !== 'concluido') return false;
     if (!p.url) return false;
-    if (p.exibicao === 'citacao') return true;
+    /* "outras" e "citacao" não têm foto: precisam só do endereço */
+    if (p.exibicao === 'citacao' || p.exibicao === 'outras') return true;
     return !!(p.capa && p.logo);
   }
 
@@ -262,24 +263,29 @@ window.SCRender = (function () {
       .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   }
 
-  function cardProjeto(p) {
+  /* Card em retrato (2:3): a foto ocupa o card inteiro, em preto e branco,
+     com o logo do cliente em branco embaixo. A cor volta no hover.
+     `semLegenda` tira nome e pastilha de baixo do card — é o carrossel da
+     home, onde o logo já diz de quem é a loja. A grade do portfolio.html
+     mantém a legenda, porque lá o visitante filtra e compara. */
+  function cardProjeto(p, semLegenda) {
     var pas = pastilha(p);
     return '<article class="projeto">' +
              '<button class="projeto__abrir" type="button" data-projeto="' + esc(p.id) + '"' +
              ' aria-label="Ver o projeto ' + esc(p.nome) + '">' +
                '<img class="projeto__capa" src="' + esc(caminho(p.capa)) + '"' +
-               ' alt="Loja ' + esc(p.nome) + '" width="1200" height="900"' +
-               ' loading="lazy" decoding="async">' +
-               '<span class="projeto__overlay">' +
+               ' alt="" width="800" height="1200" loading="lazy" decoding="async">' +
+               '<span class="projeto__marca">' +
                  '<img src="' + esc(caminho(p.logo)) + '" alt="" width="160" height="60"' +
                  ' loading="lazy" decoding="async">' +
                '</span>' +
              '</button>' +
+             (semLegenda ? '' :
              '<div class="projeto__pe">' +
                '<h3>' + esc(p.nome) + '</h3>' +
                (pas ? '<p class="pastilha">' + esc(pas) + '</p>' : '') +
                (p.tipo ? '<p class="projeto__tipo">' + esc(p.tipo) + '</p>' : '') +
-             '</div>' +
+             '</div>') +
            '</article>';
   }
 
@@ -327,8 +333,68 @@ window.SCRender = (function () {
     if (!destaques.length) { caixa.remove(); return; }   /* sem card, sem carrossel */
 
     caixa.querySelector('.carrossel__trilho').innerHTML =
-      destaques.map(cardProjeto).join('');
+      destaques.map(function (p) { return cardProjeto(p, true); }).join('');
     caixa.hidden = false;
+  }
+
+  /* ----------------------------------------------------------------------
+     outras() — "Shopify e outras plataformas". Lojas fora da Nuvemshop, em
+     seção própria para não disputar atenção com o carrossel. Sem foto:
+     plataforma (conferida), nome, o que foi feito e o link da loja.
+     Sem nenhuma loja visível, a seção inteira sai.
+     ---------------------------------------------------------------------- */
+  function outras() {
+    var caixas = document.querySelectorAll('[data-outras]');
+    if (!caixas.length) return;
+
+    var lista = projetosPor('outras');
+
+    Array.prototype.forEach.call(caixas, function (caixa) {
+      /* Remove só o próprio [data-outras]: na home ele É a seção; no
+         portfolio.html é um bloco dentro da seção que também tem a grade. */
+      if (!lista.length) { caixa.remove(); return; }
+
+      var grade = caixa.querySelector('.outras__lista');
+      grade.className = 'outras__lista cards cards--' + Math.min(lista.length, 3);
+      grade.innerHTML = lista.map(function (p) {
+        var det = [p.tipo, p.segmento].filter(Boolean).join(' · ');
+        return '<article class="outra">' +
+                 (p.logo ? '<img class="outra__logo" src="' + esc(caminho(p.logo)) +
+                           '" alt="" width="160" height="60" loading="lazy" decoding="async">' : '') +
+                 (p.plataforma ? '<span class="outra__plataforma">' + esc(pastilha(p)) + '</span>' : '') +
+                 '<h3>' + esc(p.nome) + '</h3>' +
+                 (det ? '<p class="outra__det">' + esc(det) + '</p>' : '') +
+                 (p.resumo ? '<p class="outra__resumo">' + esc(p.resumo) + '</p>' : '') +
+                 '<a class="link-sub outra__link" href="' + esc(p.url) + '" target="_blank" rel="noopener"' +
+                 ' aria-label="Ver a loja ' + esc(p.nome) + ' no ar (abre em nova aba)">' +
+                   '<span>Ver loja no ar</span>' +
+                   '<svg class="seta" width="14" height="14" viewBox="0 0 16 16" aria-hidden="true" focusable="false">' +
+                   '<path fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"' +
+                   ' stroke-linejoin="round" d="M5 11L11 5M6 5h5v5"/></svg>' +
+                 '</a>' +
+               '</article>';
+      }).join('');
+
+      caixa.hidden = false;
+    });
+  }
+
+  /* ----------------------------------------------------------------------
+     portfolioVazio() — enquanto nenhum projeto tem foto, o #portfolio da
+     home ficaria só com o título. Nesse caso a seção sai, e todo link que
+     apontava para #portfolio passa a apontar para portfolio.html — senão o
+     "Portfólio" do menu e o "Ver portfólio" do hero virariam âncora morta.
+     Roda depois de carrossel() e citacoes(), que são quem esvazia a seção.
+     ---------------------------------------------------------------------- */
+  function portfolioVazio() {
+    var secao = document.getElementById('portfolio');
+    if (!secao) return;
+    if (secao.querySelector('[data-carrossel], [data-citacoes]')) return;
+
+    secao.remove();
+    Array.prototype.forEach.call(document.querySelectorAll('a[href="#portfolio"]'), function (a) {
+      a.setAttribute('href', 'portfolio.html');
+    });
   }
 
   /* ----------------------------------------------------------------------
@@ -487,7 +553,11 @@ window.SCRender = (function () {
       if (p.tipo && tipos.indexOf(p.tipo) === -1) tipos.push(p.tipo);
     });
 
-    tira.innerHTML = ['Todos'].concat(tipos).map(function (t, i) {
+    /* Com um tipo só, a barra seria "Todos · E-commerce completo", os dois
+       com o mesmo número: filtro que não filtra. Ela só aparece com dois
+       tipos ou mais — e volta sozinha quando houver. */
+    if (tipos.length < 2) tira.remove();
+    else tira.innerHTML = ['Todos'].concat(tipos).map(function (t, i) {
       return '<button class="filtro" type="button" data-filtro="' + esc(t) + '"' +
              ' aria-pressed="' + (i === 0) + '">' + esc(t) +
              '<span class="filtro__n">' +
@@ -518,7 +588,8 @@ window.SCRender = (function () {
 
     var naoAchou = document.querySelector('[data-projeto-vazio]');
 
-    if (!p || !projetoVisivel(p) || p.exibicao === 'citacao') {
+    /* "citacao" e "outras" não têm página de caso: não têm foto nem história */
+    if (!p || !projetoVisivel(p) || p.exibicao === 'citacao' || p.exibicao === 'outras') {
       alvo.remove();
       if (naoAchou) naoAchou.hidden = false;
       document.title = 'Projeto não encontrado — Studio Cassa';
@@ -557,15 +628,9 @@ window.SCRender = (function () {
     var canon = document.querySelector('link[rel="canonical"]');
     if (canon) canon.setAttribute('href', url);
 
-    /* A capa do projeto é uma imagem melhor para compartilhar que a OG padrão.
-       As dimensões mudam junto: a capa é 1200x900, a OG padrão é 1200x630. */
-    if (p.capa) {
-      var abs = 'https://studiocassa.com.br/' + String(p.capa).replace(/^\/+/, '');
-      meta('meta[property="og:image"]', abs);
-      meta('meta[name="twitter:image"]', abs);
-      meta('meta[property="og:image:width"]', '1200');
-      meta('meta[property="og:image:height"]', '900');
-    }
+    /* A imagem de compartilhamento continua sendo a OG padrão (1200x630): a
+       capa agora é retrato 2:3, e WhatsApp e Facebook cortam para paisagem —
+       o logo, que fica embaixo da foto, seria o primeiro a sumir. */
 
     var pas = pastilha(p);
     var meta = [p.segmento, pas, p.ano].filter(Boolean).map(esc).join(' · ');
@@ -575,7 +640,7 @@ window.SCRender = (function () {
             (meta ? '<p class="modal__meta">' + meta + '</p>' : '') +
             (p.resumo ? '<p class="lead">' + esc(p.resumo) + '</p>' : '') +
             '<img class="projeto__hero" src="' + esc(caminho(p.capa)) + '" alt="Loja ' +
-              esc(p.nome) + '" width="1200" height="900" fetchpriority="high" decoding="async">';
+              esc(p.nome) + '" width="800" height="1200" fetchpriority="high" decoding="async">';
 
     if (p.desafio) h += '<h2>O desafio</h2><p>' + esc(p.desafio) + '</p>';
 
@@ -685,6 +750,8 @@ window.SCRender = (function () {
     processo();
     carrossel();
     citacoes();
+    portfolioVazio();     /* depois dos dois acima: são eles que esvaziam a seção */
+    outras();
     depoimentos();
     portfolioGrade();
     paginaProjeto();

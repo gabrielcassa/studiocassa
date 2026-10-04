@@ -2,13 +2,18 @@
 #  prepara-imagens.ps1 — Studio Cassa
 #
 #  Pega os prints crus que voce salvou e devolve as capas do portfolio no
-#  tamanho exato que o site espera (1200x900), com o nome certo.
+#  tamanho exato que o site espera, com o nome certo: RETRATO 800x1200 (2:3),
+#  porque o card do carrossel e vertical (mudou em 04/10/2026; antes era
+#  1200x900 paisagem). Use foto de marca, nao print da home — o card mostra
+#  a foto inteira. Pode ser colorida: o site deixa em preto e branco.
 #
 #  COMO USAR
 #    1. Na raiz do repositorio, crie a pasta  _prints
-#    2. Salve um print da home de cada loja la dentro, nomeado com o id do
-#       projeto no dados.js. Ex.:  quero-melancia.png , ea-labs.jpg
-#       (pode ser print de pagina inteira, bem alto — o script corta o topo)
+#    2. Salve uma foto de cada loja la dentro (de marca: produto, loja, gente),
+#       nomeada com o id do projeto no dados.js. Ex.: quero-melancia.jpg
+#       Foto mais alta que 2:3 encaixa pela largura e perde o fim de baixo
+#       (use -Deslocamento para descer o corte); mais larga encaixa pela
+#       altura e perde as laterais, centralizada.
 #    3. Rode:      .\prepara-imagens.ps1
 #       Para ja escrever os caminhos no dados.js:
 #                  .\prepara-imagens.ps1 -Aplicar
@@ -21,8 +26,8 @@
 
 param(
   [string]$Raiz     = ".",
-  [int]$Largura     = 1200,
-  [int]$Altura      = 900,
+  [int]$Largura     = 800,
+  [int]$Altura      = 1200,
   [int]$AlturaLogo  = 200,
   [int]$Qualidade   = 82,
   [int]$Deslocamento = 0,   # px para descer o corte, se o topo do print for feio

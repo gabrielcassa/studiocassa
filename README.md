@@ -38,7 +38,9 @@ direto no navegador — funciona por `file://`, sem servidor.
 | Quero… | Mexa só em… |
 |---|---|
 | Adicionar ou editar um projeto | `assets/js/dados.js` + as imagens |
+| Pôr uma loja pronta no carrossel | `assets/js/dados.js`: `status:"concluido"` |
 | Liberar uma loja que migrou | `assets/js/dados.js`, campo `bloqueio` |
+| Tirar uma loja Nuvemshop do site sem perder o registro | mover para `LOJAS_FEITAS`, no `dados.js` |
 | Trocar o selo do hero/rodapé | `assets/js/dados.js`, objeto `SELO` |
 | Trocar um texto do site | o próprio HTML **e** `assets/js/i18n.js` |
 | Trocar o WhatsApp ou o Instagram | `assets/js/site.js`, constantes no topo |
@@ -58,7 +60,7 @@ blog/<slug>.html      idem
 404.html
 CNAME                 só o domínio
 robots.txt  sitemap.xml
-prepara-imagens.ps1   trata os prints e as logos
+prepara-imagens.ps1   trata as fotos e as logos
 assets/
   css/base.css        tokens, reset, tipografia, utilitários
   css/site.css        seções e componentes
@@ -66,7 +68,7 @@ assets/
   js/render.js        monta HTML a partir do dados.js — nenhum evento aqui
   js/site.js          comportamento: nav, menu, carrossel, modal, abas, filtros
   js/i18n.js          dicionário pt completo + en vazio
-  img/portfolio/      capas    <id>-capa.jpg   1200x900
+  img/portfolio/      capas    <id>-capa.jpg   800x1200, retrato
   img/logos/          logos    <id>.png        fundo transparente
   img/og/             imagem de compartilhamento
   favicon/
@@ -80,18 +82,24 @@ HTML; todo `addEventListener` está no `site.js`.
 
 ## Adicionar um projeto
 
-1. Salve o print da loja em `_prints/<id>.png` e a logo em `_logos/<id>.png`.
-   O `<id>` é o `id` do projeto no `dados.js`, sem acento e com hífen.
+1. Salve uma **foto da marca** em `_prints/<id>.jpg` e a logo em
+   `_logos/<id>.png`. O `<id>` é o `id` do projeto no `dados.js`, sem acento e
+   com hífen.
+
+   A foto é de marca — produto, loja, gente —, **não print da home**: o card do
+   carrossel é vertical e mostra a foto inteira. Pode mandar colorida; o site
+   deixa em preto e branco e a cor volta quando o mouse passa por cima.
 2. Rode na raiz:
 
    ```powershell
    .\prepara-imagens.ps1 -Aplicar
    ```
 
-   Ele gera `assets/img/portfolio/<id>-capa.jpg` (1200×900) e
+   Ele gera `assets/img/portfolio/<id>-capa.jpg` em **retrato 800×1200** e
    `assets/img/logos/<id>.png`, e com `-Aplicar` já escreve os caminhos no
-   `dados.js`. Se uma capa passar de **200 KB** ele avisa na tela — quando
-   avisar, rode de novo com `-Qualidade 70`.
+   `dados.js`. Foto mais alta que 2:3 perde o fim de baixo (`-Deslocamento 200`
+   desce o corte); mais larga perde as laterais. Se uma capa passar de
+   **200 KB** ele avisa na tela — quando avisar, rode de novo com `-Qualidade 70`.
 3. Confira o card na home, em `portfolio.html` e em `projeto.html?id=<id>`.
 4. Some a URL do projeto ao `sitemap.xml` (tem um comentário lá explicando).
 
@@ -99,25 +107,43 @@ As pastas `_prints/` e `_logos/` estão no `.gitignore`: o cru não é publicado
 
 ### Por que um projeto pode não aparecer
 
-São **duas travas**, ambas no `dados.js`:
+São **três travas**, todas no `dados.js`:
 
-1. Um projeto só é impresso com `status:"concluido"` **e** `url` **e** `capa`
-   **e** `logo`. Faltando um, o card não existe em lugar nenhum — de propósito,
-   para não haver card quebrado. A exceção é `exibicao:"citacao"`, que precisa
-   só de `url` porque não tem card nem imagem.
-2. `bloqueio` com qualquer texto esconde o projeto **mesmo completo**. É a loja
-   pronta cujo domínio ainda aponta para a plataforma antiga: publicar o card
-   antes da virada mandaria o visitante para a loja que você substituiu.
-   **Para liberar, apague o texto do `bloqueio` e nada mais.**
+1. **`status:"concluido"`.** Com `"andamento"`, o projeto não aparece em lugar
+   nenhum. É assim que as lojas ainda não prontas esperam na fila do carrossel:
+   já estão com `exibicao:"destaque"`, e entram no dia em que o status mudar.
+2. **`url` + `capa` + `logo`.** Faltando um, o card não existe — de propósito,
+   para não haver card quebrado. `"outras"` e `"citacao"` precisam só de `url`,
+   porque não têm foto.
+3. **`bloqueio` vazio.** Com qualquer texto, o projeto some **mesmo completo**.
+   É a loja pronta cujo domínio ainda aponta para a plataforma antiga: publicar
+   o card antes da virada mandaria o visitante para a loja que você substituiu.
+   **Para liberar, apague o texto do `bloqueio`.**
 
 O campo `exibicao` decide onde o projeto aparece:
 
-- `"destaque"` → carrossel da home **e** grade do portfólio. Só e-commerce Nuvemshop.
+- `"destaque"` → carrossel da home **e** grade do portfólio. Só os melhores, e
+  só Nuvemshop.
 - `"grade"` → só na grade de `portfolio.html`.
-- `"citacao"` → sem card; entra na lista "Também passaram por aqui".
+- `"outras"` → seção **"Shopify e outras plataformas"**, abaixo do carrossel e
+  no fim do `portfolio.html`. Card sem foto: plataforma, nome e link da loja.
+- `"citacao"` → lista compacta "Também passaram por aqui". Hoje não tem
+  nenhuma.
+
+**`LOJAS_FEITAS`**, logo depois de `PROJETOS`, não é uma exibição: é o
+**registro** das lojas Nuvemshop que você fez e decidiu não mostrar. Nenhum
+código do site lê essa lista, e ela é o que sustenta a conta do selo ("15
+lojas Nuvemshop no ar"). Para uma loja voltar ao site, mova o registro para
+`PROJETOS` e complete os campos de lá.
+
+Enquanto nenhum `"destaque"` tiver foto, a seção de portfólio da home sai
+inteira, e os links "Portfólio" e "Ver portfólio" passam a levar ao
+`portfolio.html` — para não sobrar uma seção só com o título.
 
 Os filtros de `portfolio.html` são gerados dos `tipo` que de fato existem entre
-os projetos visíveis. Não há lista de filtros escrita à mão.
+os projetos visíveis — não há lista de filtros escrita à mão — e só aparecem
+com **dois tipos ou mais**. Hoje todas as lojas com card são "E-commerce
+completo", então a barra de filtros não aparece.
 
 ---
 
@@ -201,7 +227,7 @@ O que decide a velocidade do site são as **imagens**, não o código.
 
 | item | hoje | teto |
 |---|---|---|
-| CSS + JS (soma dos gzip) | 36,96 KB | 45 KB, informativo |
+| CSS + JS (soma dos gzip) | 38,62 KB | 45 KB, informativo |
 | cada capa | — | **200 KB** |
 | primeira dobra | 123,13 KB | 600 KB |
 

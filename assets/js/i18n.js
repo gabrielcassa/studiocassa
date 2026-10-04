@@ -128,6 +128,11 @@ var DICIONARIO = {
     'port.tambem':        'Também passaram por aqui',
     'port.marcas':        'Marcas que passaram por aqui',
 
+    /* --- 11b. shopify e outras plataformas ----------------------------- */
+    'outras.rotulo':      'Shopify e outras plataformas',
+    'outras.h2':          'A Nuvemshop é a casa, <em>não a única</em>.',
+    'outras.apoio':       'Quando a loja já roda em outra plataforma, eu trabalho onde ela está.',
+
     /* --- 13. depoimentos ---------------------------------------------- */
     'depo.rotulo':        'Depoimentos',
     'depo.h2':            'Quem já passou por isso <em>conta melhor</em>.',
@@ -140,8 +145,8 @@ var DICIONARIO = {
     'portp.h1':           'Tudo que eu <em>já coloquei no ar</em>.',
     'portp.apoio':        'A plataforma de cada endereço foi conferida no HTML da loja, uma a uma. O que está escrito no card é o que o site serve hoje.',
     'portp.projetos':     'Projetos',
-    'portp.vazioT':       'As capas ainda não subiram',
-    'portp.vazioP':       'Os projetos existem e estão no ar — o que falta é a imagem de capa e o logo de cada um. Enquanto isso, a lista abaixo tem os endereços.',
+    'portp.vazioT':       'As fotos ainda não subiram',
+    'portp.vazioP':       'As lojas existem e estão no ar — o que falta é a foto e o logo de cada uma. Se quiser ver agora, eu mando os endereços.',
     'portp.vazioCta':     'Pedir o portfólio no WhatsApp',
     'proj.vazioT':        'Projeto não encontrado',
     'proj.vazioP':        'Esse endereço não corresponde a nenhum projeto publicado. Pode ser um link antigo, ou um projeto que ainda não está no ar.',

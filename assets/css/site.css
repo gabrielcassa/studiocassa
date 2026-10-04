@@ -817,15 +817,12 @@
 
 /* ==========================================================================
    11. PORTFÓLIO — carrossel
+   Card em retrato, foto em preto e branco, logo do cliente em branco
+   embaixo. Setas nas laterais, centradas na altura dos cards.
    ========================================================================== */
 .carrossel{ margin-top: var(--s-7); }
 
-.carrossel__topo{
-  display: flex;
-  justify-content: flex-end;
-  margin-bottom: var(--s-5);
-}
-.carrossel__setas{ display: flex; gap: var(--s-2); }
+.carrossel__corpo{ position: relative; }
 
 .seta-btn{
   display: flex;
@@ -843,19 +840,34 @@
 .seta-btn:hover:not(:disabled){ background: var(--papel-3); border-color: var(--tinta); }
 .seta-btn:disabled{ opacity: .35; cursor: default; }
 
-/* O trilho sangra até a borda da tela — mostrar o card seguinte cortado é o
-   que avisa que dá para arrastar. Mas o PRIMEIRO card tem que nascer alinhado
-   com o título, não com a borda da janela: por isso o padding recalcula onde
-   a coluna do container começa, em vez de usar só o gutter. */
+/* As setas só aparecem a partir de 960px, quando o container ganha 60px de
+   margem lateral: elas moram nessa margem, fora dos cards. Abaixo disso o
+   swipe nativo do toque faz o trabalho. */
+.carrossel__seta{
+  position: absolute;
+  top: 50%;
+  z-index: 2;
+  display: none;
+  transform: translateY(-50%);
+  box-shadow: var(--sombra-1);
+}
+.carrossel__seta--antes{ left: -54px; }
+.carrossel__seta--depois{ right: -54px; }
+
+/* No celular o trilho sangra até a borda da tela — o card seguinte aparece
+   cortado e avisa que dá para arrastar — e o padding devolve o alinhamento
+   do primeiro card com o título. A partir de 960px o trilho fica dentro do
+   container, entre as setas, e os cards são cortados na borda dele.
+   O padding vertical existe para o anel de foco do card não ser cortado
+   pelo overflow do trilho. */
 .carrossel__trilho{
-  --sangria: max(var(--gutter), calc((100% - var(--container)) / 2 + var(--gutter)));
   display: flex;
-  gap: var(--s-5);
+  gap: var(--s-4);
   overflow-x: auto;
   scroll-snap-type: x mandatory;
-  scroll-padding-inline: var(--sangria);
-  padding-inline: var(--sangria);
-  padding-bottom: var(--s-3);
+  margin-inline: calc(-1 * var(--gutter));
+  padding: var(--s-2) var(--gutter);
+  scroll-padding-inline: var(--gutter);
   scrollbar-width: none;
   cursor: grab;
 }
@@ -864,7 +876,7 @@
 .carrossel__trilho.arrastando *{ user-select: none; }
 
 .carrossel__trilho > .projeto{
-  flex: 0 0 min(320px, 78vw);
+  flex: 0 0 clamp(240px, 24vw, 300px);
   scroll-snap-align: start;
 }
 
@@ -877,39 +889,44 @@
   position: relative;
   display: block;
   width: 100%;
+  aspect-ratio: 2 / 3;
   border-radius: var(--r-lg);
   overflow: hidden;
-  background: var(--papel-3);
-  border: 1px solid var(--borda);
+  background: var(--tinta);
+  isolation: isolate;
 }
 .projeto__capa{
   width: 100%;
-  aspect-ratio: 4 / 3;
+  height: 100%;
   object-fit: cover;
-  transition: transform .5s ease-out;
+  /* Preto e branco de propósito: fotos de marcas diferentes, com luz e cor
+     diferentes, viram uma vitrine só. A cor volta no hover e no foco. */
+  filter: grayscale(1);
+  transition: filter .5s ease-out, transform .6s ease-out;
 }
-.projeto__abrir:hover .projeto__capa{ transform: scale(1.04); }
+.projeto__abrir:hover .projeto__capa,
+.projeto__abrir:focus-visible .projeto__capa{ filter: none; transform: scale(1.03); }
 
-/* overlay escuro com o logo do cliente centralizado */
-.projeto__overlay{
+/* degradê escuro embaixo, só o bastante para o logo branco ler sobre
+   qualquer foto — clara ou escura */
+.projeto__marca{
   position: absolute;
-  inset: 0;
+  inset: auto 0 0 0;
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   justify-content: center;
-  padding: var(--s-6);
-  background: rgba(15,42,34,.72);
-  opacity: 0;
-  transition: opacity var(--transicao);
+  height: 42%;
+  padding: 0 var(--s-5) var(--s-6);
+  background: linear-gradient(to top, rgba(10,10,8,.62), rgba(10,10,8,0));
+  pointer-events: none;
 }
-.projeto__abrir:hover .projeto__overlay,
-.projeto__abrir:focus-visible .projeto__overlay{ opacity: 1; }
-.projeto__overlay img{
-  max-width: 62%;
-  max-height: 64px;
+.projeto__marca img{
+  max-width: 58%;
+  max-height: 48px;
   width: auto;
+  height: auto;
   object-fit: contain;
-  /* o logo vem colorido: no escuro ele sai em branco */
+  /* o logo vem colorido: sobre a foto ele sai em branco */
   filter: brightness(0) invert(1);
 }
 
@@ -928,6 +945,56 @@
   line-height: 1.4;
 }
 .projeto__tipo{ font-size: var(--t-mini); color: var(--mid); }
+
+/* ==========================================================================
+   11b. SHOPIFY E OUTRAS PLATAFORMAS
+   Card sem foto e mais leve que o do carrossel, de propósito: o que eu
+   vendo é Nuvemshop, e esta seção não pode competir com a vitrine.
+   ========================================================================== */
+.outras__lista{ margin-top: var(--s-7); }
+.outras__lista.cards--1{ max-width: 420px; }
+.outras__lista.cards--2{ max-width: 820px; }
+
+.outra{
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--s-3);
+  padding: var(--s-6);
+  border: 1px solid var(--borda);
+  border-radius: var(--r-lg);
+  background: var(--papel);
+  transition: border-color var(--transicao), transform var(--transicao);
+}
+.outra:hover{ border-color: var(--borda-forte); transform: translateY(-3px); }
+.outra__logo{ max-height: 36px; width: auto; filter: grayscale(1); }
+
+/* plataforma em pastilha neutra: a verde é da marca, e aqui não é Nuvemshop.
+   Texto em --tinta porque --mid sobre --papel-3 daria 4,20:1 e reprova. */
+.outra__plataforma{
+  padding: 4px 10px;
+  border-radius: var(--r-pill);
+  background: var(--papel-3);
+  color: var(--tinta);
+  font-size: .75rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+.outra h3{ font-size: 1.25rem; }
+.outra__det,
+.outra__resumo{ font-size: var(--t-mini); }
+.outra__link{ margin-top: auto; padding-top: var(--s-2); }
+
+/* no portfolio.html o bloco vive dentro da página, separado por um filete */
+.outras-bloco{
+  margin-top: var(--s-8);
+  padding-top: var(--s-7);
+  border-top: 1px solid var(--borda);
+}
+.outras-bloco h2{ font-size: clamp(1.4rem, 3vw, 1.75rem); }
+.outras-bloco > p{ margin-top: var(--s-3); }
+.outras-bloco .outras__lista{ margin-top: var(--s-6); }
+
 
 /* --- "Também passaram por aqui" ------------------------------------------ */
 .citacoes{
@@ -1183,9 +1250,12 @@
   max-width: 48rem;
 }
 .caso h2{ font-size: clamp(1.4rem, 3vw, 1.75rem); margin-top: var(--s-4); }
+/* a capa é retrato 2:3: na página do caso ela não pode ocupar a coluna
+   inteira, senão passa de 1100px de altura */
 .projeto__hero{
   width: 100%;
-  aspect-ratio: 4 / 3;
+  max-width: 400px;
+  aspect-ratio: 2 / 3;
   object-fit: cover;
   border-radius: var(--r-lg);
   border: 1px solid var(--borda);
@@ -1211,7 +1281,13 @@
 @media (min-width: 960px){
   .citacoes__lista{ columns: 3; }
   .grade-projetos{ grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  .carrossel__trilho > .projeto{ flex-basis: 360px; }
+  /* setas na margem do container; trilho volta para dentro dele */
+  .carrossel__seta{ display: flex; }
+  .carrossel__trilho{
+    margin-inline: 0;
+    padding-inline: 0;
+    scroll-padding-inline: 0;
+  }
 }
 
 /* ==========================================================================

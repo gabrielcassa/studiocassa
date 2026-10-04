@@ -498,35 +498,39 @@
     </div>
 
     <div class="carrossel rv" data-carrossel hidden>
-      <div class="container carrossel__topo">
-        <div class="carrossel__setas">
-          <button class="seta-btn" type="button" data-carrossel-antes
+      <div class="container">
+
+        <!-- Setas nas laterais, centradas na altura dos cards. A partir de
+             960px elas ficam na margem do container, fora dos cards; abaixo
+             disso somem — no toque o swipe nativo resolve. -->
+        <div class="carrossel__corpo">
+          <button class="seta-btn carrossel__seta carrossel__seta--antes" type="button" data-carrossel-antes
                   aria-label="Projeto anterior" data-i18n="port.antes" data-i18n-attr="aria-label">
             <svg width="17" height="17" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
               <path fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
-                    stroke-linejoin="round" d="M13 8H4M7.5 3.5L4 8l3.5 4.5"/>
+                    stroke-linejoin="round" d="M10 3.5L5.5 8l4.5 4.5"/>
             </svg>
           </button>
-          <button class="seta-btn" type="button" data-carrossel-depois
+
+          <!-- div, não ul: o card é um <article> e um <li> intermediário esmagaria
+               o card (o seletor é .carrossel__trilho > .projeto) -->
+          <div class="carrossel__trilho" tabindex="0" role="group"
+               aria-label="Projetos em destaque" data-i18n="port.grupo" data-i18n-attr="aria-label"></div>
+
+          <button class="seta-btn carrossel__seta carrossel__seta--depois" type="button" data-carrossel-depois
                   aria-label="Próximo projeto" data-i18n="port.depois" data-i18n-attr="aria-label">
             <svg width="17" height="17" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
               <path fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
-                    stroke-linejoin="round" d="M3 8h9M8.5 3.5L12 8l-3.5 4.5"/>
+                    stroke-linejoin="round" d="M6 3.5L10.5 8 6 12.5"/>
             </svg>
           </button>
         </div>
-      </div>
 
-      <!-- o trilho sangra até a borda de propósito: mostra que há mais ao lado -->
-      <!-- div, não ul: o card é um <article> e um <li> intermediário esmagaria
-           o card de 320px para 45px (o seletor é .carrossel__trilho > .projeto) -->
-      <div class="carrossel__trilho" tabindex="0" role="group"
-           aria-label="Projetos em destaque" data-i18n="port.grupo" data-i18n-attr="aria-label"></div>
-
-      <div class="container carrossel__pe">
-        <a class="btn btn--linha" href="portfolio.html" data-i18n="port.todos">
-          Ver todos os projetos
-        </a>
+        <div class="carrossel__pe">
+          <a class="btn btn--linha" href="portfolio.html" data-i18n="port.todos">
+            Ver todos os projetos
+          </a>
+        </div>
       </div>
     </div>
 
@@ -535,6 +539,26 @@
         <h3 data-i18n="port.tambem">Também passaram por aqui</h3>
         <ul class="citacoes__lista"></ul>
       </div>
+    </div>
+  </section>
+
+  <!-- ====================================================================
+       11b. SHOPIFY E OUTRAS PLATAFORMAS — PROJETOS com exibicao:"outras".
+       Seção própria, abaixo do carrossel, para não disputar atenção com as
+       lojas Nuvemshop — que são o que eu vendo. Sem nenhuma loja, sai.
+       ==================================================================== -->
+  <section class="secao secao--papel2" data-outras hidden>
+    <div class="container">
+      <div class="cabeca">
+        <span class="rotulo rv" data-i18n="outras.rotulo">Shopify e outras plataformas</span>
+        <h2 class="rv" data-atraso="80" data-i18n="outras.h2" data-i18n-html>
+          A Nuvemshop é a casa, <em>não a única</em>.
+        </h2>
+        <p class="rv" data-atraso="160" data-i18n="outras.apoio">
+          Quando a loja já roda em outra plataforma, eu trabalho onde ela está.
+        </p>
+      </div>
+      <div class="outras__lista"></div>
     </div>
   </section>
 

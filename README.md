@@ -228,13 +228,14 @@ O que decide a velocidade do site são as **imagens**, não o código.
 
 | item | hoje | teto |
 |---|---|---|
-| CSS + JS (soma dos gzip) | 39,18 KB | 45 KB, informativo |
+| CSS + JS (soma dos gzip) | 39,23 KB | 45 KB, informativo |
 | cada capa | 88 a 187 KB | **200 KB** |
-| primeira dobra | 331,5 KB | 600 KB |
+| primeira dobra | 185,3 KB | 600 KB |
 
-A primeira dobra subiu quando os logos entraram: os da faixa "Marcas que já
-confiaram" ficam acima da dobra e somam 206 KB. Logo PNG pequeno ampliado pelo
-script (ele gera tudo com 200px de altura) pesa mais e não fica mais nítido.
+Os logos da faixa "Marcas que já confiaram" ficam acima da dobra. O script os
+gera com **100px de altura** — o dobro do maior tamanho em que o site mostra um
+logo (48px, no card), nítido em tela retina. Com 200px, como era antes, os
+cinco somavam 206 KB; com 100px, somam 60 KB.
 
 Meça o CSS/JS pela **soma dos gzip individuais**, não pelos bytes em disco e não
 juntando os arquivos antes de comprimir — o navegador baixa cada um separado.

@@ -19,7 +19,10 @@
 #                  .\prepara-imagens.ps1 -Aplicar
 #
 #  LOGOS: mesma ideia, pasta  _logos , PNG com fundo transparente.
-#         Saem em assets/img/logos/<id>.png com 200px de altura.
+#         Saem em assets/img/logos/<id>.png com 100px de altura: o dobro do
+#         maior tamanho em que o site mostra um logo (48px no card), nitido
+#         em tela retina. Era 200px ate 05/10/2026 — pesava ate 4x mais sem
+#         ganhar nitidez, porque logo pequeno so era ampliado.
 #
 #  Precisa so do Windows (System.Drawing). Nao instala nada.
 # =============================================================================
@@ -28,7 +31,7 @@ param(
   [string]$Raiz     = ".",
   [int]$Largura     = 800,
   [int]$Altura      = 1200,
-  [int]$AlturaLogo  = 200,
+  [int]$AlturaLogo  = 100,
   [int]$Qualidade   = 82,
   [int]$Deslocamento = 0,   # px para descer o corte, se o topo do print for feio
   [switch]$Aplicar

@@ -43,13 +43,12 @@
    As 16 estão neste arquivo:
      no site (PROJETOS, concluído) .... Empório Século XVIII, Quero Melancia,
                                         Fazenda Giori, Colado, Livraria
-                                        Shalom Adonai, Ideal Forma,
-                                        EA Labs, GIORNI                     8
+                                        Shalom Adonai, EA Labs, GIORNI      7
      em andamento (PROJETOS) .......... Café Serra Gerais — o endereço já
                                         serve Nuvemshop                     1
-     só registro (LOJAS_FEITAS) ....... Casa Rigo, Zanelli, Flora, Galerie Du
-                                        Parfum, VL Dicas, Aventtura X,
-                                        Miscigenazo                         7
+     só registro (LOJAS_FEITAS) ....... Ideal Forma, Casa Rigo, Zanelli,
+                                        Flora, Galerie Du Parfum, VL Dicas,
+                                        Aventtura X, Miscigenazo            8
    A conta é de trabalho feito, não de vitrine: as de LOJAS_FEITAS contam
    mesmo fora do site.
    Era 13 em 15/09; subiu para 15 quando Quero Melancia e Shalom Adonai
@@ -66,8 +65,8 @@ const PROJETOS = [
 
   /* =====================================================================
      CARROSSEL — OS MELHORES. Lista fechada por ele em 04/10/2026, nesta
-     ordem; o Empório Século XVIII entrou em primeiro em 05/10/2026.
-     Todas conferidas no ar em Nuvemshop.
+     ordem; em 05/10/2026 o Empório Século XVIII entrou em primeiro e a
+     Ideal Forma saiu. Todas conferidas no ar em Nuvemshop.
      ===================================================================== */
 
   /* Melhor projeto, junto com a Quero Melancia — entrou em 05/10/2026, em
@@ -106,10 +105,8 @@ const PROJETOS = [
     url:"https://livrariashalomadonai.com.br/", capa:"assets/img/portfolio/shalom-adonai-capa.jpg", logo:"assets/img/logos/shalom-adonai.png",
     resumo:"", desafio:"Migração vinda do WordPress.", entrega:[], resultado:"", imagens:[], depoimento:{autor:"",texto:""} },
 
-  { id:"ideal-forma", nome:"Ideal Forma", tipo:"E-commerce completo", status:"concluido", exibicao:"destaque",
-    plataforma:"Nuvemshop", tema:"Amazonas", segmento:"", ano:"",
-    url:"https://www.idealforma.shop/", capa:"", logo:"",
-    resumo:"", desafio:"", entrega:[], resultado:"", imagens:[], depoimento:{autor:"",texto:""} },
+  /* Ideal Forma saiu do carrossel em 05/10/2026, por decisão dele: foi para
+     LOJAS_FEITAS, como registro. */
 
   /* =====================================================================
      ⏳ CARROSSEL — AINDA NÃO PRONTAS. Já estão com exibicao:"destaque";
@@ -210,7 +207,7 @@ const PROJETOS = [
    LOJAS_FEITAS — REGISTRO. NÃO APARECE NO SITE.
 
    Lojas Nuvemshop em que ele trabalhou e que ficam fora do portfólio, por
-   decisão dele em 04/10/2026. Nenhum código do site lê esta lista — de
+   decisão dele em 04 e 05/10/2026. Nenhum código do site lê esta lista — de
    propósito: ela existe como registro e para sustentar a conta do SELO.
    Todas conferidas no ar em Nuvemshop em 04/10/2026.
 
@@ -218,7 +215,8 @@ const PROJETOS = [
    formato de lá (status, exibicao, capa, logo…).
    ========================================================================== */
 const LOJAS_FEITAS = [
-  { id:"casa-rigo",         nome:"Casa Rigo",                   tipo:"Otimização", plataforma:"Nuvemshop", tema:"",                     segmento:"",                      url:"https://casarigo.com/" },
+  { id:"ideal-forma",       nome:"Ideal Forma",                 tipo:"E-commerce completo", plataforma:"Nuvemshop", tema:"Amazonas", segmento:"Moda fitness e praia feminina", url:"https://www.idealforma.shop/" },
+  { id:"casa-rigo",        nome:"Casa Rigo",                   tipo:"Otimização", plataforma:"Nuvemshop", tema:"",                     segmento:"",                      url:"https://casarigo.com/" },
   { id:"zanelli-coffee",    nome:"Zanelli Coffee",              tipo:"Otimização", plataforma:"Nuvemshop", tema:"",                     segmento:"Café especial",         url:"https://loja.zanellicoffee.com/" },
   { id:"flora-brinquedos",  nome:"Flora Brinquedos Educativos", tipo:"Otimização", plataforma:"Nuvemshop", tema:"",                     segmento:"Brinquedos educativos", url:"https://florabrinquedoseducativos.com.br/" },
   { id:"galerie-du-parfum", nome:"Galerie Du Parfum",           tipo:"Otimização", plataforma:"Nuvemshop", tema:"",                     segmento:"Perfumaria",            url:"https://www.galerieduparfum.com.br/" },

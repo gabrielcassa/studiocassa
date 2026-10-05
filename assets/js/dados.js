@@ -38,12 +38,13 @@
         texto libera.
    ========================================================================== */
 
-/* "15 lojas Nuvemshop no ar" = lojas Nuvemshop DISTINTAS, no ar e conferidas
-   em 04/10/2026, em que ele trabalhou — construídas, migradas ou melhoradas.
-   As 15 estão neste arquivo:
-     no site (PROJETOS, concluído) .... Quero Melancia, Fazenda Giori, Colado,
-                                        Livraria Shalom Adonai, Ideal Forma,
-                                        EA Labs, GIORNI                     7
+/* "16 lojas Nuvemshop no ar" = lojas Nuvemshop DISTINTAS, no ar e conferidas
+   em 04-05/10/2026, em que ele trabalhou — construídas, migradas ou melhoradas.
+   As 16 estão neste arquivo:
+     no site (PROJETOS, concluído) .... Empório Século XVIII, Quero Melancia,
+                                        Fazenda Giori, Colado, Livraria
+                                        Shalom Adonai, Ideal Forma,
+                                        EA Labs, GIORNI                     8
      em andamento (PROJETOS) .......... Café Serra Gerais — o endereço já
                                         serve Nuvemshop                     1
      só registro (LOJAS_FEITAS) ....... Casa Rigo, Zanelli, Flora, Galerie Du
@@ -52,10 +53,11 @@
    A conta é de trabalho feito, não de vitrine: as de LOJAS_FEITAS contam
    mesmo fora do site.
    Era 13 em 15/09; subiu para 15 quando Quero Melancia e Shalom Adonai
-   viraram. Quando NeuroCapsule e GA Equestre virarem, vai para 17. */
+   viraram, e para 16 com a entrada do Empório Século XVIII em 05/10/2026.
+   Quando NeuroCapsule e GA Equestre virarem, vai para 18. */
 const SELO = {
   ativo:  true,
-  texto:  "15 lojas Nuvemshop no ar",
+  texto:  "16 lojas Nuvemshop no ar",
   imagem: "",
   link:   ""
 };
@@ -64,34 +66,44 @@ const PROJETOS = [
 
   /* =====================================================================
      CARROSSEL — OS MELHORES. Lista fechada por ele em 04/10/2026, nesta
-     ordem. Todas conferidas no ar em Nuvemshop em 04/10/2026.
+     ordem; o Empório Século XVIII entrou em primeiro em 05/10/2026.
+     Todas conferidas no ar em Nuvemshop.
      ===================================================================== */
+
+  /* Melhor projeto, junto com a Quero Melancia — entrou em 05/10/2026, em
+     primeiro. A loja se apresenta como "Empório Século XVIII" (nome do site,
+     alt do logo e og:title); o domínio é cachacaseculoxviii.com.br.
+     Nuvemshop e tema Ipanema conferidos no código da página em 05/10/2026. */
+  { id:"cachaca-seculo-xviii", nome:"Empório Século XVIII", tipo:"E-commerce completo", status:"concluido", exibicao:"destaque",
+    plataforma:"Nuvemshop", tema:"Ipanema", segmento:"Cachaça", ano:"",
+    url:"https://cachacaseculoxviii.com.br/", capa:"assets/img/portfolio/cachaca-seculo-xviii-capa.jpg", logo:"assets/img/logos/cachaca-seculo-xviii.png",
+    resumo:"", desafio:"", entrega:[], resultado:"", imagens:[], depoimento:{autor:"",texto:""} },
 
   /* Era migração em voo; o domínio virou para a Nuvemshop — bloqueio liberado. */
   { id:"quero-melancia", nome:"Quero Melancia", tipo:"E-commerce completo", status:"concluido", exibicao:"destaque",
     plataforma:"Nuvemshop", tema:"Ipanema", segmento:"Moda feminina", ano:"",
-    url:"https://www.queromelancia.com.br/", capa:"", logo:"",
+    url:"https://www.queromelancia.com.br/", capa:"assets/img/portfolio/quero-melancia-capa.jpg", logo:"assets/img/logos/quero-melancia.png",
     resumo:"", desafio:"Migração vinda da Tray.", entrega:[], resultado:"", imagens:[], depoimento:{autor:"",texto:""} },
 
   /* Loja inteira, confirmado por ele em 04/10/2026 — antes estava como
      Página de produto. */
   { id:"fazenda-giori", nome:"Fazenda Giori", tipo:"E-commerce completo", status:"concluido", exibicao:"destaque",
     plataforma:"Nuvemshop", tema:"Flex", segmento:"Café especial", ano:"",
-    url:"https://giori.farm/", capa:"", logo:"",
+    url:"https://giori.farm/", capa:"assets/img/portfolio/fazenda-giori-capa.jpg", logo:"assets/img/logos/fazenda-giori.png",
     resumo:"Loja completa, com melhoria de CRO e páginas de produto.", desafio:"", entrega:[], resultado:"", imagens:[], depoimento:{autor:"",texto:""} },
 
   /* Loja inteira, confirmado por ele em 04/10/2026 — antes estava como
      Otimização. Junta os dois registros antigos (loja + manutenção). */
   { id:"colado", nome:"Colado", tipo:"E-commerce completo", status:"concluido", exibicao:"destaque",
     plataforma:"Nuvemshop", tema:"Flex", segmento:"", ano:"",
-    url:"https://www.colado.art.br/", capa:"", logo:"",
+    url:"https://www.colado.art.br/", capa:"assets/img/portfolio/colado-capa.jpg", logo:"assets/img/logos/colado.png",
     resumo:"Loja completa e contrato de manutenção do e-commerce.", desafio:"Migração vinda da Shopify.", entrega:[], resultado:"", imagens:[], depoimento:{autor:"",texto:""} },
 
   /* Era migração em voo; o domínio virou para a Nuvemshop — bloqueio liberado.
      Em 15/09 o domínio ainda servia WordPress: daí o desafio. */
   { id:"shalom-adonai", nome:"Livraria Shalom Adonai", tipo:"E-commerce completo", status:"concluido", exibicao:"destaque",
     plataforma:"Nuvemshop", tema:"Ipanema", segmento:"Livraria", ano:"",
-    url:"https://livrariashalomadonai.com.br/", capa:"", logo:"",
+    url:"https://livrariashalomadonai.com.br/", capa:"assets/img/portfolio/shalom-adonai-capa.jpg", logo:"assets/img/logos/shalom-adonai.png",
     resumo:"", desafio:"Migração vinda do WordPress.", entrega:[], resultado:"", imagens:[], depoimento:{autor:"",texto:""} },
 
   { id:"ideal-forma", nome:"Ideal Forma", tipo:"E-commerce completo", status:"concluido", exibicao:"destaque",

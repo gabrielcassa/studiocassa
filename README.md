@@ -132,9 +132,10 @@ O campo `exibicao` decide onde o projeto aparece:
 
 **`LOJAS_FEITAS`**, logo depois de `PROJETOS`, não é uma exibição: é o
 **registro** das lojas Nuvemshop que você fez e decidiu não mostrar. Nenhum
-código do site lê essa lista, e ela é o que sustenta a conta do selo ("15
-lojas Nuvemshop no ar"). Para uma loja voltar ao site, mova o registro para
-`PROJETOS` e complete os campos de lá.
+código do site lê essa lista, e ela ajuda a sustentar a conta do selo ("N
+lojas Nuvemshop no ar" — a conta loja por loja está no comentário acima do
+`SELO`). Para uma loja voltar ao site, mova o registro para `PROJETOS` e
+complete os campos de lá.
 
 Enquanto nenhum `"destaque"` tiver foto, a seção de portfólio da home sai
 inteira, e os links "Portfólio" e "Ver portfólio" passam a levar ao
@@ -227,9 +228,13 @@ O que decide a velocidade do site são as **imagens**, não o código.
 
 | item | hoje | teto |
 |---|---|---|
-| CSS + JS (soma dos gzip) | 38,62 KB | 45 KB, informativo |
-| cada capa | — | **200 KB** |
-| primeira dobra | 123,13 KB | 600 KB |
+| CSS + JS (soma dos gzip) | 39,18 KB | 45 KB, informativo |
+| cada capa | 88 a 187 KB | **200 KB** |
+| primeira dobra | 331,5 KB | 600 KB |
+
+A primeira dobra subiu quando os logos entraram: os da faixa "Marcas que já
+confiaram" ficam acima da dobra e somam 206 KB. Logo PNG pequeno ampliado pelo
+script (ele gera tudo com 200px de altura) pesa mais e não fica mais nítido.
 
 Meça o CSS/JS pela **soma dos gzip individuais**, não pelos bytes em disco e não
 juntando os arquivos antes de comprimir — o navegador baixa cada um separado.

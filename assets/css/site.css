@@ -265,14 +265,18 @@
   align-items: center;
   gap: clamp(var(--s-5), 4vw, var(--s-8));
 }
+/* Silhueta escura, e não escala de cinza: os logos chegam em qualquer cor,
+   inclusive BRANCOS — feitos para o card escuro do carrossel, onde viram
+   silhueta branca. Em cinza, um logo branco some no fundo claro desta faixa.
+   Como silhueta escura, todos leem igual: é o espelho do que o carrossel faz. */
 .confianca__logos img{
   height: 30px;
   width: auto;
-  filter: grayscale(1);
-  opacity: .55;
-  transition: filter var(--transicao), opacity var(--transicao);
+  filter: brightness(0);
+  opacity: .5;
+  transition: opacity var(--transicao);
 }
-.confianca__logos img:hover{ filter: none; opacity: 1; }
+.confianca__logos img:hover{ opacity: .9; }
 
 /* --- barra de 3 números --------------------------------------------------
    No celular a barra empilha: três colunas de 98px espremem rótulos longos
@@ -967,7 +971,8 @@
   transition: border-color var(--transicao), transform var(--transicao);
 }
 .outra:hover{ border-color: var(--borda-forte); transform: translateY(-3px); }
-.outra__logo{ max-height: 36px; width: auto; filter: grayscale(1); }
+/* mesmo motivo da faixa de logos: silhueta escura serve para logo de qualquer cor */
+.outra__logo{ max-height: 36px; width: auto; filter: brightness(0); opacity: .75; }
 
 /* plataforma em pastilha neutra: a verde é da marca, e aqui não é Nuvemshop.
    Texto em --tinta porque --mid sobre --papel-3 daria 4,20:1 e reprova. */

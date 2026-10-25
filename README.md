@@ -103,6 +103,11 @@ HTML; todo `addEventListener` está no `site.js`.
    o campo `logoCor` no `dados.js` (arquivo em `assets/img/logos/cor/<id>.png`,
    100px de altura), entra o logo colorido; sem ele, o branco vira silhueta
    preta — certo para as marcas pretas e para quem só tem logo branco.
+
+   A galeria **"Loja de verdade"** mostra o cartão desenhado de cada marca
+   (campo `capaGaleria`, arquivo `assets/img/portfolio/<id>-cartao.png`,
+   600×900, cantos arredondados de 32px já no PNG). Sem cartão, ela usa a
+   `capa`. O portfólio e a página de cada projeto seguem com a foto.
 2. Rode na raiz:
 
    ```powershell

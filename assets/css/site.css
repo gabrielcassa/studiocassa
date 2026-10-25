@@ -723,6 +723,14 @@
 }
 /* o cartão inteiro é clicável — o pseudo do botão cobre também a legenda */
 .peca__abrir::after{ content: ""; position: absolute; inset: 0; }
+/* Cartão desenhado da marca (capaGaleria): já vem com canto arredondado,
+   32px num cartão de 600x900, e transparente nas pontas. O recorte segue o
+   mesmo raio em %, e o cinza de espera sai — senão ficaria uma lasca cinza
+   em cada canto. */
+.peca--cartao .peca__abrir{
+  border-radius: 5.33% / 3.56%;
+  background: transparent;
+}
 .peca__capa{
   width: 100%;
   height: 100%;

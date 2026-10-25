@@ -14,6 +14,10 @@
             texto gravado: a peça da galeria é vertical e mostra a foto
             inteira, em cor. O script faz junto a <id>-mini.jpg (hoje sem
             uso: a órbita do hero é só de logos).
+     capaGaleria → assets/img/portfolio/<id>-cartao.png   (opcional) o cartão
+            desenhado da marca, 600x900 (2:3), que só a galeria "Loja de
+            verdade" usa. Sem ele, a galeria mostra a `capa`. Portfólio e
+            página do projeto seguem com a foto da `capa`.
             Gerar com:  .\prepara-imagens.ps1 -Aplicar
      logo → assets/img/logos/<id>.png             (fundo transparente — idem)
             O site mostra todo logo como SILHUETA de uma cor: logo colorido
@@ -94,14 +98,14 @@ const PROJETOS = [
      Nuvemshop e tema Ipanema conferidos no código da página em 05/10/2026. */
   { id:"cachaca-seculo-xviii", nome:"Empório Século XVIII", tipo:"E-commerce completo", status:"concluido", exibicao:"destaque",
     plataforma:"Nuvemshop", tema:"Ipanema", segmento:"Cachaça", ano:"",
-    url:"https://cachacaseculoxviii.com.br/", capa:"assets/img/portfolio/cachaca-seculo-xviii-capa.jpg", logo:"assets/img/logos/cachaca-seculo-xviii.png",
+    url:"https://cachacaseculoxviii.com.br/", capa:"assets/img/portfolio/cachaca-seculo-xviii-capa.jpg", capaGaleria:"assets/img/portfolio/cachaca-seculo-xviii-cartao.png", logo:"assets/img/logos/cachaca-seculo-xviii.png",
     logoCor:"assets/img/logos/cor/cachaca-seculo-xviii.png",
     resumo:"", desafio:"", entrega:[], resultado:"", imagens:[], depoimento:{autor:"",texto:""} },
 
   /* Era migração em voo; o domínio virou para a Nuvemshop — bloqueio liberado. */
   { id:"quero-melancia", nome:"Quero Melancia", tipo:"E-commerce completo", status:"concluido", exibicao:"destaque",
     plataforma:"Nuvemshop", tema:"Ipanema", segmento:"Moda feminina", ano:"",
-    url:"https://www.queromelancia.com.br/", capa:"assets/img/portfolio/quero-melancia-capa.jpg", logo:"assets/img/logos/quero-melancia.png",
+    url:"https://www.queromelancia.com.br/", capa:"assets/img/portfolio/quero-melancia-capa.jpg", capaGaleria:"assets/img/portfolio/quero-melancia-cartao.png", logo:"assets/img/logos/quero-melancia.png",
     logoCor:"assets/img/logos/cor/quero-melancia.png",
     resumo:"", desafio:"Migração vinda da Tray.", entrega:[], resultado:"", imagens:[], depoimento:{autor:"",texto:""} },
 
@@ -109,14 +113,14 @@ const PROJETOS = [
      Página de produto. */
   { id:"fazenda-giori", nome:"Fazenda Giori", tipo:"E-commerce completo", status:"concluido", exibicao:"destaque",
     plataforma:"Nuvemshop", tema:"Flex", segmento:"Café especial", ano:"",
-    url:"https://giori.farm/", capa:"assets/img/portfolio/fazenda-giori-capa.jpg", logo:"assets/img/logos/fazenda-giori.png",
+    url:"https://giori.farm/", capa:"assets/img/portfolio/fazenda-giori-capa.jpg", capaGaleria:"assets/img/portfolio/fazenda-giori-cartao.png", logo:"assets/img/logos/fazenda-giori.png",
     resumo:"Loja completa, com melhoria de CRO e páginas de produto.", desafio:"", entrega:[], resultado:"", imagens:[], depoimento:{autor:"",texto:""} },
 
   /* Loja inteira, confirmado por ele em 04/10/2026 — antes estava como
      Otimização. Junta os dois registros antigos (loja + manutenção). */
   { id:"colado", nome:"Colado", tipo:"E-commerce completo", status:"concluido", exibicao:"destaque",
     plataforma:"Nuvemshop", tema:"Flex", segmento:"", ano:"",
-    url:"https://www.colado.art.br/", capa:"assets/img/portfolio/colado-capa.jpg", logo:"assets/img/logos/colado.png",
+    url:"https://www.colado.art.br/", capa:"assets/img/portfolio/colado-capa.jpg", capaGaleria:"assets/img/portfolio/colado-cartao.png", logo:"assets/img/logos/colado.png",
     resumo:"Loja completa e contrato de manutenção do e-commerce.", desafio:"Migração vinda da Shopify.", entrega:[], resultado:"", imagens:[], depoimento:{autor:"",texto:""} },
 
   /* Migração que virou: em 22/10/2026 os DNS públicos (Google, Cloudflare)
@@ -126,7 +130,7 @@ const PROJETOS = [
      Brasília). Capa e logo chegaram em 25/10/2026. */
   { id:"neurocapsule", nome:"NeuroCapsule", tipo:"E-commerce completo", status:"concluido", exibicao:"destaque",
     plataforma:"Nuvemshop", tema:"Ipanema", segmento:"Suplementos", ano:"",
-    url:"https://loja.neurocapsule.com.br/", capa:"assets/img/portfolio/neurocapsule-capa.jpg", logo:"assets/img/logos/neurocapsule.png",
+    url:"https://loja.neurocapsule.com.br/", capa:"assets/img/portfolio/neurocapsule-capa.jpg", capaGaleria:"assets/img/portfolio/neurocapsule-cartao.png", logo:"assets/img/logos/neurocapsule.png",
     logoCor:"assets/img/logos/cor/neurocapsule.png",
     resumo:"", desafio:"E-commerce completo mais todas as páginas de produto.", entrega:[], resultado:"", imagens:[], depoimento:{autor:"",texto:""} },
 
@@ -136,14 +140,14 @@ const PROJETOS = [
      chegaram em 25/10/2026. */
   { id:"ga-equestre", nome:"GA Equestre", tipo:"E-commerce completo", status:"concluido", exibicao:"destaque",
     plataforma:"Nuvemshop", tema:"Ipanema", segmento:"Equitação", ano:"",
-    url:"https://gaequestre.com.br/", capa:"assets/img/portfolio/ga-equestre-capa.jpg", logo:"assets/img/logos/ga-equestre.png",
+    url:"https://gaequestre.com.br/", capa:"assets/img/portfolio/ga-equestre-capa.jpg", capaGaleria:"assets/img/portfolio/ga-equestre-cartao.png", logo:"assets/img/logos/ga-equestre.png",
     resumo:"", desafio:"Migração vinda da iSet, com estruturação de automações.", entrega:[], resultado:"", imagens:[], depoimento:{autor:"",texto:""} },
 
   /* Esperava o endereço desde 04/10/2026; passado por ele em 25/10/2026.
      Nuvemshop e tema Ipanema conferidos no código da página no mesmo dia. */
   { id:"romance-enxovais", nome:"Romance Enxovais", tipo:"E-commerce completo", status:"concluido", exibicao:"destaque",
     plataforma:"Nuvemshop", tema:"Ipanema", segmento:"Cama, mesa e banho", ano:"",
-    url:"https://romanceenxovais.com.br/", capa:"assets/img/portfolio/romance-enxovais-capa.jpg", logo:"assets/img/logos/romance-enxovais.png",
+    url:"https://romanceenxovais.com.br/", capa:"assets/img/portfolio/romance-enxovais-capa.jpg", capaGaleria:"assets/img/portfolio/romance-enxovais-cartao.png", logo:"assets/img/logos/romance-enxovais.png",
     resumo:"", desafio:"Migração vinda da Octopus. Marca no mercado desde 1994.", entrega:[], resultado:"", imagens:[], depoimento:{autor:"",texto:""} },
 
   /* Juntou os dois registros antigos (página de produto + otimização).
@@ -154,7 +158,7 @@ const PROJETOS = [
      (168 KB). */
   { id:"cafe-serra-gerais", nome:"Café Serra Gerais", tipo:"E-commerce completo", status:"concluido", exibicao:"destaque",
     plataforma:"Nuvemshop", tema:"Ipanema", segmento:"Café especial", ano:"",
-    url:"https://serragerais.com.br/", capa:"assets/img/portfolio/cafe-serra-gerais-capa.jpg", logo:"assets/img/logos/cafe-serra-gerais.png",
+    url:"https://serragerais.com.br/", capa:"assets/img/portfolio/cafe-serra-gerais-capa.jpg", capaGaleria:"assets/img/portfolio/cafe-serra-gerais-cartao.png", logo:"assets/img/logos/cafe-serra-gerais.png",
     resumo:"E-commerce novo, com troca de tema e o layout todo refeito.", desafio:"", entrega:["2 páginas de produto", "Melhorias de layout e implementações"], resultado:"", imagens:[], depoimento:{autor:"",texto:""} },
 
   /* Esperava endereço e plataforma desde 04/10/2026; endereço passado por
@@ -162,7 +166,7 @@ const PROJETOS = [
      página no mesmo dia. */
   { id:"bella-caza-decor", nome:"Bella Caza Decor", tipo:"E-commerce completo", status:"concluido", exibicao:"destaque",
     plataforma:"Nuvemshop", tema:"Ipanema", segmento:"Decoração", ano:"",
-    url:"https://bellacazadecor.com.br/", capa:"assets/img/portfolio/bella-caza-decor-capa.jpg", logo:"assets/img/logos/bella-caza-decor.png",
+    url:"https://bellacazadecor.com.br/", capa:"assets/img/portfolio/bella-caza-decor-capa.jpg", capaGaleria:"assets/img/portfolio/bella-caza-decor-cartao.png", logo:"assets/img/logos/bella-caza-decor.png",
     resumo:"", desafio:"", entrega:[], resultado:"", imagens:[], depoimento:{autor:"",texto:""} },
 
   /* Esperava o endereço desde 04/10/2026; passado por ele em 24/10/2026.
@@ -172,7 +176,7 @@ const PROJETOS = [
      branco, é só trocar. A capa dele cabe no teto na qualidade padrão. */
   { id:"croche-vitoria", nome:"Crochê Vitória", tipo:"E-commerce completo", status:"concluido", exibicao:"destaque",
     plataforma:"Nuvemshop", tema:"Ipanema", segmento:"Decoração em crochê", ano:"",
-    url:"https://www.crochevitoria.com.br/", capa:"assets/img/portfolio/croche-vitoria-capa.jpg", logo:"assets/img/logos/croche-vitoria.png",
+    url:"https://www.crochevitoria.com.br/", capa:"assets/img/portfolio/croche-vitoria-capa.jpg", capaGaleria:"assets/img/portfolio/croche-vitoria-cartao.png", logo:"assets/img/logos/croche-vitoria.png",
     logoCor:"assets/img/logos/cor/croche-vitoria.png",
     resumo:"", desafio:"Migração vinda da Yampi. Fabricante de Ibitinga desde 1987.", entrega:[], resultado:"", imagens:[], depoimento:{autor:"",texto:""} },
 
@@ -181,7 +185,7 @@ const PROJETOS = [
      por ele em 25/10/2026. */
   { id:"vilaz", nome:"Vilaz", tipo:"E-commerce completo", status:"concluido", exibicao:"destaque",
     plataforma:"Nuvemshop", tema:"Amazonas", segmento:"Moda feminina", ano:"",
-    url:"https://www.usevilaz.com.br/", capa:"assets/img/portfolio/vilaz-capa.jpg", logo:"assets/img/logos/vilaz.png",
+    url:"https://www.usevilaz.com.br/", capa:"assets/img/portfolio/vilaz-capa.jpg", capaGaleria:"assets/img/portfolio/vilaz-cartao.png", logo:"assets/img/logos/vilaz.png",
     logoCor:"assets/img/logos/cor/vilaz.png",
     resumo:"", desafio:"", entrega:[], resultado:"", imagens:[], depoimento:{autor:"",texto:""} },
 

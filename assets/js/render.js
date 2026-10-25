@@ -358,6 +358,8 @@ window.SCRender = (function () {
      peça chega perto da frente. A galeria mora logo abaixo do hero, e com
      src + loading="lazy" o navegador baixaria as 11 capas (~1,6 MB) já na
      abertura da página.
+     Com `capaGaleria` (o cartão desenhado da marca), é ele que entra, e a
+     peça ganha .peca--cartao: o cartão tem canto arredondado próprio.
      Sem loja nenhuma, a seção sai, e todo link que apontava para
      #portfolio passa a apontar para portfolio.html — senão o "Portfólio"
      do menu e o "Ver os projetos" do hero virariam âncora morta.
@@ -377,10 +379,10 @@ window.SCRender = (function () {
 
     secao.querySelector('.evidencia__trilho').innerHTML = lojas.map(function (p, i) {
       var meta = [p.tipo, pastilha(p), p.segmento].filter(Boolean).map(esc).join(' · ');
-      return '<article class="peca" data-peca="' + i + '">' +
+      return '<article class="peca' + (p.capaGaleria ? ' peca--cartao' : '') + '" data-peca="' + i + '">' +
                '<button class="peca__abrir" type="button" data-projeto="' + esc(p.id) + '"' +
                ' aria-label="Ver o projeto ' + esc(p.nome) + '">' +
-                 '<img class="peca__capa" data-src="' + esc(caminho(p.capa)) + '"' +
+                 '<img class="peca__capa" data-src="' + esc(caminho(p.capaGaleria || p.capa)) + '"' +
                  ' alt="" width="800" height="1200" decoding="async">' +
                '</button>' +
                '<div class="peca__legenda">' +

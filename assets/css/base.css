@@ -3,81 +3,105 @@
    Reset, tokens, tipografia e utilitários. Nada de seção aqui: seção e
    componente moram em site.css.
 
-   CONTRASTES CONFERIDOS (WCAG 2.1, calculados — não estimados):
-     tinta      / papel        17,53:1      marca      / papel        7,50:1
-     tinta      / papel-2      16,07:1      marca      / papel-2      6,87:1
-     tinta      / papel-3      14,56:1      marca      / papel-3      6,23:1
-     tinta      / marca-tint   15,76:1      marca      / marca-tint   6,73:1
-     mid        / papel         5,06:1      branco     / marca        7,95:1
-     mid        / papel-2       4,64:1      branco     / marca-esc   11,09:1
-     escuro-tx  / escuro       13,31:1      branco     / tinta       18,59:1
-     escuro-mid / escuro        6,64:1      erro       / papel        7,03:1
-     escuro-ac  / escuro        8,93:1      branco     / erro         7,46:1
+   IDENTIDADE PROVISÓRIA (outubro de 2026). Fontes e cores seguem a
+   referência anubi.io enquanto as definitivas não chegam (o papel foi
+   levado ao neutro puro: #FCFCFA lia como creme no inspetor). Para trocar:
+   só o bloco de tokens abaixo — nenhum outro arquivo escreve cor ou fonte
+   na mão. Os NOMES dos tokens continuam os da paleta "Estúdio"; mudaram os
+   valores.
 
-   DUAS COISAS QUE NÃO PODEM VIRAR TEXTO:
-     --light sobre --papel   = 2,39:1 → só filete, ícone e separador.
-     --mid   sobre --papel-3 = 4,20:1 → reprova. Texto secundário sobre
-     --papel-3 usa --tinta. Está escrito aqui porque é fácil errar depois.
+   CONTRASTES CONFERIDOS (WCAG 2.1, calculados — não estimados):
+     tinta      / papel        18,11:1      marca      / papel        5,83:1
+     tinta      / papel-2      16,72:1      marca      / papel-3      4,92:1
+     tinta      / papel-3      15,27:1      branco     / marca        5,98:1
+     tinta      / marca-tint   16,08:1      branco     / marca-esc    8,05:1
+     mid        / papel         6,36:1      marca      / marca-tint   5,18:1
+     mid        / papel-2       5,87:1      erro       / papel        6,41:1
+     mid        / papel-3       5,36:1
+     escuro-tx  / escuro       16,16:1      escuro-tx  / escuro-2    14,36:1
+     escuro-mid / escuro        7,50:1      escuro-mid / escuro-2     6,66:1
+     escuro-ac  / escuro        8,50:1
+
+   O QUE NÃO PODE VIRAR TEXTO:
+     --light sobre --papel = 2,03:1 → só filete, ícone e rabisco.
+     As cores dos rabiscos (--risco-*) são desenho, nunca texto.
    ========================================================================== */
 
 /* --------------------------------------------------------------- tokens -- */
 :root{
-  /* --- paleta fechada "Estúdio" ------------------------------------------ */
-  --papel:       #FAF8F5;   /* fundo padrão                                  */
-  --papel-2:     #F2EEE7;   /* seção alternada                               */
-  --papel-3:     #E9E3D9;   /* faixas, hover de card                         */
-  --tinta:       #14130F;   /* texto e CTA sólido                            */
-  --mid:         #6F6A62;   /* texto secundário                              */
-  --light:       #A8A29A;   /* SÓ linha e ícone decorativo — NUNCA texto     */
-  --borda:       #E6E1D8;
-  --borda-forte: #D5CDBF;
-  --marca:       #0E5C48;   /* verde profundo                                */
-  --marca-esc:   #0A4436;   /* hover do botão verde                          */
-  --marca-tint:  #E3EFEA;   /* fundo de badge                                */
-  --erro:        #9E2B1C;
+  /* --- cores ------------------------------------------------------------- */
+  --papel:       #FCFCFC;   /* fundo padrão                                  */
+  --papel-2:     #F3F3F1;   /* um passo de tom: superfície de card           */
+  --papel-3:     #E9E9E6;   /* dois passos: hover, faixa                     */
+  --tinta:       #131313;   /* texto corrido e botão sólido                  */
+  --mid:         #5E5E58;   /* texto secundário                              */
+  --light:       #B4B4AD;   /* SÓ linha e ícone decorativo — NUNCA texto     */
+  --borda:       #DCDCD6;
+  --borda-forte: #C6C6BF;
+  --marca:       #175ECC;   /* azul: item ativo, link, foco                  */
+  --marca-esc:   #124CA6;   /* hover do botão azul                           */
+  --marca-tint:  #E8EFFB;
+  --erro:        #B42318;
 
-  /* seção escura — só a prova de números e o contato final */
-  --escuro:      #0F2A22;
-  --escuro-tx:   #F2EFE9;
-  --escuro-mid:  #9DAFA8;
-  --escuro-ac:   #8FD4B8;
-  --escuro-bd:   #25453A;
+  /* seções escuras — "Como funciona" e "Nuvemshop", uma depois da outra */
+  --escuro:      #171715;
+  --escuro-2:    #22221F;
+  --escuro-tx:   #F3F3F1;
+  --escuro-mid:  #A8A8A0;
+  --escuro-ac:   #8DB2FF;
+  --escuro-bd:   #34342F;
 
-  /* --- tipografia -------------------------------------------------------- */
-  --fonte-titulo:   "Instrument Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --fonte-texto:    "Instrument Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --fonte-destaque: "Instrument Serif", Georgia, "Times New Roman", serif;
+  /* rabiscos desenhados à mão — decoração, nunca texto */
+  --risco-azul:    #2F6BFF;
+  --risco-amarelo: #FFD21F;
+  --risco-laranja: #FF6A1F;
 
-  --t-h1:     clamp(2.4rem, 6vw, 4.2rem);
-  --t-h2:     clamp(1.9rem, 4vw, 3rem);
-  --t-h3:     clamp(1.15rem, 2vw, 1.5rem);
+  /* --- tipografia ---------------------------------------------------------
+     Quatro papéis, e só a marca-larga é exclusiva: ela é o logotipo e vem
+     do Google Fonts recortada só nas letras de "STUDIO CASSA" (&text=). */
+  --fonte-titulo: "Epilogue", "Bricolage Grotesque", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --fonte-texto:  "Bricolage Grotesque", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --fonte-rotulo: "IBM Plex Mono", ui-monospace, "Cascadia Mono", Menlo, Consolas, monospace;   /* taste-skill-ignore: rótulo em mono da referência */
+  --fonte-marca:  "Archivo", "Arial Black", "Helvetica Neue", Arial, sans-serif;
+
+  /* cinco tamanhos fazem o trabalho visível; o resto deriva destes */
+  /* mínimo de 2,05rem: "Escolha pelo problema," cabe numa linha a 390px —
+     com mais, o título grande passa de duas linhas no celular */
+  --t-xl:     clamp(2.05rem, 6.4vw, 6rem);      /* título de seção grande   */
+  --t-h1:     clamp(2.2rem, 4.6vw, 4.2rem);
+  --t-h2:     clamp(1.9rem, 3.4vw, 3.05rem);
+  --t-h3:     clamp(1.35rem, 1.95vw, 1.75rem);
+  --t-lead:   clamp(1.125rem, 1.45vw, 1.3125rem);
   --t-corpo:  1.0625rem;
-  --t-lead:   clamp(1.0625rem, 1.5vw, 1.25rem);
-  --t-mini:   0.875rem;
-  --t-rotulo: 0.72rem;
+  --t-mini:   1.0625rem;     /* listas e notas: mesmo tamanho do corpo */
+  --t-ui:     0.9375rem;     /* menu, botões, pílulas                   */
+  --t-rotulo: 0.8125rem;
 
   /* --- espaçamento (escala de 4px) --------------------------------------- */
   --s-1: 4px;  --s-2: 8px;  --s-3: 12px; --s-4: 16px;
   --s-5: 24px; --s-6: 32px; --s-7: 48px; --s-8: 64px;
+  --s-9: 96px; --s-10: 144px;
 
-  /* --- raios ------------------------------------------------------------- */
-  --r-sm: 6px; --r-md: 10px; --r-lg: 16px; --r-xl: 24px; --r-pill: 999px;
+  /* --- raios: cartão de 16px, botão inteiramente redondo ------------------ */
+  --r-sm: 8px; --r-md: 16px; --r-lg: 24px; --r-pill: 999px;
 
-  /* --- sombras (discretas: o site é de papel, não de vidro) -------------- */
-  --sombra-1: 0 1px 2px rgba(20,19,15,.04), 0 2px 8px rgba(20,19,15,.04);
-  --sombra-2: 0 2px 4px rgba(20,19,15,.05), 0 12px 32px rgba(20,19,15,.08);
+  /* --- sombra: só no que de fato flutua (menu, cartão em órbita, modal) --- */
+  --sombra-flutua: 0 1px 2px rgba(19,19,19,.06), 0 10px 30px rgba(19,19,19,.10);
+  --sombra-orbita: 0 18px 40px -14px rgba(19,19,19,.35);
 
-  /* --- movimento --------------------------------------------------------- */
-  --transicao: .28s ease-out;
+  /* --- movimento ---------------------------------------------------------- */
+  --transicao: .28s cubic-bezier(.2,.7,.2,1);
+  --sai-forte: cubic-bezier(.16,1,.3,1);       /* desacelera no fim        */
+  --vai-e-vem: cubic-bezier(.7,0,.2,1);        /* acelera e freia          */
 
   /* o ✓ das listas, como máscara — a cor vem do CSS, não do arquivo */
   --check: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='none' stroke='%23000' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round' d='M3.5 8.5l3 3 6-6.5'/%3E%3C/svg%3E");
 
   /* --- layout ------------------------------------------------------------ */
-  --container: 1180px;
-  --gutter: 24px;
-  --secao-y: clamp(72px, 10vw, 132px);
-  --nav-h: 72px;
+  --container: 1400px;
+  --gutter: clamp(20px, 3.2vw, 64px);
+  --secao-y: clamp(88px, 11vw, 176px);
+  --nav-h: 88px;
 }
 
 /* ---------------------------------------------------------------- reset -- */
@@ -85,8 +109,9 @@
 
 html{
   -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: rgba(19,19,19,.08);   /* toque visível, mas discreto */
   scroll-behavior: smooth;
-  scroll-padding-top: calc(var(--nav-h) + var(--s-5));
+  scroll-padding-top: var(--nav-h);
 }
 
 body{
@@ -95,26 +120,28 @@ body{
   color: var(--tinta);
   font-family: var(--fonte-texto);
   font-size: var(--t-corpo);
-  line-height: 1.65;
+  line-height: 1.55;
   font-weight: 400;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 
-/* trava de rolagem do menu mobile e, depois, do modal de projeto */
+/* trava de rolagem do menu mobile e do modal de projeto */
 body.travado{ overflow: hidden; }
 
-h1, h2, h3, h4, p, figure, blockquote, ul, ol, dl{ margin: 0; }
+h1, h2, h3, h4, p, figure, blockquote, ul, ol, dl, dd{ margin: 0; }
 ul, ol{ padding: 0; list-style: none; }
 
-img, video, svg{ display: block; max-width: 100%; }
+img, video, svg, canvas{ display: block; max-width: 100%; }
 img, video{ height: auto; }
 
 a{ color: inherit; text-decoration: none; }
 
 button, input, select, textarea{ font: inherit; color: inherit; margin: 0; }
 button{ background: none; border: 0; padding: 0; cursor: pointer; }
+/* sem a espera do toque duplo (zoom) em link e botão */
+a, button{ touch-action: manipulation; }
 
 /* Foco visível obrigatório. Nunca outline:none sem substituto. */
 :focus-visible{
@@ -129,48 +156,55 @@ button{ background: none; border: 0; padding: 0; cursor: pointer; }
 /* ----------------------------------------------------------- tipografia -- */
 h1, h2, h3, h4{
   font-family: var(--fonte-titulo);
-  font-weight: 600;          /* 700 fica pesado nesta família */
-  line-height: 1.12;
+  font-weight: 500;          /* a Epilogue a 500 já pesa: 600 embola o fechado */
+  line-height: 1.06;
   color: var(--tinta);
   text-wrap: balance;
 }
 
-h1{ font-size: var(--t-h1); letter-spacing: -.03em; line-height: 1.04; }
-h2{ font-size: var(--t-h2); letter-spacing: -.02em; }
-h3{ font-size: var(--t-h3); letter-spacing: -.01em; }
+h1{ font-size: var(--t-h1); letter-spacing: -.055em; }
+h2{ font-size: var(--t-h2); letter-spacing: -.05em; }
+h3{ font-size: var(--t-h3); letter-spacing: -.035em; line-height: 1.12; }
 
-/* A assinatura do site: uma palavra por título em serifa itálica.
-   1.06em porque a altura-de-x da Instrument Serif é menor que a da sans. */
-em{
-  font-family: var(--fonte-destaque);
-  font-style: italic;
-  font-weight: 400;
-  font-size: 1.06em;
-  letter-spacing: 0;
-  color: var(--marca);
-}
-.secao--escura em{ color: var(--escuro-ac); }
+/* Título em dois tons: o trecho em <em> fica no cinza, na mesma fonte e no
+   mesmo peso. É o recurso da referência ("Direzione e / Produzione
+   Creativa") — e não a palavra em itálico serifado da versão anterior. */
+em{ font-style: normal; }
+h1 em, h2 em, h3 em, .titulo-xl em{ color: var(--mid); }
+.secao--escura h2 em,
+.secao--escura h3 em{ color: var(--escuro-mid); }
 
-p{ color: var(--mid); }
-p strong{ color: var(--tinta); font-weight: 600; }
+p{ color: var(--tinta); text-wrap: pretty; }   /* sem palavra órfã na última linha */
+p strong{ font-weight: 600; }
 
-.lead{ font-size: var(--t-lead); line-height: 1.55; }
+.lead{ font-size: var(--t-lead); line-height: 1.5; }
+.secundario{ color: var(--mid); }
 
+/* Rótulo: mono, em caixa normal e num tamanho que se lê. É o único lugar
+   da mono — nunca texto corrido. */
 .rotulo{
-  font-family: var(--fonte-texto);
+  font-family: var(--fonte-rotulo);
   font-size: var(--t-rotulo);
-  font-weight: 700;
-  line-height: 1;
-  text-transform: uppercase;
-  letter-spacing: .18em;
+  font-weight: 400;
+  line-height: 1.3;
+  letter-spacing: 0;
   color: var(--mid);
 }
 .secao--escura .rotulo{ color: var(--escuro-mid); }
 
+/* título de seção no tamanho grande (a seção de serviços, o contato) */
+.titulo-xl{
+  font-size: var(--t-xl);
+  letter-spacing: -.065em;
+  line-height: .98;
+}
+/* no título grande o segundo tom sempre abre a linha de baixo */
+.titulo-xl em{ display: block; }
+
 /* --------------------------------------------------------------- layout -- */
 .container{
   width: 100%;
-  max-width: var(--container);
+  max-width: calc(var(--container) + 2 * var(--gutter));
   margin-inline: auto;
   padding-inline: var(--gutter);
 }
@@ -181,89 +215,92 @@ p strong{ color: var(--tinta); font-weight: 600; }
 .secao--escura h1,
 .secao--escura h2,
 .secao--escura h3{ color: var(--escuro-tx); }
-.secao--escura p{ color: var(--escuro-mid); }
+.secao--escura p{ color: var(--escuro-tx); }
+.secao--escura .secundario{ color: var(--escuro-mid); }
 
-/* cabeçalho padrão de seção: rótulo + H2 com <em> + linha de apoio */
-.cabeca{ max-width: 46rem; }
+/* cabeçalho padrão das páginas internas: H1/H2 + linha de apoio */
+.cabeca{ max-width: 52rem; }
 .cabeca .rotulo{ display: block; margin-bottom: var(--s-4); }
 .cabeca h1 + p,
-.cabeca h2 + p{ margin-top: var(--s-4); }
+.cabeca h2 + p{ margin-top: var(--s-5); max-width: 46rem; color: var(--mid); font-size: var(--t-lead); line-height: 1.5; }
 .cabeca--centro{ margin-inline: auto; text-align: center; }
+.cabeca--centro h1 + p,
+.cabeca--centro h2 + p{ margin-inline: auto; }
 
-/* -------------------------------------------------------------- botões --- */
+/* -------------------------------------------------------------- botões ---
+   Decidido uma vez: botão é inteiramente redondo, cor chapada, sem sombra. */
 .btn{
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: var(--s-2);
-  padding: 14px var(--s-5);
+  gap: var(--s-3);
+  min-height: 48px;
+  padding: 12px var(--s-5);
   border-radius: var(--r-pill);
   font-family: var(--fonte-texto);
-  font-size: .9375rem;
-  font-weight: 600;
+  font-size: var(--t-ui);
+  font-weight: 500;
   letter-spacing: -.01em;
   line-height: 1.2;
-  border: 1px solid transparent;
+  border: 1px solid transparent;   /* taste-skill-ignore: invisível, só guarda o 1px que o .btn--linha pinta */
   cursor: pointer;
   transition: background-color var(--transicao), color var(--transicao),
               border-color var(--transicao), transform var(--transicao);
 }
-.btn:active{ transform: translateY(1px); }
+.btn:active{ transform: scale(.97); }
 
-.btn--marca{ background: var(--marca); color: #fff; }        /* 7,95:1 */
-.btn--marca:hover{ background: var(--marca-esc); }           /* 11,09:1 */
-
-.btn--tinta{ background: var(--tinta); color: var(--papel); }
+.btn--tinta{ background: var(--tinta); color: var(--papel); }         /* 18,11:1 */
 .btn--tinta:hover{ background: #000; }
 
+.btn--marca{ background: var(--marca); color: #fff; }                  /*  5,98:1 */
+.btn--marca:hover{ background: var(--marca-esc); }                     /*  8,05:1 */
+
 .btn--linha{ background: transparent; color: var(--tinta); border-color: var(--borda-forte); }
-.btn--linha:hover{ background: var(--papel-3); border-color: var(--tinta); }
+.btn--linha:hover{ background: var(--papel-2); border-color: var(--tinta); }
 
-.btn--claro{ background: var(--escuro-ac); color: var(--escuro); }
-.btn--claro:hover{ background: #A6E0C8; }
+.btn--claro{ background: var(--escuro-tx); color: var(--escuro); }
+.btn--claro:hover{ background: #fff; }
 
-.btn--g{ padding: 18px var(--s-6); font-size: 1.0625rem; }
+.btn--g{ min-height: 64px; padding: 16px var(--s-7); font-size: var(--t-lead); }
 
-/* link sublinhado — o CTA secundário do site inteiro */
+/* link com seta — o CTA secundário do site inteiro */
 .link-sub{
   display: inline-flex;
   align-items: center;
   gap: var(--s-2);
-  font-weight: 600;
-  font-size: .9375rem;
+  font-weight: 500;
+  font-size: var(--t-ui);
   color: var(--tinta);
   padding-block: 2px;
-  border-bottom: 1px solid var(--borda-forte);
-  transition: color var(--transicao), border-color var(--transicao);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 5px;
+  transition: color var(--transicao), text-decoration-color var(--transicao);
 }
-.link-sub:hover{ color: var(--marca); border-color: var(--marca); }
-.secao--escura .link-sub{ color: var(--escuro-tx); border-color: var(--escuro-bd); }
-.secao--escura .link-sub:hover{ color: var(--escuro-ac); border-color: var(--escuro-ac); }
+.link-sub:hover{ color: var(--marca); text-decoration-color: transparent; }
+.secao--escura .link-sub{ color: var(--escuro-tx); }
+.secao--escura .link-sub:hover{ color: var(--escuro-ac); }
 
 .seta{ flex: none; transition: transform var(--transicao); }
 .btn:hover .seta,
-.link-sub:hover .seta{ transform: translateX(3px); }
+.link-sub:hover .seta{ transform: translate(2px, -2px); }
 
-/* --------------------------------------------------------------- badge --- */
+/* --------------------------------------------------------------- selo ----
+   O selo vem do dados.js (objeto SELO). Sem pílula colorida: uma estrela
+   na cor da marca e o texto na fonte de rótulo. */
 .badge{
   display: inline-flex;
   align-items: center;
   gap: var(--s-2);
-  padding: 7px 14px 7px 12px;
-  border-radius: var(--r-pill);
-  background: var(--marca-tint);
-  color: var(--marca);                /* 6,73:1 */
-  font-size: .8125rem;
-  font-weight: 600;
-  letter-spacing: -.005em;
+  font-family: var(--fonte-rotulo);
+  font-size: var(--t-rotulo);
   line-height: 1.3;
+  color: var(--tinta);
 }
-.badge__estrela{ flex: none; }
-.secao--escura .badge{
-  background: rgba(143,212,184,.12);
-  color: var(--escuro-ac);
-  border: 1px solid var(--escuro-bd);
-}
+.badge__estrela{ flex: none; color: var(--marca); }
+.secao--escura .badge{ color: var(--escuro-tx); }
+.secao--escura .badge__estrela{ color: var(--escuro-ac); }
+a.badge{ text-decoration: underline; text-underline-offset: 3px; }
 
 /* ---------------------------------------------------------- utilitários --
    Estes são os blocos que as seções reaproveitam. Antes de escrever CSS novo
@@ -281,35 +318,35 @@ p strong{ color: var(--tinta); font-weight: 600; }
 .cards{
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  gap: var(--s-5);
+  gap: var(--s-4);
   margin-top: var(--s-8);
 }
 
-/* card padrão: borda de 1px, sem sombra, sobe 4px no hover */
+/* Card: superfície um passo de tom acima do papel, sem borda e sem sombra.
+   No hover sobe 4px. */
 .card{
   display: flex;
   flex-direction: column;
   gap: var(--s-3);
   align-items: flex-start;
   padding: var(--s-6);
-  border: 1px solid var(--borda);
-  border-radius: var(--r-lg);
-  background: var(--papel);
-  transition: transform var(--transicao), border-color var(--transicao);
+  border-radius: var(--r-md);
+  background: var(--papel-2);
+  transition: transform var(--transicao), background-color var(--transicao);
 }
-.card:hover{ transform: translateY(-4px); border-color: var(--borda-forte); }
+.card:hover{ transform: translateY(-4px); background: var(--papel-3); }
 .secao--papel2 .card{ background: var(--papel); }
+.card p{ color: var(--mid); }
 
-/* Lista com ✓ — o ícone é o único lugar de marca dentro do card.
-   O check é pseudo-elemento, e não SVG no HTML: assim a lista fica igual
-   quer venha do dados.js, quer esteja escrita direto numa página. */
+/* Lista com ✓. O check é pseudo-elemento, e não SVG no HTML: assim a lista
+   fica igual quer venha do dados.js, quer esteja escrita direto numa página. */
 .lista-check{ display: flex; flex-direction: column; gap: var(--s-3); }
 .lista-check li{
   position: relative;
-  padding-left: 26px;
+  padding-left: 28px;
   font-size: var(--t-mini);
   line-height: 1.5;
-  color: var(--mid);
+  color: var(--tinta);
 }
 .lista-check li::before{
   content: "";
@@ -322,6 +359,8 @@ p strong{ color: var(--tinta); font-weight: 600; }
   -webkit-mask: var(--check) center / 16px 16px no-repeat;
           mask: var(--check) center / 16px 16px no-repeat;
 }
+.secao--escura .lista-check li{ color: var(--escuro-tx); }
+.secao--escura .lista-check li::before{ background: var(--escuro-ac); }
 
 @media (min-width: 760px){
   .cards--3{ grid-template-columns: repeat(3, minmax(0, 1fr)); }
@@ -331,12 +370,9 @@ p strong{ color: var(--tinta); font-weight: 600; }
   .grade-2{ grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--s-8); }
 }
 
-.filete{ border: 0; border-top: 1px solid var(--borda); margin: 0; }
-.secao--escura .filete{ border-color: var(--escuro-bd); }
-
 .so-leitor{
   position: absolute !important;
-  width: 1px; height: 1px;
+  width: 1px; height: 1px;   /* taste-skill-ignore: só para leitor de tela */
   padding: 0; margin: -1px;
   overflow: hidden;
   clip: rect(0 0 0 0);
@@ -350,13 +386,13 @@ p strong{ color: var(--tinta); font-weight: 600; }
   position: absolute;
   top: var(--s-3);
   left: var(--s-3);
-  z-index: 200;
+  z-index: 300;
   padding: 12px var(--s-5);
   border-radius: var(--r-pill);
   background: var(--tinta);
   color: var(--papel);
-  font-size: .875rem;
-  font-weight: 600;
+  font-size: var(--t-ui);
+  font-weight: 500;
   transform: translateY(-200%);
   transition: transform var(--transicao);
 }
@@ -364,22 +400,26 @@ p strong{ color: var(--tinta); font-weight: 600; }
 
 [hidden]{ display: none !important; }
 
-/* ----------------------------------------------------------- movimento --- */
-/* Entrada padrão: 18px para cima + opacidade, escalonada por data-atraso. */
-.rv{
+/* ----------------------------------------------------------- movimento ---
+   Entrada padrão: 28px para cima + opacidade, escalonada por data-atraso.
+   Só com JS (classe .js no <html>): sem script, tudo já nasce visível. */
+.js .rv{
   opacity: 0;
-  transform: translateY(18px);
-  transition: opacity .55s ease-out, transform .55s ease-out;
+  transform: translateY(28px);
+  transition: opacity .8s var(--sai-forte), transform .8s var(--sai-forte);
   transition-delay: var(--atraso, 0ms);
 }
-.rv.in{ opacity: 1; transform: none; }
+.js .rv.in{ opacity: 1; transform: none; }
+/* o site.js não carregou: o <head> põe esta classe e nada fica escondido */
+.sem-js-vivo .rv{ opacity: 1; transform: none; }
 
 @media (prefers-reduced-motion: reduce){
   html{ scroll-behavior: auto; }
   *, *::before, *::after{
-    animation: none !important;
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
     transition: none !important;
     scroll-behavior: auto !important;
   }
-  .rv{ opacity: 1; transform: none; }
+  .js .rv{ opacity: 1; transform: none; }
 }

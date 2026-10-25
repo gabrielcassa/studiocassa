@@ -31,7 +31,6 @@ var DICIONARIO = {
   pt: {
     /* --- nav ---------------------------------------------------------- */
     'nav.tagline':        'lojas Nuvemshop sob medida',
-    'nav.sobre':          'Sobre',
     'nav.servicos':       'Serviços',
     'nav.processo':       'Como funciona',
     'nav.portfolio':      'Portfólio',
@@ -42,56 +41,55 @@ var DICIONARIO = {
     'nav.menuRotulo':     'Menu',
     'nav.pular':          'Ir para o conteúdo',
 
-    /* --- 4. marquee (texto visível, logo traduzível) -------------------- */
-    'mq.1':               'Nuvemshop',
-    'mq.2':               'migração de plataforma',
-    'mq.3':               'página de produto',
-    'mq.4':               'tema Ipanema',
-    'mq.5':               'CSS customizado',
-    'mq.6':               'landing page',
-    'mq.7':               'otimização de loja no ar',
-    'mq.8':               'tema Flex',
-    'mq.9':               'e-commerce sob medida',
-
     /* --- hero --------------------------------------------------------- */
-    'hero.h1':            'Loja Nuvemshop feita <em>sob medida</em>',
-    'hero.texto':         'A gente constrói, migra e melhora loja na Nuvemshop desde 2024. São 10 e-commerces completos entregues — cada um com a cara da marca dele, não a do tema.',
-    'hero.cta1':          'Quero minha loja',
-    'hero.cta2':          'Ver portfólio',
-    'hero.confianca':     'Marcas que já confiaram',
+    'hero.linha':         'Lojas Nuvemshop feitas sob medida.',
+    /* o <em> é o segundo tom: a linha de baixo, em cinza */
+    'hero.canto':         'Criação, migração <em>e melhoria de loja.</em>',
+    'hero.descer':        'Ver os projetos',
+    'hero.pausar':        'Pausar movimento',
+    'hero.retomar':       'Retomar movimento',
 
-    'hero.n1':            '10',
-    'hero.r1':            'e-commerces completos',
-    'hero.n2':            '19',
-    /* espaço fixo antes de "ar": sem ele a palavra cai sozinha na última
-       linha no celular */
-    'hero.r2':            'otimizações em lojas e sites já no ar',
-    'hero.n3':            '+50',
-    'hero.r3':            'páginas de produto exclusivas para best sellers',
+    /* --- marcas ------------------------------------------------------- */
+    'marcas.titulo':      'Marcas que já confiaram',
 
-    /* --- 3. sobre ----------------------------------------------------- */
-    'sobre.rotulo':       'Quem faz',
-    'sobre.h2':           'Uma pessoa só. E isso é <em>a vantagem</em>.',
+    /* --- serviços ----------------------------------------------------- */
+    'serv.h2':            'Escolha pelo problema, <em>não pelo pacote.</em>',
+    'serv.apoio':         'Me diga em que pé está a sua loja hoje. O resto a gente ajusta na conversa.',
+    'serv.grupo':         'Tipos de serviço',
+    'serv.orcamento':     'Sob orçamento · resposta no mesmo dia',
+
+    /* --- quem faz (fecho dos serviços; era a seção Sobre) --------------- */
+    'sobre.h2':           'Uma pessoa só. E isso é a vantagem.',
     'sobre.p1':           'Me chamo Gabriel Cassa. Desde 2024 eu construo loja na Nuvemshop — do zero, ou migrando de uma plataforma que já não dava conta. Comecei mexendo no CSS de tema pronto e acabei fazendo loja inteira.',
     'sobre.p2':           'Trabalho sozinho de propósito. Quem responde no WhatsApp é quem desenha, quem escreve o código e quem entrega. Não tem repasse para terceiro, e você não precisa explicar seu negócio três vezes.',
-    'sobre.cta1':         'Ver portfólio',
 
-    /* --- 5. essência -------------------------------------------------- */
-    'essencia.rotulo':    'Essência',
-    'essencia.h2':        'O que eu faço quando <em>ninguém está olhando</em>.',
-    'essencia.c1r':       'Missão',
-    'essencia.c1t':       'Tirar a loja do template',
-    'essencia.c1p':       'Fazer loja com a cara da marca, não a cara do tema. Cada projeto sai com decisão de design tomada para aquele negócio, e não copiada do anterior.',
-    'essencia.c2r':       'Visão',
-    'essencia.c2t':       'Ser a primeira ligação',
-    'essencia.c2p':       'Que quem vende online pense em mim antes de pensar em plataforma — porque o problema quase nunca é a plataforma, é como ela foi montada.',
-    'essencia.c3r':       'Valores',
-    'essencia.c3t':       'Combinado escrito',
-    'essencia.c3p':       'Escopo por escrito, com o que entra e o que não entra. Prazo dito na frente. Se alguma coisa atrasar, você fica sabendo por mim primeiro.',
+    /* --- portfólio ---------------------------------------------------- */
+    'port.h2':            'Loja de verdade, <em>no ar agora.</em>',
+    'port.pular':         'Pular os projetos',
+    'port.grupo':         'Projetos em destaque',
+    'port.dica':          'Role para ver os projetos',
+    'port.todos':         'Ver todos os projetos',
+    'port.tambem':        'Também passaram por aqui',
 
-    /* --- 6. a plataforma ---------------------------------------------- */
+    /* --- shopify e outras plataformas ---------------------------------- */
+    'outras.titulo':      'Shopify e outras plataformas',
+    'outras.h2':          'A Nuvemshop é a casa, <em>não a única.</em>',
+    'outras.apoio':       'Quando a loja já roda em outra plataforma, eu trabalho onde ela está.',
+
+    /* --- depoimentos -------------------------------------------------- */
+    'depo.h2':            'Quem já passou por isso <em>conta melhor.</em>',
+
+    /* --- como funciona ------------------------------------------------- */
+    'proc.rotulo':        'Como funciona',
+    'proc.legenda':       'Do primeiro oi à loja no ar',
+    'proc.h2':            'Sete passos. Nenhum improviso.',
+    'proc.apoio':         'Do primeiro “oi” no WhatsApp até você tocando a loja sozinho.',
+    'proc.pe':            'Escopo por escrito, com o que entra e o que não entra. Prazo dito na frente. Se alguma coisa atrasar, você fica sabendo por mim primeiro.',
+    'proc.cta':           'Começar pela conversa',
+
+    /* --- a plataforma -------------------------------------------------- */
     'plat.rotulo':        'A plataforma',
-    'plat.h2':            'Por que eu construo <em>na Nuvemshop</em>.',
+    'plat.h2':            'Por que eu construo na Nuvemshop.',
     'plat.apoio':         'Dá para fazer loja bonita em qualquer lugar. O que muda é o que sobra para você depois que eu entrego.',
     'plat.r1t':           'O tema aceita código',
     'plat.r1p':           'Dá para editar o tema por dentro. É isso que permite página de produto exclusiva e layout que não parece o do vizinho.',
@@ -100,42 +98,16 @@ var DICIONARIO = {
     'plat.r3t':           'Migrar não é recomeçar',
     'plat.r3p':           'Produto, categoria e cliente vêm junto, e as URLs antigas são redirecionadas — o que você já construiu no Google não vai embora.',
 
-    /* --- 8. prova de números ------------------------------------------ */
-    'num.rotulo':         'Números',
-    'num.h2':             'Sem estimativa. Só o que <em>já está no ar</em>.',
+    /* --- números ------------------------------------------------------- */
+    'num.h2':             'Sem estimativa. Só o que já está no ar.',
+    'num.texto':          'São 10 e-commerces completos entregues — cada um com a cara da marca dele, não a do tema.',
+    'num.r1':             'e-commerces completos',
+    /* espaço fixo antes de "ar": sem ele a palavra cai sozinha na última
+       linha no celular */
+    'num.r2':             'otimizações em lojas e sites já no ar',
+    'num.r3':             'páginas de produto exclusivas para best sellers',
     'num.r4':             'landing pages',
     'num.data':           'Conferido em setembro de 2026',
-
-    /* --- 9. serviços -------------------------------------------------- */
-    'serv.rotulo':        'Serviços',
-    'serv.h2':            'Escolha pelo problema, não <em>pelo pacote</em>.',
-    'serv.apoio':         'Me diga em que pé está a sua loja hoje. O resto a gente ajusta na conversa.',
-    'serv.orcamento':     'Sob orçamento · resposta no mesmo dia',
-
-    /* --- 10. como funciona -------------------------------------------- */
-    'proc.rotulo':        'Como funciona',
-    'proc.h2':            'Sete passos. Nenhum <em>improviso</em>.',
-    'proc.apoio':         'Do primeiro "oi" no WhatsApp até você tocando a loja sozinho.',
-
-    /* --- 11. portfólio ------------------------------------------------ */
-    'port.rotulo':        'Portfólio',
-    'port.h2':            'Loja de verdade, <em>no ar agora</em>.',
-    'port.apoio':         'Cada card abre o caso: o que o cliente tinha antes, o que eu entreguei e o endereço para você conferir.',
-    'port.antes':         'Projeto anterior',
-    'port.depois':        'Próximo projeto',
-    'port.todos':         'Ver todos os projetos',
-    'port.grupo':         'Projetos em destaque',
-    'port.tambem':        'Também passaram por aqui',
-    'port.marcas':        'Marcas que passaram por aqui',
-
-    /* --- 11b. shopify e outras plataformas ----------------------------- */
-    'outras.rotulo':      'Shopify e outras plataformas',
-    'outras.h2':          'A Nuvemshop é a casa, <em>não a única</em>.',
-    'outras.apoio':       'Quando a loja já roda em outra plataforma, eu trabalho onde ela está.',
-
-    /* --- 13. depoimentos ---------------------------------------------- */
-    'depo.rotulo':        'Depoimentos',
-    'depo.h2':            'Quem já passou por isso <em>conta melhor</em>.',
 
     /* --- modal --------------------------------------------------------- */
     'modal.fechar':       'Fechar',
@@ -152,21 +124,21 @@ var DICIONARIO = {
     'proj.vazioP':        'Esse endereço não corresponde a nenhum projeto publicado. Pode ser um link antigo, ou um projeto que ainda não está no ar.',
     'proj.vazioCta':      'Ver o portfólio',
 
-    /* --- 15. blog (bloco da home está comentado — §15b) ---------------- */
+    /* --- blog (bloco da home está comentado — §15b) -------------------- */
     'blog.rotulo':        'Blog',
-    'blog.h1':            'O que eu aprendo <em>fazendo</em>.',
-    'blog.h2':            'O que eu aprendo <em>fazendo</em>.',
+    'blog.h1':            'O que eu aprendo <em>fazendo.</em>',
+    'blog.h2':            'O que eu aprendo <em>fazendo.</em>',
     'blog.apoio':         'Texto sobre e-commerce escrito por quem constrói, não por quem só opina.',
     'blog.todos':         'Ver todos os artigos',
     'blog.artigos':       'Artigos',
     'blog.vazioT':        'Ainda não há artigo publicado',
     'blog.vazioP':        'Assim que o primeiro texto sair, ele aparece aqui.',
 
-    /* --- 16. contato final --------------------------------------------- */
-    'cta.rotulo':         'Contato',
-    'cta.h2':             'Sua loja não vai <em>se construir sozinha</em>.',
+    /* --- contato (fim da home) ----------------------------------------- */
+    'cta.h2':             'Sua loja não vai <em>se construir sozinha.</em>',
     'cta.apoio':          'Me conta em que pé está: ideia no papel, loja parada ou loja vendendo que podia vender mais. Eu respondo no mesmo dia.',
     'cta.botao':          'Chamar no WhatsApp',
+    'cta.ou':             'ou me escreva em',
     'cta.pagina':         'Outras formas de falar comigo',
 
     /* --- contato.html --------------------------------------------------- */
@@ -197,7 +169,6 @@ var DICIONARIO = {
     'rodape.sobre':       'Lojas Nuvemshop feitas sob medida, de São João del-Rei para o Brasil inteiro.',
     'rodape.navegar':     'Navegar',
     'rodape.servicos':    'Serviços',
-    'rodape.falar':       'Falar comigo',
     'rodape.whatsapp':    'WhatsApp',
     'rodape.instagram':   'Instagram',
     'rodape.email':       'E-mail',
@@ -207,7 +178,6 @@ var DICIONARIO = {
     'rodape.s3':          'Página de produto',
     'rodape.s4':          'Landing page',
     'rodape.local':       'São João del-Rei · MG',
-    'rodape.direitos':    'Todos os direitos reservados.',
 
     /* --- flutuantes --------------------------------------------------- */
     'flut.whatsapp':      'Falar no WhatsApp',

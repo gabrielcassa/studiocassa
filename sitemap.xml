@@ -8,11 +8,12 @@
     blog/*.html    — idem
     projeto.html   — sem ?id= não tem conteúdo; ver abaixo
 
-  QUANDO AS CAPAS ENTRAREM: cada projeto que passar a renderizar ganha um
-  bloco url aqui, copiando um dos de baixo e trocando a loc por
+  PROJETOS: cada projeto que renderiza (status "concluido", url, capa e logo,
+  sem `bloqueio`) tem um bloco url aqui, com a loc
     https://studiocassa.com.br/projeto.html?id=SLUG
-  com o `id` do dados.js no lugar de SLUG. Hoje nenhum projeto renderiza
-  (faltam capa e logo), então não há o que listar.
+  e o `id` do dados.js no lugar de SLUG. Projeto novo com capa e logo: copie
+  um dos blocos de projeto de baixo. Hoje são as 11 lojas da galeria da
+  home, na mesma ordem.
 
   PARA PUBLICAR O BLOG: somar blog.html e cada post, e tirar o noindex.
 -->
@@ -20,23 +21,100 @@
 
   <url>
     <loc>https://studiocassa.com.br/</loc>
-    <lastmod>2026-09-16</lastmod>
+    <lastmod>2026-10-25</lastmod>
     <changefreq>monthly</changefreq>
     <priority>1.0</priority>
   </url>
 
   <url>
     <loc>https://studiocassa.com.br/portfolio.html</loc>
-    <lastmod>2026-09-16</lastmod>
+    <lastmod>2026-10-25</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
     <loc>https://studiocassa.com.br/contato.html</loc>
-    <lastmod>2026-09-16</lastmod>
+    <lastmod>2026-10-25</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://studiocassa.com.br/projeto.html?id=cachaca-seculo-xviii</loc>
+    <lastmod>2026-10-25</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.5</priority>
+  </url>
+
+  <url>
+    <loc>https://studiocassa.com.br/projeto.html?id=quero-melancia</loc>
+    <lastmod>2026-10-25</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.5</priority>
+  </url>
+
+  <url>
+    <loc>https://studiocassa.com.br/projeto.html?id=fazenda-giori</loc>
+    <lastmod>2026-10-25</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.5</priority>
+  </url>
+
+  <url>
+    <loc>https://studiocassa.com.br/projeto.html?id=colado</loc>
+    <lastmod>2026-10-25</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.5</priority>
+  </url>
+
+  <url>
+    <loc>https://studiocassa.com.br/projeto.html?id=neurocapsule</loc>
+    <lastmod>2026-10-25</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.5</priority>
+  </url>
+
+  <url>
+    <loc>https://studiocassa.com.br/projeto.html?id=ga-equestre</loc>
+    <lastmod>2026-10-25</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.5</priority>
+  </url>
+
+  <url>
+    <loc>https://studiocassa.com.br/projeto.html?id=romance-enxovais</loc>
+    <lastmod>2026-10-25</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.5</priority>
+  </url>
+
+  <url>
+    <loc>https://studiocassa.com.br/projeto.html?id=cafe-serra-gerais</loc>
+    <lastmod>2026-10-25</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.5</priority>
+  </url>
+
+  <url>
+    <loc>https://studiocassa.com.br/projeto.html?id=bella-caza-decor</loc>
+    <lastmod>2026-10-25</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.5</priority>
+  </url>
+
+  <url>
+    <loc>https://studiocassa.com.br/projeto.html?id=croche-vitoria</loc>
+    <lastmod>2026-10-25</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.5</priority>
+  </url>
+
+  <url>
+    <loc>https://studiocassa.com.br/projeto.html?id=vilaz</loc>
+    <lastmod>2026-10-25</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.5</priority>
   </url>
 
 </urlset>

@@ -38,11 +38,12 @@ direto no navegador — funciona por `file://`, sem servidor.
 | Quero… | Mexa só em… |
 |---|---|
 | Adicionar ou editar um projeto | `assets/js/dados.js` + as imagens |
-| Pôr uma loja pronta no carrossel | `assets/js/dados.js`: `status:"concluido"` |
+| Pôr uma loja pronta na galeria da home | `assets/js/dados.js`: `status:"concluido"` |
 | Liberar uma loja que migrou | `assets/js/dados.js`, campo `bloqueio` |
 | Tirar uma loja Nuvemshop do site sem perder o registro | mover para `LOJAS_FEITAS`, no `dados.js` |
 | Trocar o selo do hero/rodapé | `assets/js/dados.js`, objeto `SELO` |
 | Trocar um texto do site | o próprio HTML **e** `assets/js/i18n.js` |
+| Trocar fontes ou cores | ver "Identidade visual (provisória)" |
 | Trocar o WhatsApp ou o Instagram | `assets/js/site.js`, constantes no topo |
 | Publicar o blog | ver "Ligar o blog" |
 
@@ -66,9 +67,11 @@ assets/
   css/site.css        seções e componentes
   js/dados.js         TODO o conteúdo: SELO, PROJETOS, SERVICOS, PROCESSO, POSTS
   js/render.js        monta HTML a partir do dados.js — nenhum evento aqui
-  js/site.js          comportamento: nav, menu, carrossel, modal, abas, filtros
+  js/site.js          comportamento: abertura, nav, menu, órbita, galeria,
+                      anel, nuvem, modal, abas, filtros
   js/i18n.js          dicionário pt completo + en vazio
   img/portfolio/      capas    <id>-capa.jpg   800x1200, retrato
+                      minis    <id>-mini.jpg   360x540, as que giram no hero
   img/logos/          logos    <id>.png        fundo transparente
   img/og/             imagem de compartilhamento
   favicon/
@@ -86,20 +89,29 @@ HTML; todo `addEventListener` está no `site.js`.
    `_logos/<id>.png`. O `<id>` é o `id` do projeto no `dados.js`, sem acento e
    com hífen.
 
-   A foto é de marca — produto, loja, gente —, **não print da home**: o card do
-   carrossel é vertical e mostra a foto inteira. Pode mandar colorida; o site
-   deixa em preto e branco e a cor volta quando o mouse passa por cima.
+   A foto é de marca — produto, loja, gente —, **não print da home** e sem
+   texto gravado: a peça da galeria da home é vertical e mostra a foto
+   inteira, em cor, e uma miniatura dela gira na órbita do hero. Pode já vir
+   pronta em 800×1200, como as capas de 25/10/2026: o script só recodifica.
+
+   O site mostra todo logo como **silhueta de uma cor** (preta na faixa de
+   marcas, branca nos cartões escuros). Mande PNG transparente, de preferência
+   a versão branca ou de uma cor: logo colorido com fundo próprio (adesivo,
+   selo) vira borrão.
 2. Rode na raiz:
 
    ```powershell
    .\prepara-imagens.ps1 -Aplicar
    ```
 
-   Ele gera `assets/img/portfolio/<id>-capa.jpg` em **retrato 800×1200** e
-   `assets/img/logos/<id>.png`, e com `-Aplicar` já escreve os caminhos no
-   `dados.js`. Foto mais alta que 2:3 perde o fim de baixo (`-Deslocamento 200`
-   desce o corte); mais larga perde as laterais. Se uma capa passar de
-   **200 KB** ele avisa na tela — quando avisar, rode de novo com `-Qualidade 70`.
+   Ele gera `assets/img/portfolio/<id>-capa.jpg` em **retrato 800×1200**, a
+   miniatura `<id>-mini.jpg` (360×540, a da órbita) e `assets/img/logos/<id>.png`,
+   e com `-Aplicar` já escreve os caminhos no `dados.js`. A miniatura não entra
+   no `dados.js`: o site a acha pelo nome da capa, e sem ela usa a capa inteira
+   (funciona, só pesa mais). Foto mais alta que 2:3 perde o fim de baixo
+   (`-Deslocamento 200` desce o corte); mais larga perde as laterais. Se uma
+   capa passar de **200 KB** ele avisa na tela — quando avisar, rode de novo
+   com `-Qualidade 70` (a da Café Serra Gerais só cabe assim).
 3. Confira o card na home, em `portfolio.html` e em `projeto.html?id=<id>`.
 4. Some a URL do projeto ao `sitemap.xml` (tem um comentário lá explicando).
 
@@ -110,7 +122,7 @@ As pastas `_prints/` e `_logos/` estão no `.gitignore`: o cru não é publicado
 São **três travas**, todas no `dados.js`:
 
 1. **`status:"concluido"`.** Com `"andamento"`, o projeto não aparece em lugar
-   nenhum. É assim que as lojas ainda não prontas esperam na fila do carrossel:
+   nenhum. É assim que as lojas ainda não prontas esperam na fila da galeria:
    já estão com `exibicao:"destaque"`, e entram no dia em que o status mudar.
 2. **`url` + `capa` + `logo`.** Faltando um, o card não existe — de propósito,
    para não haver card quebrado. `"outras"` e `"citacao"` precisam só de `url`,
@@ -122,11 +134,13 @@ São **três travas**, todas no `dados.js`:
 
 O campo `exibicao` decide onde o projeto aparece:
 
-- `"destaque"` → carrossel da home **e** grade do portfólio. Só os melhores, e
-  só Nuvemshop.
+- `"destaque"` → galeria em profundidade da home ("Loja de verdade, no ar
+  agora."), órbita do hero **e** grade do portfólio. Só os melhores, e só
+  Nuvemshop.
 - `"grade"` → só na grade de `portfolio.html`.
-- `"outras"` → seção **"Shopify e outras plataformas"**, abaixo do carrossel e
-  no fim do `portfolio.html`. Card sem foto: plataforma, nome e link da loja.
+- `"outras"` → lista **"A Nuvemshop é a casa, não a única."**, abaixo da
+  galeria, e **"Shopify e outras plataformas"**, no fim do `portfolio.html`.
+  Linha sem foto: nome, plataforma e link da loja.
 - `"citacao"` → lista compacta "Também passaram por aqui". Hoje não tem
   nenhuma.
 
@@ -137,8 +151,8 @@ lojas Nuvemshop no ar" — a conta loja por loja está no comentário acima do
 `SELO`). Para uma loja voltar ao site, mova o registro para `PROJETOS` e
 complete os campos de lá.
 
-Enquanto nenhum `"destaque"` tiver foto, a seção de portfólio da home sai
-inteira, e os links "Portfólio" e "Ver portfólio" passam a levar ao
+Enquanto nenhum `"destaque"` tiver foto, a galeria da home sai inteira, o hero
+fica sem a órbita, e os links para `#portfolio` passam a levar ao
 `portfolio.html` — para não sobrar uma seção só com o título.
 
 Os filtros de `portfolio.html` são gerados dos `tipo` que de fato existem entre
@@ -172,6 +186,56 @@ profundidade sozinho (é o que o `data-base="../"` no `<html>` das páginas de
 O português mora no HTML; o `i18n.js` é o espelho para tradução. **Mudou um texto
 visível, mude nos dois** — senão o dia em que o inglês entrar o site volta à
 versão antiga. A chave está no próprio elemento, em `data-i18n`.
+
+---
+
+## Identidade visual (provisória)
+
+Fontes e cores seguem a referência [anubi.io](https://anubi.io/) até as
+definitivas chegarem. Tudo sai de tokens no topo do `assets/css/base.css`; o
+resto do CSS só lê os tokens.
+
+**Cores.** `--papel*` (fundos claros), `--tinta`, `--mid` e `--light` (textos),
+`--marca*` (o azul), `--escuro*` (as seções escuras) e `--risco-*` (os rabiscos
+do hero). O comentário no topo do `base.css` tem a tabela de contraste de cada
+par em uso: trocou uma cor, refaça a conta do par — texto corrido pede 4,5:1.
+
+**Fontes.** São quatro papéis:
+
+| token | hoje | onde |
+|---|---|---|
+| `--fonte-titulo` | Epilogue 500 | títulos |
+| `--fonte-texto` | Bricolage Grotesque 400 e 500 | texto, botões |
+| `--fonte-rotulo` | IBM Plex Mono 400 | rótulos pequenos, contadores |
+| `--fonte-marca` | Archivo larga (125%) 900 | só o nome: hero, rodapé, "SC" e o 404 |
+
+Trocar uma fonte = mudar o token **e** o `<link>` do Google Fonts no `<head>`
+das 7 páginas, com os mesmos pesos. A Archivo vem recortada só nas letras de
+"STUDIO CASSA" (`&text=STUDIO%20CA` no link; no `404.html`, também `40`), o que
+a deixa com pouco mais de 1 KB: se o nome ou a fonte do nome mudar, mude o
+`text=` junto.
+
+A cor da barra do navegador no celular é o `<meta name="theme-color">`, também
+nas 7 páginas.
+
+---
+
+## Movimento
+
+- **Abertura:** a cortina roda uma vez por sessão (marca `cassa-abertura` no
+  `sessionStorage`).
+- **Órbita do hero:** uma volta a cada 80 s. O botão **"Pausar movimento"**
+  existe porque nada pode se mexer sozinho por mais de 5 s sem um jeito de
+  parar (WCAG 2.2.2). A escolha fica no navegador da pessoa
+  (`cassa-movimento` no `localStorage`).
+- **Galeria "Loja de verdade":** só anda com a rolagem.
+- **Anel do "Como funciona":** gira só até a estação do passo que está sendo
+  lido, e para.
+- **Nuvem "nuvemshop":** os pontos formam a palavra em ~2 s e param; depois só
+  se mexem com o cursor ou o dedo.
+
+Tudo para quando sai da tela. Com **"reduzir movimento"** ligado no sistema,
+nada se mexe: sem cortina, órbita parada e a galeria vira uma grade comum.
 
 ---
 
@@ -228,14 +292,21 @@ O que decide a velocidade do site são as **imagens**, não o código.
 
 | item | hoje | teto |
 |---|---|---|
-| CSS + JS (soma dos gzip) | 39,23 KB | 45 KB, informativo |
-| cada capa | 88 a 187 KB | **200 KB** |
-| primeira dobra | 185,3 KB | 600 KB |
+| CSS + JS (soma dos gzip) | 51,70 KB | 45 KB, informativo |
+| cada capa | 85 a 187 KB | **200 KB** |
+| primeira dobra | ~440 KB | 600 KB |
 
-Os logos da faixa "Marcas que já confiaram" ficam acima da dobra. O script os
-gera com **100px de altura** — o dobro do maior tamanho em que o site mostra um
-logo (48px, no card), nítido em tela retina. Com 200px, como era antes, os
-cinco somavam 206 KB; com 100px, somam 60 KB.
+O CSS + JS passou do teto informativo com a órbita, a galeria em profundidade,
+o anel e a nuvem (antes do redesign eram 39,23 KB). A primeira dobra subiu de
+185 KB porque o hero agora carrega miniaturas e logos das lojas: por isso as
+minis existem, e por isso, **a partir de 6 lojas, cada uma entra na órbita uma
+vez só** — foto e logo alternados (com 11, são 6 minis e 5 logos). Com foto e
+logo de todas, as 11 lojas passariam dos 600 KB.
+
+Os logos ficam acima da dobra, na órbita e na faixa de marcas logo abaixo. O
+script os gera com **100px de altura** — perto do dobro do maior tamanho em que
+o site mostra um logo (60px, na faixa de marcas), nítido em tela retina. Com
+200px, como era antes, os cinco somavam 206 KB; com 100px, os onze somam ~98 KB.
 
 Meça o CSS/JS pela **soma dos gzip individuais**, não pelos bytes em disco e não
 juntando os arquivos antes de comprimir — o navegador baixa cada um separado.
@@ -264,8 +335,6 @@ fonte, e legibilidade vale mais que 1 KB.
   mensagem" para quem nunca mandou nada.
 - **A seção "Resultado real" (vídeo) está no HTML, comentada**, esperando um vídeo
   ou um print de loja. O CSS do mockup de celular já está pronto.
-- **A foto do Sobre não existe**: no lugar há uma composição gráfica, com um TODO
-  no `index.html`.
 
 ---
 

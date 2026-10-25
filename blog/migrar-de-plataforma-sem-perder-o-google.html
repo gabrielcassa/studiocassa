@@ -29,11 +29,14 @@
 <link rel="icon" href="../assets/favicon/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="../assets/favicon/favicon-32.png" sizes="32x32" type="image/png">
 <link rel="apple-touch-icon" href="../assets/favicon/apple-touch-icon.png">
-<meta name="theme-color" content="#FAF8F5">
+<meta name="theme-color" content="#FCFCFC">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&amp;family=Instrument+Serif:ital@1&amp;display=swap">
+<!-- Fontes PROVISÓRIAS, da referência anubi.io. Títulos, texto e rótulo: -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Epilogue:wght@500&amp;family=Bricolage+Grotesque:wght@400;500&amp;family=IBM+Plex+Mono:wght@400&amp;display=swap"><!-- taste-skill-ignore: rótulo em mono da referência -->
+<!-- Logotipo: a Archivo larga, recortada só nas letras de STUDIO CASSA -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@125,900&amp;text=STUDIO%20CA&amp;display=swap">
 
 <link rel="stylesheet" href="../assets/css/base.css">
 <link rel="stylesheet" href="../assets/css/site.css">
@@ -82,29 +85,37 @@
 <a class="pular" href="#conteudo" data-i18n="nav.pular">Ir para o conteúdo</a>
 
 <header class="nav">
-  <div class="container nav__interno">
+  <div class="nav__interno">
 
     <a class="marca" href="../index.html" aria-label="Studio Cassa — página inicial">
-      <span class="marca__nome">Studio <i>Cassa</i></span>
-      <span class="marca__tag" data-i18n="nav.tagline">lojas Nuvemshop sob medida</span>
+      <span class="marca__simbolo" aria-hidden="true" translate="no">SC</span>
+      <span class="marca__texto">
+        <span class="marca__nome" translate="no">Studio Cassa</span>
+        <span class="marca__tag" data-i18n="nav.tagline">lojas Nuvemshop sob medida</span>
+      </span>
     </a>
 
     <nav class="nav__links" aria-label="Principal">
-      <a class="nav__link" href="../index.html#sobre"     data-i18n="nav.sobre">Sobre</a>
       <a class="nav__link" href="../index.html#servicos"  data-i18n="nav.servicos">Serviços</a>
-      <a class="nav__link" href="../index.html#processo"  data-i18n="nav.processo">Como funciona</a>
       <a class="nav__link" href="../portfolio.html"       data-i18n="nav.portfolio">Portfólio</a>
+      <a class="nav__link" href="../index.html#processo"  data-i18n="nav.processo">Como funciona</a>
       <a class="nav__link" href="../index.html#contato"   data-i18n="nav.contato">Contato</a>
     </nav>
 
     <div class="nav__idiomas" data-idiomas hidden></div>
 
-    <a class="btn btn--marca nav__cta" data-zap="Olá, Gabriel! Vim pelo site e quero falar sobre um projeto."
-       href="https://wa.me/5532999144851" data-i18n="nav.cta">Falar no WhatsApp</a>
+    <a class="nav__cta" data-zap="Olá, Gabriel! Vim pelo site e quero falar sobre um projeto."
+       href="https://wa.me/5532999144851">
+      <span data-i18n="nav.cta">Falar no WhatsApp</span>
+      <span class="nav__cta-seta" aria-hidden="true">
+        <svg width="14" height="14" viewBox="0 0 16 16" focusable="false"><path fill="none" stroke="currentColor"
+             stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" d="M5 11L11 5M6 5h5v5"/></svg>
+      </span>
+    </a>
 
     <button class="hamburguer" type="button" aria-expanded="false" aria-controls="menu"
             aria-label="Menu" data-i18n="nav.menuRotulo" data-i18n-attr="aria-label">
-      <span></span><span></span><span></span>
+      <span></span><span></span>
     </button>
 
   </div>
@@ -114,14 +125,13 @@
      aria-label="Menu" data-i18n="nav.menuRotulo" data-i18n-attr="aria-label">
   <div class="container">
     <nav class="menu__lista" aria-label="Menu principal">
-      <a class="menu__link" href="../index.html#sobre"     data-i18n="nav.sobre">Sobre</a>
       <a class="menu__link" href="../index.html#servicos"  data-i18n="nav.servicos">Serviços</a>
-      <a class="menu__link" href="../index.html#processo"  data-i18n="nav.processo">Como funciona</a>
       <a class="menu__link" href="../portfolio.html"       data-i18n="nav.portfolio">Portfólio</a>
+      <a class="menu__link" href="../index.html#processo"  data-i18n="nav.processo">Como funciona</a>
       <a class="menu__link" href="../index.html#contato"   data-i18n="nav.contato">Contato</a>
     </nav>
     <div class="menu__pe">
-      <a class="btn btn--marca" data-zap="Olá, Gabriel! Vim pelo site e quero falar sobre um projeto."
+      <a class="btn btn--claro" data-zap="Olá, Gabriel! Vim pelo site e quero falar sobre um projeto."
          href="https://wa.me/5532999144851" data-i18n="nav.cta">Falar no WhatsApp</a>
       <a class="menu__contato" data-insta data-insta-handle>@xpinformatica_</a>
       <a class="menu__contato" data-email data-email-texto
@@ -239,7 +249,7 @@
         </p>
 
         <div class="modal__acoes">
-          <a class="btn btn--marca"
+          <a class="btn btn--tinta"
              data-zap="Olá, Gabriel! Li o artigo sobre migração e quero falar sobre a minha loja."
              href="https://wa.me/5532999144851">Falar sobre a minha migração</a>
         </div>
@@ -252,57 +262,52 @@
 
 <footer class="rodape">
   <div class="container">
-    <div class="rodape__topo">
 
+    <div class="rodape__topo">
+      <div class="rodape__col">
+        <h2 class="rotulo" data-i18n="rodape.navegar">Navegar</h2>
+        <ul>
+          <li><a href="../index.html#servicos"  data-i18n="nav.servicos">Serviços</a></li>
+          <li><a href="../portfolio.html"       data-i18n="nav.portfolio">Portfólio</a></li>
+          <li><a href="../index.html#processo"  data-i18n="nav.processo">Como funciona</a></li>
+          <li><a href="../index.html#contato"   data-i18n="nav.contato">Contato</a></li>
+        </ul>
+      </div>
+
+      <div class="rodape__col">
+        <h2 class="rotulo" data-i18n="rodape.servicos">Serviços</h2>
+        <ul>
+          <li><a href="../index.html#servicos" data-i18n="rodape.s1">E-commerce completo</a></li>
+          <li><a href="../index.html#servicos" data-i18n="rodape.s2">Migração de plataforma</a></li>
+          <li><a href="../index.html#servicos" data-i18n="rodape.s3">Página de produto</a></li>
+          <li><a href="../index.html#servicos" data-i18n="rodape.s4">Landing page</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="rodape__meio">
       <div class="rodape__sobre">
-        <span class="marca__nome">Studio <i>Cassa</i></span>
-        <p data-i18n="rodape.sobre">
-          Lojas Nuvemshop feitas sob medida, de São João del-Rei para o Brasil inteiro.
-        </p>
+        <p data-i18n="rodape.sobre">Lojas Nuvemshop feitas sob medida, de São João del-Rei para o Brasil inteiro.</p>
         <!-- o conteúdo do selo (texto, estrela ou imagem, e o link) vem todo do
              objeto SELO no dados.js — aqui só se marca o lugar -->
         <p class="badge" data-selo hidden></p>
       </div>
-
-      <div class="rodape__colunas">
-        <div class="rodape__col">
-          <h2 data-i18n="rodape.navegar">Navegar</h2>
-          <ul>
-            <li><a href="../index.html#sobre"     data-i18n="nav.sobre">Sobre</a></li>
-            <li><a href="../index.html#servicos"  data-i18n="nav.servicos">Serviços</a></li>
-            <li><a href="../index.html#processo"  data-i18n="nav.processo">Como funciona</a></li>
-            <li><a href="../portfolio.html"       data-i18n="nav.portfolio">Portfólio</a></li>
-            <li><a href="../index.html#contato"   data-i18n="nav.contato">Contato</a></li>
-          </ul>
-        </div>
-
-        <div class="rodape__col">
-          <h2 data-i18n="rodape.servicos">Serviços</h2>
-          <ul>
-            <li><a href="../index.html#servicos" data-i18n="rodape.s1">E-commerce completo</a></li>
-            <li><a href="../index.html#servicos" data-i18n="rodape.s2">Migração de plataforma</a></li>
-            <li><a href="../index.html#servicos" data-i18n="rodape.s3">Página de produto</a></li>
-            <li><a href="../index.html#servicos" data-i18n="rodape.s4">Landing page</a></li>
-          </ul>
-        </div>
-
-        <div class="rodape__col">
-          <h2 data-i18n="rodape.falar">Falar comigo</h2>
-          <ul>
-            <li><a data-zap="Olá, Gabriel! Vim pelo site e quero falar sobre um projeto."
-                   href="https://wa.me/5532999144851" data-i18n="rodape.whatsapp">WhatsApp</a></li>
-            <li><a data-insta data-i18n="rodape.instagram">Instagram</a></li>
-            <li><a data-email href="mailto:gabriel.cassa02@outlook.com" data-i18n="rodape.email">E-mail</a></li>
-            <li><span class="rodape__horario" data-i18n="rodape.horario">Seg a sex, 9h às 18h</span></li>
-          </ul>
-        </div>
-      </div>
+      <ul class="rodape__canais">
+        <li><a class="pilula" data-zap="Olá, Gabriel! Vim pelo site e quero falar sobre um projeto."
+               href="https://wa.me/5532999144851" data-i18n="rodape.whatsapp">WhatsApp</a></li>
+        <li><a class="pilula" data-insta data-i18n="rodape.instagram">Instagram</a></li>
+        <li><a class="pilula" data-email href="mailto:gabriel.cassa02@outlook.com" data-i18n="rodape.email">E-mail</a></li>
+      </ul>
     </div>
+
+    <p class="rodape__marca" aria-hidden="true" translate="no">Studio Cassa</p>
 
     <div class="rodape__base">
       <p>&copy; <span data-ano>2026</span> Studio Cassa · Gabriel Cassa</p>
       <p data-i18n="rodape.local">São João del-Rei · MG</p>
+      <p data-i18n="rodape.horario">Seg a sex, 9h às 18h</p>
     </div>
+
   </div>
 </footer>
 

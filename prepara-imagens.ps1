@@ -3,9 +3,10 @@
 #
 #  Pega os prints crus que voce salvou e devolve as capas do portfolio no
 #  tamanho exato que o site espera, com o nome certo: RETRATO 800x1200 (2:3),
-#  porque o card do carrossel e vertical (mudou em 04/10/2026; antes era
-#  1200x900 paisagem). Use foto de marca, nao print da home — o card mostra
-#  a foto inteira. Pode ser colorida: o site deixa em preto e branco.
+#  porque a peca da galeria da home e vertical (mudou em 04/10/2026; antes
+#  era 1200x900 paisagem). Use foto de marca, nao print da home, e sem texto
+#  gravado — a peca mostra a foto inteira, em cor. Capa que ja chega pronta
+#  em 800x1200 so e recodificada.
 #
 #  COMO USAR
 #    1. Na raiz do repositorio, crie a pasta  _prints
@@ -17,6 +18,12 @@
 #    3. Rode:      .\prepara-imagens.ps1
 #       Para ja escrever os caminhos no dados.js:
 #                  .\prepara-imagens.ps1 -Aplicar
+#
+#  MINIS: toda capa ganha tambem assets/img/portfolio/<id>-mini.jpg, 360x540.
+#         E a que gira na orbita do topo da home: as quatro capas inteiras
+#         somavam ~630 KB so na primeira dobra (o teto e 600 KB); as minis,
+#         ~160 KB. Capa sem mini (ou com mini mais velha que ela) ganha uma
+#         nova a cada rodada — inclusive capa posta na pasta sem o _prints.
 #
 #  LOGOS: mesma ideia, pasta  _logos , PNG com fundo transparente.
 #         Saem em assets/img/logos/<id>.png com 100px de altura: o dobro do
@@ -56,6 +63,10 @@ $codecJpg = [System.Drawing.Imaging.ImageCodecInfo]::GetImageEncoders() |
 $paramsJpg = New-Object System.Drawing.Imaging.EncoderParameters(1)
 $paramsJpg.Param[0] = New-Object System.Drawing.Imaging.EncoderParameter(
                         [System.Drawing.Imaging.Encoder]::Quality, [long]$Qualidade)
+# a mini aparece pequena e girando: 80 basta, e nao segue o -Qualidade da capa
+$paramsMini = New-Object System.Drawing.Imaging.EncoderParameters(1)
+$paramsMini.Param[0] = New-Object System.Drawing.Imaging.EncoderParameter(
+                        [System.Drawing.Imaging.Encoder]::Quality, [long]80)
 
 function Redimensiona-Capa($origem, $destino) {
   $img = [System.Drawing.Image]::FromFile($origem)
@@ -88,6 +99,23 @@ function Redimensiona-Capa($origem, $destino) {
     } finally { $g.Dispose() }
 
     $bmp.Save($destino, $codecJpg, $paramsJpg)
+    $bmp.Dispose()
+  } finally { $img.Dispose() }
+}
+
+function Gera-Mini($capa, $mini) {
+  $img = [System.Drawing.Image]::FromFile($capa)
+  try {
+    # a capa ja sai em 2:3; a mini so encolhe, sem novo corte
+    $bmp = New-Object System.Drawing.Bitmap(360, 540)
+    $g = [System.Drawing.Graphics]::FromImage($bmp)
+    try {
+      $g.InterpolationMode = [System.Drawing.Drawing2D.InterpolationMode]::HighQualityBicubic
+      $g.PixelOffsetMode   = [System.Drawing.Drawing2D.PixelOffsetMode]::HighQuality
+      $g.SmoothingMode     = [System.Drawing.Drawing2D.SmoothingMode]::HighQuality
+      $g.DrawImage($img, 0, 0, 360, 540)
+    } finally { $g.Dispose() }
+    $bmp.Save($mini, $codecJpg, $paramsMini)
     $bmp.Dispose()
   } finally { $img.Dispose() }
 }
@@ -130,6 +158,16 @@ if (Test-Path $pastaPrints) {
   }
 } else { Write-Host "  (pasta _prints nao existe — pulei as capas)" }
 
+# ---------------------------------------------------------------- minis ----
+$minis = 0
+Get-ChildItem $saidaCapas -Filter '*-capa.jpg' -ErrorAction SilentlyContinue | ForEach-Object {
+  $mini = Join-Path $saidaCapas ($_.Name -replace '-capa\.jpg$', '-mini.jpg')
+  if ((Test-Path $mini) -and ((Get-Item $mini).LastWriteTime -ge $_.LastWriteTime)) { return }
+  Gera-Mini $_.FullName $mini
+  Write-Host ("  mini  {0,-26} 360x540  {1} KB" -f ($_.BaseName -replace '-capa$', ''), [int]((Get-Item $mini).Length / 1KB))
+  $minis++
+}
+
 # ---------------------------------------------------------------- logos ----
 $logos = 0
 if (Test-Path $pastaLogos) {
@@ -145,7 +183,7 @@ if (Test-Path $pastaLogos) {
 } else { Write-Host "  (pasta _logos nao existe — pulei os logos)" }
 
 Write-Host ""
-Write-Host "$capas capa(s) e $logos logo(s) gerados."
+Write-Host "$capas capa(s), $minis mini(s) e $logos logo(s) gerados."
 if ($capas -gt 0) { Write-Host ("Peso somado das capas: {0} KB (media {1} KB). Orcamento: 200 KB por capa." -f $pesoCapas, [int]($pesoCapas/$capas)) }
 
 # ------------------------------------------------- escreve no dados.js ----

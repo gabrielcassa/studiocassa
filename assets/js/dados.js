@@ -10,20 +10,25 @@
 
    COMO COMPLETAR
      capa → assets/img/portfolio/<id>-capa.jpg   RETRATO 800x1200 (2:3)
-            Foto de marca — produto, loja, gente —, não print da home: o card
-            do carrossel é vertical e mostra a foto inteira. Pode ser colorida;
-            o site deixa em preto e branco e a cor volta no hover.
+            Foto de marca — produto, loja, gente —, não print da home e sem
+            texto gravado: a peça da galeria é vertical e mostra a foto
+            inteira, em cor. O script faz junto a <id>-mini.jpg da órbita.
             Gerar com:  .\prepara-imagens.ps1 -Aplicar
      logo → assets/img/logos/<id>.png             (fundo transparente — idem)
+            O site mostra todo logo como SILHUETA de uma cor: logo colorido
+            com fundo próprio (adesivo, selo) vira borrão — precisa de uma
+            versão de uma cor, como a da Crochê Vitória.
      segmento, ano, resumo, desafio, entrega
      resultado → SÓ com número real. Sem número, deixa "".
 
    ONDE CADA PROJETO APARECE  (campo `exibicao`)
-     "destaque" → carrossel da home + grade do portfolio.html.
+     "destaque" → galeria da home ("Loja de verdade, no ar agora."), órbita
+                  do hero + grade do portfolio.html.
                   Só os melhores, e só Nuvemshop. É a vitrine.
      "grade"    → só na grade de portfolio.html, com card completo.
-     "outras"   → seção "Shopify e outras plataformas", na home e no
-                  portfolio.html. Sem foto: nome, plataforma e link.
+     "outras"   → lista "A Nuvemshop é a casa, não a única." na home e
+                  "Shopify e outras plataformas" no portfolio.html. Sem foto:
+                  nome, plataforma e link.
      "citacao"  → lista compacta "Também passaram por aqui". Hoje vazia.
 
    LOJAS_FEITAS, depois de PROJETOS, é outra coisa: registro de loja
@@ -38,25 +43,30 @@
         texto libera.
    ========================================================================== */
 
-/* "16 lojas Nuvemshop no ar" = lojas Nuvemshop DISTINTAS, no ar e conferidas
-   em 04-05/10/2026, em que ele trabalhou — construídas, migradas ou melhoradas.
-   As 16 estão neste arquivo:
-     no site (PROJETOS, concluído) .... Empório Século XVIII, Quero Melancia,
-                                        Fazenda Giori, Colado, Livraria
-                                        Shalom Adonai, EA Labs, GIORNI      7
-     em andamento (PROJETOS) .......... Café Serra Gerais — o endereço já
-                                        serve Nuvemshop                     1
-     só registro (LOJAS_FEITAS) ....... Ideal Forma, Casa Rigo, Zanelli,
-                                        Flora, Galerie Du Parfum, VL Dicas,
-                                        Aventtura X, Miscigenazo            8
+/* "22 lojas Nuvemshop no ar" = lojas Nuvemshop DISTINTAS, no ar e conferidas,
+   em que ele trabalhou — construídas, migradas ou melhoradas.
+   As 22 estão neste arquivo:
+     PROJETOS, concluído .............. Empório Século XVIII, Quero Melancia,
+                                        Fazenda Giori, Colado, NeuroCapsule,
+                                        GA Equestre, Romance Enxovais, Café
+                                        Serra Gerais, Bella Caza Decor,
+                                        Crochê Vitória, Vilaz, EA Labs,
+                                        GIORNI                             13
+     só registro (LOJAS_FEITAS) ....... Livraria Shalom Adonai, Ideal Forma,
+                                        Casa Rigo, Zanelli, Flora, Galerie
+                                        Du Parfum, VL Dicas, Aventtura X,
+                                        Miscigenazo                         9
    A conta é de trabalho feito, não de vitrine: as de LOJAS_FEITAS contam
    mesmo fora do site.
-   Era 13 em 15/09; subiu para 15 quando Quero Melancia e Shalom Adonai
-   viraram, e para 16 com a entrada do Empório Século XVIII em 05/10/2026.
-   Quando NeuroCapsule e GA Equestre virarem, vai para 18. */
+   Era 13 em 15/09; 15 quando Quero Melancia e Shalom Adonai viraram; 16 com
+   a entrada do Empório Século XVIII em 05/10/2026; 18 quando NeuroCapsule e
+   GA Equestre viraram, conferido em 22/10/2026; 21 com Vilaz, Crochê Vitória
+   e Bella Caza Decor, endereços passados por ele e conferidos em 24/10/2026;
+   22 com a Romance Enxovais, conferida em 25/10/2026 (a Café Serra Gerais
+   já contava desde antes, como "em andamento"). */
 const SELO = {
   ativo:  true,
-  texto:  "16 lojas Nuvemshop no ar",
+  texto:  "22 lojas Nuvemshop no ar",
   imagem: "",
   link:   ""
 };
@@ -64,9 +74,13 @@ const SELO = {
 const PROJETOS = [
 
   /* =====================================================================
-     CARROSSEL — OS MELHORES. Lista fechada por ele em 04/10/2026, nesta
-     ordem; em 05/10/2026 o Empório Século XVIII entrou em primeiro e a
-     Ideal Forma saiu. Todas conferidas no ar em Nuvemshop.
+     GALERIA DA HOME — OS MELHORES (era o carrossel), na ordem em que
+     aparecem. Lista fechada por ele em 04/10/2026; em 05/10/2026 o Empório
+     Século XVIII entrou em primeiro e a Ideal Forma saiu; em 22/10/2026 a
+     Shalom Adonai saiu e NeuroCapsule e GA Equestre entraram; em 24 e
+     25/10/2026 ele mandou a lista de 11 lojas nesta ordem, com capa e logo
+     de cada uma (os logos brancos e as capas 800x1200 são dele). Todas
+     conferidas no ar em Nuvemshop em 25/10/2026.
      ===================================================================== */
 
   /* Melhor projeto, junto com a Quero Melancia — entrou em 05/10/2026, em
@@ -98,64 +112,83 @@ const PROJETOS = [
     url:"https://www.colado.art.br/", capa:"assets/img/portfolio/colado-capa.jpg", logo:"assets/img/logos/colado.png",
     resumo:"Loja completa e contrato de manutenção do e-commerce.", desafio:"Migração vinda da Shopify.", entrega:[], resultado:"", imagens:[], depoimento:{autor:"",texto:""} },
 
-  /* Era migração em voo; o domínio virou para a Nuvemshop — bloqueio liberado.
-     Em 15/09 o domínio ainda servia WordPress: daí o desafio. */
-  { id:"shalom-adonai", nome:"Livraria Shalom Adonai", tipo:"E-commerce completo", status:"concluido", exibicao:"destaque",
-    plataforma:"Nuvemshop", tema:"Ipanema", segmento:"Livraria", ano:"",
-    url:"https://livrariashalomadonai.com.br/", capa:"assets/img/portfolio/shalom-adonai-capa.jpg", logo:"assets/img/logos/shalom-adonai.png",
-    resumo:"", desafio:"Migração vinda do WordPress.", entrega:[], resultado:"", imagens:[], depoimento:{autor:"",texto:""} },
+  /* Migração que virou: em 22/10/2026 os DNS públicos (Google, Cloudflare)
+     já mandam o domínio para a Nuvemshop — bloqueio liberado. Alguns
+     provedores ainda guardavam o endereço antigo do WordPress em cache.
+     Tema conferido direto no servidor da Nuvemshop: Ipanema (estava como
+     Brasília). Capa e logo chegaram em 25/10/2026. */
+  { id:"neurocapsule", nome:"NeuroCapsule", tipo:"E-commerce completo", status:"concluido", exibicao:"destaque",
+    plataforma:"Nuvemshop", tema:"Ipanema", segmento:"Suplementos", ano:"",
+    url:"https://loja.neurocapsule.com.br/", capa:"assets/img/portfolio/neurocapsule-capa.jpg", logo:"assets/img/logos/neurocapsule.png",
+    resumo:"", desafio:"E-commerce completo mais todas as páginas de produto.", entrega:[], resultado:"", imagens:[], depoimento:{autor:"",texto:""} },
 
-  /* Ideal Forma saiu do carrossel em 05/10/2026, por decisão dele: foi para
-     LOJAS_FEITAS, como registro. */
+  /* Migração que virou em 22/10/2026 — bloqueio liberado. O endereço passou
+     a ser o domínio sem "www": é o principal configurado na Nuvemshop, e o
+     "www" ainda caía no iSet antigo em parte dos provedores. Capa e logo
+     chegaram em 25/10/2026. */
+  { id:"ga-equestre", nome:"GA Equestre", tipo:"E-commerce completo", status:"concluido", exibicao:"destaque",
+    plataforma:"Nuvemshop", tema:"Ipanema", segmento:"Equitação", ano:"",
+    url:"https://gaequestre.com.br/", capa:"assets/img/portfolio/ga-equestre-capa.jpg", logo:"assets/img/logos/ga-equestre.png",
+    resumo:"", desafio:"Migração vinda da iSet, com estruturação de automações.", entrega:[], resultado:"", imagens:[], depoimento:{autor:"",texto:""} },
+
+  /* Esperava o endereço desde 04/10/2026; passado por ele em 25/10/2026.
+     Nuvemshop e tema Ipanema conferidos no código da página no mesmo dia. */
+  { id:"romance-enxovais", nome:"Romance Enxovais", tipo:"E-commerce completo", status:"concluido", exibicao:"destaque",
+    plataforma:"Nuvemshop", tema:"Ipanema", segmento:"Cama, mesa e banho", ano:"",
+    url:"https://romanceenxovais.com.br/", capa:"assets/img/portfolio/romance-enxovais-capa.jpg", logo:"assets/img/logos/romance-enxovais.png",
+    resumo:"", desafio:"Migração vinda da Octopus. Marca no mercado desde 1994.", entrega:[], resultado:"", imagens:[], depoimento:{autor:"",texto:""} },
+
+  /* Juntou os dois registros antigos (página de produto + otimização).
+     Entrou na galeria em 25/10/2026, na lista que ele mandou.
+     CONFERIR O TIPO: segue "Página de produto", o registro dele de antes.
+     A capa dele passa de 200 KB: sai com -Qualidade 70 (168 KB). */
+  { id:"cafe-serra-gerais", nome:"Café Serra Gerais", tipo:"Página de produto", status:"concluido", exibicao:"destaque",
+    plataforma:"Nuvemshop", tema:"Ipanema", segmento:"Café especial", ano:"",
+    url:"https://serragerais.com.br/", capa:"assets/img/portfolio/cafe-serra-gerais-capa.jpg", logo:"assets/img/logos/cafe-serra-gerais.png",
+    resumo:"", desafio:"", entrega:["2 páginas de produto", "Melhorias de layout e implementações"], resultado:"", imagens:[], depoimento:{autor:"",texto:""} },
+
+  /* Esperava endereço e plataforma desde 04/10/2026; endereço passado por
+     ele em 24/10/2026. Nuvemshop e tema Ipanema conferidos no código da
+     página no mesmo dia. */
+  { id:"bella-caza-decor", nome:"Bella Caza Decor", tipo:"E-commerce completo", status:"concluido", exibicao:"destaque",
+    plataforma:"Nuvemshop", tema:"Ipanema", segmento:"Decoração", ano:"",
+    url:"https://bellacazadecor.com.br/", capa:"assets/img/portfolio/bella-caza-decor-capa.jpg", logo:"assets/img/logos/bella-caza-decor.png",
+    resumo:"", desafio:"", entrega:[], resultado:"", imagens:[], depoimento:{autor:"",texto:""} },
+
+  /* Esperava o endereço desde 04/10/2026; passado por ele em 24/10/2026.
+     Nuvemshop e tema Ipanema conferidos no código da página no mesmo dia.
+     Logo: a versão de uma cor feita do original em 24/10/2026 — o adesivo
+     amarelo vira borrão na silhueta do site; quando ele mandar um logo
+     branco, é só trocar. A capa dele cabe no teto na qualidade padrão. */
+  { id:"croche-vitoria", nome:"Crochê Vitória", tipo:"E-commerce completo", status:"concluido", exibicao:"destaque",
+    plataforma:"Nuvemshop", tema:"Ipanema", segmento:"Decoração em crochê", ano:"",
+    url:"https://www.crochevitoria.com.br/", capa:"assets/img/portfolio/croche-vitoria-capa.jpg", logo:"assets/img/logos/croche-vitoria.png",
+    resumo:"", desafio:"Migração vinda da Yampi. Fabricante de Ibitinga desde 1987.", entrega:[], resultado:"", imagens:[], depoimento:{autor:"",texto:""} },
+
+  /* Endereço passado por ele em 24/10/2026. Nuvemshop e tema Amazonas
+     conferidos no código da página no mesmo dia. CONFERIR O TIPO: entrou
+     como loja completa, como as outras desta lista. */
+  { id:"vilaz", nome:"Vilaz", tipo:"E-commerce completo", status:"concluido", exibicao:"destaque",
+    plataforma:"Nuvemshop", tema:"Amazonas", segmento:"Moda feminina", ano:"",
+    url:"https://www.usevilaz.com.br/", capa:"assets/img/portfolio/vilaz-capa.jpg", logo:"assets/img/logos/vilaz.png",
+    resumo:"", desafio:"", entrega:[], resultado:"", imagens:[], depoimento:{autor:"",texto:""} },
+
+  /* Saíram da vitrine (então carrossel) por decisão dele e foram para
+     LOJAS_FEITAS, como registro: Ideal Forma em 05/10/2026 e Livraria
+     Shalom Adonai em 22/10/2026. */
 
   /* =====================================================================
-     ⏳ CARROSSEL — AINDA NÃO PRONTAS. Já estão com exibicao:"destaque";
-     quem segura é o status:"andamento".
+     ⏳ GALERIA — AINDA NÃO PRONTAS. Ficam aqui com exibicao:"destaque" e
+     status:"andamento" até fechar. Hoje vazia: as que esperavam (Romance
+     Enxovais, Café Serra Gerais, Bella Caza Decor e Crochê Vitória)
+     entraram em 24 e 25/10/2026.
 
-     PARA ENTRAR NO CARROSSEL: trocar para status:"concluido", ter url,
+     PARA ENTRAR NA GALERIA: trocar para status:"concluido", ter url,
      capa e logo — e apagar o `bloqueio`, onde houver.
      ===================================================================== */
 
-  { id:"neurocapsule", nome:"NeuroCapsule", tipo:"E-commerce completo", status:"andamento", exibicao:"destaque",
-    plataforma:"Nuvemshop", tema:"Brasília", segmento:"Suplementos", ano:"",
-    url:"https://loja.neurocapsule.com.br/", capa:"", logo:"",
-    bloqueio:"domínio ainda responde WordPress (conferido em 04/10/2026) — apagar quando apontar para a Nuvemshop",
-    resumo:"", desafio:"E-commerce completo mais todas as páginas de produto.", entrega:[], resultado:"", imagens:[], depoimento:{autor:"",texto:""} },
-
-  { id:"ga-equestre", nome:"GA Equestre", tipo:"E-commerce completo", status:"andamento", exibicao:"destaque",
-    plataforma:"Nuvemshop", tema:"Ipanema", segmento:"Equitação", ano:"",
-    url:"https://www.gaequestre.com.br/", capa:"", logo:"",
-    bloqueio:"domínio ainda responde iSet (conferido em 04/10/2026) — apagar quando apontar para a Nuvemshop",
-    resumo:"", desafio:"Migração vinda da iSet, com estruturação de automações.", entrega:[], resultado:"", imagens:[], depoimento:{autor:"",texto:""} },
-
-  /* Falta o endereço. */
-  { id:"romance-enxovais", nome:"Romance Enxovais", tipo:"E-commerce completo", status:"andamento", exibicao:"destaque",
-    plataforma:"Nuvemshop", tema:"Ipanema", segmento:"Cama, mesa e banho", ano:"",
-    url:"", capa:"", logo:"",
-    resumo:"", desafio:"Migração vinda da Octopus. Marca no mercado desde 1994.", entrega:[], resultado:"", imagens:[], depoimento:{autor:"",texto:""} },
-
-  /* Juntou os dois registros antigos (página de produto + otimização). O
-     endereço já serve Nuvemshop; ele considera o projeto ainda não concluído.
-     CONFERIR O TIPO quando fechar. */
-  { id:"cafe-serra-gerais", nome:"Café Serra Gerais", tipo:"Página de produto", status:"andamento", exibicao:"destaque",
-    plataforma:"Nuvemshop", tema:"Ipanema", segmento:"Café especial", ano:"",
-    url:"https://serragerais.com.br/", capa:"", logo:"",
-    resumo:"", desafio:"", entrega:["2 páginas de produto", "Melhorias de layout e implementações"], resultado:"", imagens:[], depoimento:{autor:"",texto:""} },
-
-  /* Falta o endereço e a plataforma. */
-  { id:"bella-caza-decor", nome:"Bella Caza Decor", tipo:"E-commerce completo", status:"andamento", exibicao:"destaque",
-    plataforma:"", tema:"", segmento:"Decoração", ano:"",
-    url:"", capa:"", logo:"",
-    resumo:"", desafio:"", entrega:[], resultado:"", imagens:[], depoimento:{autor:"",texto:""} },
-
-  /* Falta o endereço. */
-  { id:"croche-vitoria", nome:"Crochê Vitória", tipo:"E-commerce completo", status:"andamento", exibicao:"destaque",
-    plataforma:"Nuvemshop", tema:"Ipanema", segmento:"Decoração em crochê", ano:"",
-    url:"", capa:"", logo:"",
-    resumo:"", desafio:"Migração vinda da Yampi. Fabricante de Ibitinga desde 1987.", entrega:[], resultado:"", imagens:[], depoimento:{autor:"",texto:""} },
-
   /* =====================================================================
-     SÓ NA GRADE DO PORTFOLIO.HTML — fora do carrossel.
+     SÓ NA GRADE DO PORTFOLIO.HTML — fora da galeria da home.
      Lojas completas que não entraram na lista dos melhores de 04/10/2026.
      ===================================================================== */
 
@@ -170,7 +203,7 @@ const PROJETOS = [
     resumo:"Loja Nuvemshop construída do zero.", desafio:"", entrega:[], resultado:"", imagens:[], depoimento:{autor:"",texto:""} },
 
   /* =====================================================================
-     SHOPIFY E OUTRAS PLATAFORMAS — seção própria, abaixo do carrossel.
+     SHOPIFY E OUTRAS PLATAFORMAS — lista própria, abaixo da galeria.
      Plataforma conferida no endereço em 04/10/2026. Glaucia Goulart roda
      em Tray, não em Shopify: por isso a seção não se chama só "Shopify".
      FAOL entrou aqui por ser loja Shopify, como a VITAL.
@@ -207,7 +240,7 @@ const PROJETOS = [
    LOJAS_FEITAS — REGISTRO. NÃO APARECE NO SITE.
 
    Lojas Nuvemshop em que ele trabalhou e que ficam fora do portfólio, por
-   decisão dele em 04 e 05/10/2026. Nenhum código do site lê esta lista — de
+   decisão dele em 04/10, 05/10 e 22/10/2026. Nenhum código do site lê esta lista — de
    propósito: ela existe como registro e para sustentar a conta do SELO.
    Todas conferidas no ar em Nuvemshop em 04/10/2026.
 
@@ -215,7 +248,8 @@ const PROJETOS = [
    formato de lá (status, exibicao, capa, logo…).
    ========================================================================== */
 const LOJAS_FEITAS = [
-  { id:"ideal-forma",       nome:"Ideal Forma",                 tipo:"E-commerce completo", plataforma:"Nuvemshop", tema:"Amazonas", segmento:"Moda fitness e praia feminina", url:"https://www.idealforma.shop/" },
+  { id:"shalom-adonai",     nome:"Livraria Shalom Adonai",      tipo:"E-commerce completo", plataforma:"Nuvemshop", tema:"Ipanema",  segmento:"Livraria",                      url:"https://livrariashalomadonai.com.br/" },
+  { id:"ideal-forma",      nome:"Ideal Forma",                 tipo:"E-commerce completo", plataforma:"Nuvemshop", tema:"Amazonas", segmento:"Moda fitness e praia feminina", url:"https://www.idealforma.shop/" },
   { id:"casa-rigo",        nome:"Casa Rigo",                   tipo:"Otimização", plataforma:"Nuvemshop", tema:"",                     segmento:"",                      url:"https://casarigo.com/" },
   { id:"zanelli-coffee",    nome:"Zanelli Coffee",              tipo:"Otimização", plataforma:"Nuvemshop", tema:"",                     segmento:"Café especial",         url:"https://loja.zanellicoffee.com/" },
   { id:"flora-brinquedos",  nome:"Flora Brinquedos Educativos", tipo:"Otimização", plataforma:"Nuvemshop", tema:"",                     segmento:"Brinquedos educativos", url:"https://florabrinquedoseducativos.com.br/" },

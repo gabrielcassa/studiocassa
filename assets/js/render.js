@@ -2,13 +2,15 @@
    render.js — Studio Cassa
 
    O QUE MORA AQUI: só a MONTAGEM de HTML a partir dos arrays do dados.js —
-   selo, faixa de logos, marquee, serviços, processo, carrossel, citações,
-   depoimentos, posts, grade do portfólio e página de caso. Mais o
-   htmlModal(p), que devolve o miolo do modal como texto.
+   selo, faixa de logos, serviços, processo, órbita do hero, portfólio em
+   parede curva, outras plataformas, citações, depoimentos, posts, grade do
+   portfólio e página de caso. Mais o htmlModal(p), que devolve o miolo do
+   modal como texto.
 
-   O QUE NÃO MORA AQUI: nenhum addEventListener. Todo comportamento — setas e
-   arrasto do carrossel, abrir/fechar do modal, troca de aba, filtro da grade,
-   nav, menu, contadores — está no site.js, como manda a §6.
+   O QUE NÃO MORA AQUI: nenhum addEventListener. Todo comportamento — giro
+   da órbita, rolagem do portfólio, abrir/fechar do modal, troca de aba,
+   filtro da grade, nav, menu, contadores, canvas — está no site.js, como
+   manda a §6.
 
    Este arquivo só DEFINE. Quem manda montar é o site.js, no arranque, para
    que a ordem seja uma só e esteja escrita num lugar só.
@@ -109,21 +111,12 @@ window.SCRender = (function () {
 
 
   /* ----------------------------------------------------------------------
-     marquee() — a faixa rolante. O segundo <ul> é preenchido com uma cópia
-     do primeiro: é a cópia que faz o laço fechar sem emenda em -50%.
-     Com reduced-motion o CSS já desliga a animação; aqui não se faz nada.
-     ---------------------------------------------------------------------- */
-  function marquee() {
-    var listas = document.querySelectorAll('[data-marquee]');
-    if (listas.length < 2) return;
-    listas[1].innerHTML = listas[0].innerHTML;
-  }
-
-  /* ----------------------------------------------------------------------
      servicos() — abas + cards, montados a partir de SERVICOS do dados.js.
      As abas saem dos valores de `aba` que de fato existem, na ordem em que
-     aparecem — não há lista de abas escrita na mão em lugar nenhum.
-     Acessível: role=tablist, setas, Home/End, aria-selected, roving tabindex.
+     aparecem — não há lista de abas escrita na mão em lugar nenhum. Na tela
+     elas são as palavras grandes da seção; para o leitor de tela continuam
+     sendo abas: role=tablist, setas, Home/End, aria-selected, roving
+     tabindex.
      ---------------------------------------------------------------------- */
   function servicos() {
     var caixa = document.querySelector('[data-servicos]');
@@ -142,19 +135,19 @@ window.SCRender = (function () {
     });
 
     var tira    = caixa.querySelector('.abas__tira');
-    var paineis = caixa.querySelector('.abas__painéis');
+    var paineis = caixa.querySelector('.abas__paineis');
 
     tira.innerHTML = abas.map(function (a, i) {
       return '<button class="aba" type="button" role="tab" id="aba-' + i + '"' +
              ' aria-controls="painel-' + i + '" aria-selected="' + (i === 0) + '"' +
-             ' tabindex="' + (i === 0 ? 0 : -1) + '">' + a + '</button>';
+             ' tabindex="' + (i === 0 ? 0 : -1) + '">' + esc(a) + '</button>';
     }).join('');
 
     paineis.innerHTML = abas.map(function (a, i) {
       var daAba = lista.filter(function (s) { return s.aba === a; });
-      /* a grade acompanha quantos serviços a aba tem: 3 colunas para uma aba
-         de 2 cards deixaria um buraco do lado direito */
-      var colunas = Math.min(daAba.length, 3);
+      /* o painel acompanha quantos serviços a aba tem: dois lado a lado,
+         um sozinho ocupa a coluna */
+      var colunas = Math.min(daAba.length, 2);
 
       var cards = daAba.map(function (s) {
         var itens = (s.itens || []).map(function (it) {
@@ -164,23 +157,25 @@ window.SCRender = (function () {
         var msg = 'Olá, Gabriel! Vim pelo site e quero falar sobre ' + s.nome + '.';
 
         /* `destaque` é um rótulo sobre o MEU posicionamento ("Meu carro-chefe"),
-           não sobre demanda de mercado. Quem escreve o texto é o dados.js. */
+           não sobre demanda de mercado. Quem escreve o texto é o dados.js.
+           Vem logo DEPOIS do nome: rótulo em cima de título é o vício que a
+           identidade nova tirou. */
         var dest = s.destaque
-          ? '<span class="servico__destaque">' + s.destaque + '</span>' : '';
+          ? '<p class="servico__destaque">' + esc(s.destaque) + '</p>' : '';
 
         return '<article class="servico' + (s.destaque ? ' servico--destaque' : '') + '">' +
+                 '<h3>' + esc(s.nome) + '</h3>' +
                  dest +
-                 '<h3>' + s.nome + '</h3>' +
-                 '<p class="servico__dor">&ldquo;' + s.dor + '&rdquo;</p>' +
+                 '<p class="servico__dor">&ldquo;' + esc(s.dor) + '&rdquo;</p>' +
                  '<ul class="lista-check">' + itens + '</ul>' +
                  '<p class="servico__orcamento" data-i18n="serv.orcamento">' +
                    'Sob orçamento · resposta no mesmo dia</p>' +
-                 '<a class="btn btn--marca" data-zap="' + msg + '"' +
-                 ' href="https://wa.me/' + SC.WHATSAPP + '">' + s.cta + '</a>' +
+                 '<a class="btn btn--tinta" data-zap="' + esc(msg) + '"' +
+                 ' href="https://wa.me/' + SC.WHATSAPP + '">' + esc(s.cta) + '</a>' +
                '</article>';
       }).join('');
 
-      return '<div class="abas__painel cards cards--' + colunas + '" role="tabpanel"' +
+      return '<div class="abas__painel cards--' + colunas + '" role="tabpanel"' +
              ' id="painel-' + i + '" aria-labelledby="aba-' + i + '"' +
              (i === 0 ? '' : ' hidden') + '>' + cards + '</div>';
     }).join('');
@@ -191,7 +186,10 @@ window.SCRender = (function () {
   }
 
   /* ----------------------------------------------------------------------
-     processo() — a timeline sai de PROCESSO do dados.js.
+     processo() — os passos saem de PROCESSO do dados.js, numa <ol> de
+     verdade. O número que aparece na tela é o contador do CSS, e não o
+     campo `n` do dados.js (o "zero-um"): a ordem já é a da lista. data-passo é o
+     índice que o anel do site.js acende.
      ---------------------------------------------------------------------- */
   function processo() {
     var ol = document.querySelector('[data-processo]');
@@ -205,10 +203,9 @@ window.SCRender = (function () {
     }
 
     ol.innerHTML = passos.map(function (p, i) {
-      return '<li class="passo rv" data-atraso="' + (i * 80) + '">' +
-               '<span class="passo__n" aria-hidden="true">' + p.n + '</span>' +
-               '<div class="passo__txt"><h3>' + p.titulo + '</h3>' +
-               '<p>' + p.texto + '</p></div>' +
+      return '<li class="passo rv" data-passo="' + i + '" data-atraso="' + Math.min(i, 3) * 60 + '">' +
+               '<h3>' + esc(p.titulo) + '</h3>' +
+               '<p>' + esc(p.texto) + '</p>' +
              '</li>';
     }).join('');
   }
@@ -263,11 +260,10 @@ window.SCRender = (function () {
       .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   }
 
-  /* Card em retrato (2:3): a foto ocupa o card inteiro, em preto e branco,
-     com o logo do cliente em branco embaixo. A cor volta no hover.
-     `semLegenda` tira nome e pastilha de baixo do card — é o carrossel da
-     home, onde o logo já diz de quem é a loja. A grade do portfolio.html
-     mantém a legenda, porque lá o visitante filtra e compara. */
+  /* Card em retrato (2:3) da grade do portfolio.html: a foto ocupa o card
+     inteiro, colorida, com o logo do cliente em branco embaixo.
+     `semLegenda` tira nome e pastilha de baixo do card; hoje ninguém usa,
+     mas fica para um card que dispense legenda. */
   function cardProjeto(p, semLegenda) {
     var pas = pastilha(p);
     return '<article class="projeto">' +
@@ -319,29 +315,112 @@ window.SCRender = (function () {
     });
   }
 
+  /* a seta ↗ dos links de loja e dos cartões — um desenho só */
+  function seta(classe, tam) {
+    return '<svg class="' + classe + '" width="' + tam + '" height="' + tam + '" viewBox="0 0 16 16"' +
+           ' aria-hidden="true" focusable="false"><path fill="none" stroke="currentColor"' +
+           ' stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"' +
+           ' d="M4 12L12 4M5 4h7v7"/></svg>';
+  }
+
   /* ----------------------------------------------------------------------
-     carrossel() — scroll-snap no eixo x. As setas desabilitam nas pontas, o
-     mouse arrasta por pointer events e no toque o swipe nativo já funciona
-     (por isso não há listener de touch: seria brigar com o navegador).
-     Sem projeto com card, o carrossel inteiro sai da página.
+     orbita() — os cartões que giram em volta do nome, no hero. A foto é a
+     versão -mini da capa (360x540, feita pelo prepara-imagens.ps1): as
+     capas inteiras estourariam o teto de 600 KB da primeira dobra. Se a
+     mini não existir, o site.js troca pela capa inteira (data-capa).
+
+     Com poucas lojas (menos de 6), cada uma entra com a foto E o logo, e o
+     logo fica do outro lado da elipse, não colado na foto dela: com 4 lojas
+     a ordem é foto0, logo2, foto1, logo3, foto2, logo0… Com 6 ou mais, cada
+     loja entra uma vez só, foto e logo alternados (foto0, logo1, foto2…):
+     com 11 lojas seriam 22 cartões, apertados, e 11 minis na primeira
+     dobra passam dos 600 KB.
+     data-indice é a posição da loja no portfólio — o site.js rola até ela
+     no clique. Sem loja nenhuma, a órbita sai e o nome fica sozinho.
      ---------------------------------------------------------------------- */
-  function carrossel() {
-    var caixa = document.querySelector('[data-carrossel]');
+  function mini(capa) {
+    return String(capa || '').replace(/-capa\.(jpe?g)$/i, '-mini.$1');
+  }
+
+  function orbita() {
+    var caixa = document.querySelector('[data-orbita]');
     if (!caixa) return;
 
-    var destaques = projetosPor('destaque');
-    if (!destaques.length) { caixa.remove(); return; }   /* sem card, sem carrossel */
+    var lojas = projetosPor('destaque');
+    if (!lojas.length) { caixa.remove(); return; }
 
-    caixa.querySelector('.carrossel__trilho').innerHTML =
-      destaques.map(function (p) { return cardProjeto(p, true); }).join('');
-    caixa.hidden = false;
+    function foto(p, i) {
+      return '<div class="orbita__item orbita__item--foto" data-indice="' + i + '">' +
+               '<img src="' + esc(caminho(mini(p.capa))) + '" data-capa="' + esc(caminho(p.capa)) + '"' +
+               ' alt="" width="360" height="540" decoding="async">' +
+             '</div>';
+    }
+    function logo(p, i) {
+      return '<div class="orbita__item orbita__item--logo" data-indice="' + i + '">' +
+               '<img src="' + esc(caminho(p.logo)) + '" alt="" width="160" height="60" decoding="async">' +
+             '</div>';
+    }
+
+    if (lojas.length >= 6) {
+      caixa.innerHTML = lojas.map(function (p, i) { return i % 2 ? logo(p, i) : foto(p, i); }).join('');
+      return;
+    }
+    var meio = Math.floor(lojas.length / 2);
+    caixa.innerHTML = lojas.map(function (p, i) {
+      var j = (i + meio) % lojas.length;
+      return foto(p, i) + logo(lojas[j], j);
+    }).join('');
+  }
+
+  /* ----------------------------------------------------------------------
+     evidencia() — o portfólio da home: um cartão por loja "destaque"
+     visível. Quem põe os cartões na parede curva e os faz passar com a
+     rolagem é o site.js; aqui só se monta.
+     Sem loja nenhuma, a seção sai, e todo link que apontava para
+     #portfolio passa a apontar para portfolio.html — senão o "Portfólio"
+     do menu e o "Ver os projetos" do hero virariam âncora morta.
+     ---------------------------------------------------------------------- */
+  function evidencia() {
+    var secao = document.querySelector('[data-evidencia]');
+    if (!secao) return;
+
+    var lojas = projetosPor('destaque');
+    if (!lojas.length) {
+      secao.remove();
+      Array.prototype.forEach.call(document.querySelectorAll('a[href="#portfolio"]'), function (a) {
+        a.setAttribute('href', 'portfolio.html');
+      });
+      return;
+    }
+
+    secao.querySelector('.evidencia__trilho').innerHTML = lojas.map(function (p, i) {
+      var meta = [p.tipo, pastilha(p), p.segmento].filter(Boolean).map(esc).join(' · ');
+      return '<article class="peca" data-peca="' + i + '">' +
+               '<button class="peca__abrir" type="button" data-projeto="' + esc(p.id) + '"' +
+               ' aria-label="Ver o projeto ' + esc(p.nome) + '">' +
+                 '<img class="peca__capa" src="' + esc(caminho(p.capa)) + '"' +
+                 ' alt="" width="800" height="1200" loading="lazy" decoding="async">' +
+               '</button>' +
+               '<div class="peca__legenda">' +
+                 '<h3 class="peca__nome">' + esc(p.nome) + '</h3>' +
+                 (meta ? '<p class="peca__meta">' + meta + '</p>' : '') +
+                 seta('peca__seta', 28) +
+               '</div>' +
+             '</article>';
+    }).join('');
+
+    var total = secao.querySelector('[data-evidencia-total]');
+    if (total) total.textContent = (lojas.length < 10 ? '0' : '') + lojas.length;
+    secao.style.setProperty('--n', lojas.length);
+    secao.hidden = false;
   }
 
   /* ----------------------------------------------------------------------
      outras() — "Shopify e outras plataformas". Lojas fora da Nuvemshop, em
-     seção própria para não disputar atenção com o carrossel. Sem foto:
-     plataforma (conferida), nome, o que foi feito e o link da loja.
-     Sem nenhuma loja visível, a seção inteira sai.
+     linhas, abaixo do link para o portfólio completo: não disputam atenção
+     com a parede de lojas Nuvemshop. Sem foto: nome, plataforma
+     (conferida), o que foi feito e o link da loja.
+     Sem nenhuma loja visível, o bloco inteiro sai.
      ---------------------------------------------------------------------- */
   function outras() {
     var caixas = document.querySelectorAll('[data-outras]');
@@ -350,51 +429,35 @@ window.SCRender = (function () {
     var lista = projetosPor('outras');
 
     Array.prototype.forEach.call(caixas, function (caixa) {
-      /* Remove só o próprio [data-outras]: na home ele É a seção; no
-         portfolio.html é um bloco dentro da seção que também tem a grade. */
+      /* Remove só o próprio [data-outras]: na home ele é um bloco da seção
+         "todos"; no portfolio.html, um bloco dentro da seção da grade. */
       if (!lista.length) { caixa.remove(); return; }
 
-      var grade = caixa.querySelector('.outras__lista');
-      grade.className = 'outras__lista cards cards--' + Math.min(lista.length, 3);
-      grade.innerHTML = lista.map(function (p) {
-        var det = [p.tipo, p.segmento].filter(Boolean).join(' · ');
-        return '<article class="outra">' +
-                 (p.logo ? '<img class="outra__logo" src="' + esc(caminho(p.logo)) +
-                           '" alt="" width="160" height="60" loading="lazy" decoding="async">' : '') +
-                 (p.plataforma ? '<span class="outra__plataforma">' + esc(pastilha(p)) + '</span>' : '') +
-                 '<h3>' + esc(p.nome) + '</h3>' +
-                 (det ? '<p class="outra__det">' + esc(det) + '</p>' : '') +
-                 (p.resumo ? '<p class="outra__resumo">' + esc(p.resumo) + '</p>' : '') +
-                 '<a class="link-sub outra__link" href="' + esc(p.url) + '" target="_blank" rel="noopener"' +
-                 ' aria-label="Ver a loja ' + esc(p.nome) + ' no ar (abre em nova aba)">' +
-                   '<span>Ver loja no ar</span>' +
-                   '<svg class="seta" width="14" height="14" viewBox="0 0 16 16" aria-hidden="true" focusable="false">' +
-                   '<path fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"' +
-                   ' stroke-linejoin="round" d="M5 11L11 5M6 5h5v5"/></svg>' +
+      caixa.querySelector('.outras__lista').innerHTML = lista.map(function (p) {
+        var det = [pastilha(p), p.tipo, p.segmento, p.resumo].filter(Boolean).map(esc).join(' · ');
+        return '<li class="outra">' +
+                 '<a href="' + esc(p.url) + '" target="_blank" rel="noopener"' +
+                 ' aria-label="' + esc(p.nome) + ' — ver a loja no ar (abre em nova aba)">' +
+                   '<span class="outra__nome">' + esc(p.nome) + '</span>' +
+                   (det ? '<span class="outra__det">' + det + '</span>' : '') +
+                   seta('outra__seta', 22) +
                  '</a>' +
-               '</article>';
+               '</li>';
       }).join('');
 
       caixa.hidden = false;
     });
   }
 
-  /* ----------------------------------------------------------------------
-     portfolioVazio() — enquanto nenhum projeto tem foto, o #portfolio da
-     home ficaria só com o título. Nesse caso a seção sai, e todo link que
-     apontava para #portfolio passa a apontar para portfolio.html — senão o
-     "Portfólio" do menu e o "Ver portfólio" do hero virariam âncora morta.
-     Roda depois de carrossel() e citacoes(), que são quem esvazia a seção.
-     ---------------------------------------------------------------------- */
-  function portfolioVazio() {
-    var secao = document.getElementById('portfolio');
-    if (!secao) return;
-    if (secao.querySelector('[data-carrossel], [data-citacoes]')) return;
-
-    secao.remove();
-    Array.prototype.forEach.call(document.querySelectorAll('a[href="#portfolio"]'), function (a) {
-      a.setAttribute('href', 'portfolio.html');
-    });
+  /* os dois botões do fim do caso — iguais no modal e no projeto.html */
+  function acoesProjeto(p) {
+    return '<div class="modal__acoes">' +
+             '<a class="btn btn--tinta" href="' + esc(p.url) + '" target="_blank" rel="noopener">' +
+               'Ver loja no ar' + seta('seta', 15) + '</a>' +
+             '<a class="link-sub" data-zap="Olá, Gabriel! Vi o projeto ' + esc(p.nome) +
+             ' no site e quero algo parecido." href="https://wa.me/' + SC.WHATSAPP +
+             '">Quero algo parecido</a>' +
+           '</div>';
   }
 
   /* ----------------------------------------------------------------------
@@ -404,10 +467,12 @@ window.SCRender = (function () {
      ---------------------------------------------------------------------- */
   function htmlModal(p) {
       var pas = pastilha(p);
-      var h = '<p class="rotulo">' + esc(p.tipo || 'Projeto') + '</p>' +
-              '<h2 id="modal-titulo">' + esc(p.nome) + '</h2>';
+      /* o tipo vai na linha de dados, debaixo do nome — e não num rótulo
+         em cima dele */
+      var h = '<h2 id="modal-titulo">' + esc(p.nome) + '</h2>';
 
       var meta = [];
+      if (p.tipo) meta.push(esc(p.tipo));
       if (p.segmento) meta.push(esc(p.segmento));
       if (pas) meta.push(esc(pas));
       if (p.ano) meta.push(esc(p.ano));
@@ -438,13 +503,7 @@ window.SCRender = (function () {
         }).join('') + '</div>';
       }
 
-      h += '<div class="modal__acoes">' +
-             '<a class="btn btn--marca" href="' + esc(p.url) + '"' +
-             ' target="_blank" rel="noopener">Ver loja no ar</a>' +
-             '<a class="link-sub" data-zap="Olá, Gabriel! Vi o projeto ' + esc(p.nome) +
-             ' no site e quero algo parecido." href="https://wa.me/' + SC.WHATSAPP +
-             '">Quero algo parecido</a>' +
-           '</div>';
+      h += acoesProjeto(p);
 
       return h;
   }
@@ -633,10 +692,9 @@ window.SCRender = (function () {
        o logo, que fica embaixo da foto, seria o primeiro a sumir. */
 
     var pas = pastilha(p);
-    var meta = [p.segmento, pas, p.ano].filter(Boolean).map(esc).join(' · ');
+    var meta = [p.tipo, p.segmento, pas, p.ano].filter(Boolean).map(esc).join(' · ');
 
-    var h = '<p class="rotulo">' + esc(p.tipo || 'Projeto') + '</p>' +
-            '<h1>' + esc(p.nome) + '</h1>' +
+    var h = '<h1>' + esc(p.nome) + '</h1>' +
             (meta ? '<p class="modal__meta">' + meta + '</p>' : '') +
             (p.resumo ? '<p class="lead">' + esc(p.resumo) + '</p>' : '') +
             '<img class="projeto__hero" src="' + esc(caminho(p.capa)) + '" alt="Loja ' +
@@ -663,13 +721,7 @@ window.SCRender = (function () {
       }).join('') + '</div>';
     }
 
-    h += '<div class="modal__acoes">' +
-           '<a class="btn btn--marca" href="' + esc(p.url) + '" target="_blank"' +
-           ' rel="noopener">Ver loja no ar</a>' +
-           '<a class="link-sub" data-zap="Olá, Gabriel! Vi o projeto ' + esc(p.nome) +
-           ' no site e quero algo parecido." href="https://wa.me/' + SC.WHATSAPP +
-           '">Quero algo parecido</a>' +
-         '</div>';
+    h += acoesProjeto(p);
 
     alvo.innerHTML = h;
     alvo.hidden = false;
@@ -745,12 +797,11 @@ window.SCRender = (function () {
     posts();
     selo();
     logosConfianca();
-    marquee();
     servicos();
     processo();
-    carrossel();
+    orbita();
+    evidencia();
     citacoes();
-    portfolioVazio();     /* depois dos dois acima: são eles que esvaziam a seção */
     outras();
     depoimentos();
     portfolioGrade();

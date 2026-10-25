@@ -3,6 +3,11 @@
    JavaScript vanilla, sem dependência, sem type="module" (quebraria em file://).
    O MESMO arquivo roda em todas as páginas: por isso todo bloco começa com um
    guard que sai fora se o elemento não existir naquela página.
+
+   MOVIMENTO: tudo que anima (órbita, parede de projetos, anel, nuvem) mexe
+   só em transform e opacity, para quando sai da tela, e fica parado com
+   prefers-reduced-motion. Nenhum bloco segura a rolagem: a parede de
+   projetos lê a rolagem normal do navegador, não a substitui.
    ========================================================================== */
 (function () {
   'use strict';
@@ -73,6 +78,41 @@
     }
   }
 
+  /* prefers-reduced-motion, lido na hora (a pessoa pode trocar no sistema) */
+  function parado() {
+    return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  }
+
+  /* ----------------------------------------------------------------------
+     suave() — devolve o behavior de rolagem a usar. Com reduced-motion tem
+     que ser 'auto': um behavior explícito VENCE o scroll-behavior do CSS,
+     então passar 'smooth' fixo furaria a preferência do visitante.
+     ---------------------------------------------------------------------- */
+  function suave() {
+    return parado() ? 'auto' : 'smooth';
+  }
+
+  /* quandoVisivel(el, fn) — chama fn(true/false) quando el entra ou sai da
+     tela. É o que faz cada animação parar quando ninguém está vendo. */
+  function quandoVisivel(el, fn) {
+    if (!('IntersectionObserver' in window)) { fn(true); return; }
+    new IntersectionObserver(function (entradas) {
+      entradas.forEach(function (e) { fn(e.isIntersecting); });
+    }, { rootMargin: '120px 0px' }).observe(el);
+  }
+
+  /* ----------------------------------------------------------------------
+     abertura() — a cortina do primeiro carregamento. A animação é CSS; aqui
+     só se anota na sessão que ela já rodou (não repete a cada volta à home)
+     e, quando termina, a cortina sai da pintura de vez.
+     ---------------------------------------------------------------------- */
+  function abertura() {
+    var raiz = document.documentElement;
+    if (!raiz.classList.contains('abrindo')) return;
+    try { sessionStorage.setItem('cassa-abertura', '1'); } catch (e) { /* modo anônimo */ }
+    setTimeout(function () { raiz.classList.add('aberto'); }, 1900);
+  }
+
   /* ----------------------------------------------------------------------
      revelar() — IntersectionObserver, threshold .15, escalonado por
      data-atraso (ms) e unobserve depois. Sem IO, mostra tudo na hora.
@@ -81,9 +121,7 @@
     var itens = document.querySelectorAll('.rv');
     if (!itens.length) return;
 
-    var parado = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-    if (parado || !('IntersectionObserver' in window)) {
+    if (parado() || !('IntersectionObserver' in window)) {
       Array.prototype.forEach.call(itens, function (el) { el.classList.add('in'); });
       return;
     }
@@ -120,9 +158,7 @@
       el.textContent = (el.getAttribute('data-prefixo') || '') + fmt.format(valor);
     }
 
-    var parado = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-    if (parado || !('IntersectionObserver' in window)) {
+    if (parado() || !('IntersectionObserver' in window)) {
       Array.prototype.forEach.call(alvos, function (el) {
         escrever(el, parseInt(el.getAttribute('data-n'), 10) || 0);
       });
@@ -160,16 +196,6 @@
   }
 
   /* ----------------------------------------------------------------------
-     suave() — devolve o behavior de rolagem a usar. Com reduced-motion tem
-     que ser 'auto': um behavior explícito VENCE o scroll-behavior do CSS,
-     então passar 'smooth' fixo furaria a preferência do visitante.
-     ---------------------------------------------------------------------- */
-  function suave() {
-    return window.matchMedia('(prefers-reduced-motion: reduce)').matches
-      ? 'auto' : 'smooth';
-  }
-
-  /* ----------------------------------------------------------------------
      focaveisEm(raiz) — os elementos que de fato recebem foco dentro de raiz.
      Usado pelo modal e pelo menu.
      ---------------------------------------------------------------------- */
@@ -191,77 +217,634 @@
   }
 
   /* ----------------------------------------------------------------------
-     carrossel() — setas com estado disabled nas pontas e arrasto por
-     pointer events. No toque não há listener: o swipe nativo é melhor do
-     que qualquer coisa que eu escrevesse por cima.
+     A parede de projetos preenche isto; a órbita do hero usa para levar o
+     clique num cartão até a loja dele. Sem parede (sem projeto, ou outra
+     página), fica null e o clique só desce até #portfolio.
      ---------------------------------------------------------------------- */
-  function carrossel() {
-    var caixa = document.querySelector('[data-carrossel]');
-    if (!caixa) return;
+  var irParaPeca = null;
 
-    var trilho = caixa.querySelector('.carrossel__trilho');
-    var antes  = caixa.querySelector('[data-carrossel-antes]');
-    var depois = caixa.querySelector('[data-carrossel-depois]');
-    if (!trilho || !antes || !depois) return;
+  /* ----------------------------------------------------------------------
+     orbitaMovimento() — os cartões do hero numa elipse em volta do nome.
+     Profundidade de mentira, mas convincente: o cartão na parte de baixo da
+     elipse está "na frente" (maior, por cima do nome); o de cima, "atrás"
+     (menor, por baixo dele). A elipse gira uma volta a cada 80s, inclina um
+     pouco com o mouse, e os cartões entram vindo do centro depois que a
+     cortina abre. Parada com reduced-motion, fora da tela e quando a
+     pessoa aperta "Pausar movimento".
+     ---------------------------------------------------------------------- */
+  function orbitaMovimento() {
+    var caixa = document.querySelector('[data-orbita]');
+    var hero  = caixa && caixa.closest('.hero');
+    if (!caixa || !hero) return;
 
-    function passo() {
-      var card = trilho.querySelector('.projeto');
-      return card ? card.getBoundingClientRect().width + 24 : trilho.clientWidth;
-    }
+    var itens = Array.prototype.slice.call(caixa.querySelectorAll('.orbita__item'));
+    if (!itens.length) return;
 
-    function estado() {
-      var max = trilho.scrollWidth - trilho.clientWidth;
-      antes.disabled  = trilho.scrollLeft <= 1;
-      depois.disabled = trilho.scrollLeft >= max - 1;
-    }
-
-    antes.addEventListener('click', function () {
-      trilho.scrollBy({ left: -passo(), behavior: suave() });
-    });
-    depois.addEventListener('click', function () {
-      trilho.scrollBy({ left: passo(), behavior: suave() });
-    });
-
-    trilho.addEventListener('scroll', estado, { passive: true });
-    window.addEventListener('resize', estado);
-    estado();
-
-    var arrastando = false, x0 = 0, s0 = 0, moveu = 0;
-
-    trilho.addEventListener('pointerdown', function (e) {
-      if (e.pointerType === 'touch') return;
-      arrastando = true; moveu = 0;
-      x0 = e.clientX; s0 = trilho.scrollLeft;
-      trilho.classList.add('arrastando');
-    });
-
-    trilho.addEventListener('pointermove', function (e) {
-      if (!arrastando) return;
-      var d = e.clientX - x0;
-      moveu = Math.max(moveu, Math.abs(d));
-      trilho.scrollLeft = s0 - d;
-      if (moveu > 4) e.preventDefault();
-    });
-
-    function soltar() {
-      if (!arrastando) return;
-      arrastando = false;
-      trilho.classList.remove('arrastando');
-      /* engole o clique que abriria um modal no fim de um arrasto */
-      if (moveu > 6) {
-        trilho.addEventListener('click', function engole(ev) {
-          ev.stopPropagation(); ev.preventDefault();
-          trilho.removeEventListener('click', engole, true);
-        }, true);
+    /* mini que não existe (capa nova sem rodar o prepara-imagens.ps1) → a
+       capa inteira: mais pesada, mas a órbita não fica com cartão vazio */
+    Array.prototype.forEach.call(caixa.querySelectorAll('img[data-capa]'), function (img) {
+      function troca() {
+        var capa = img.getAttribute('data-capa');
+        img.removeAttribute('data-capa');
+        if (capa) img.src = capa;
       }
+      img.addEventListener('error', troca);
+      if (img.complete && !img.naturalWidth) troca();
+    });
+
+    var n = itens.length;
+    var VOLTA = 80000;                 /* ms por volta inteira */
+    var ENTRADA = 1400;                /* ms da entrada de cada cartão */
+    var atraso = document.documentElement.classList.contains('abrindo') ? 950 : 150;
+
+    /* inclinação fixa de cada cartão, entre -7° e +7°: o ar de jogado à mão */
+    var inclina = itens.map(function (el, i) { return ((i * 37) % 15) - 7; });
+    var tam = [];
+    var g = { cx: 0, cy: 0, rx: 0, ry: 0 };
+    var mouse = { x: 0, y: 0, ax: 0, ay: 0 };
+    var t0 = null, antes = null, giro = 0;
+    var visivel = true, rodando = false, quieto = parado();
+
+    /* "Pausar movimento" (WCAG 2.2.2): a órbita gira sem parar, então quem
+       quiser para. A escolha fica neste navegador — é conforto de quem
+       visita, não estado do site. */
+    var pausado = false;
+    try { pausado = localStorage.getItem('cassa-movimento') === 'pausado'; } catch (e) { /* modo anônimo */ }
+
+    var linha = hero.querySelector('.hero__linha');
+    var canto = hero.querySelector('.hero__canto');
+    var acoes = hero.querySelector('.hero__acoes');
+    var navH = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--nav-h')) || 88;
+
+    /* altura de el dentro do hero pelo offsetTop, que ignora transform: a
+       entrada do hero ainda está deslocando os textos quando isto roda */
+    function topoEm(el) {
+      var y = 0;
+      while (el && el !== hero) { y += el.offsetTop; el = el.offsetParent; }
+      return y;
     }
-    trilho.addEventListener('pointerup', soltar);
-    trilho.addEventListener('pointercancel', soltar);
-    trilho.addEventListener('pointerleave', soltar);
+
+    function cartoes(largura) {
+      var maior = 0;
+      itens.forEach(function (el, i) {
+        el.style.setProperty('--w', Math.round(largura) + 'px');
+        tam[i] = { w: el.offsetWidth, h: el.offsetHeight };
+        maior = Math.max(maior, tam[i].h);
+      });
+      return maior;
+    }
+
+    function medir() {
+      var w = hero.clientWidth, h = hero.clientHeight;
+      var largo = w >= 760;
+      var base = largo ? Math.min(Math.max(w * .085, 96), 156) : Math.max(w * .19, 64);
+      var maior = cartoes(base);
+      g.cx = w / 2;
+      if (largo) {
+        g.cy = h * .47;
+        g.rx = Math.min(w * .43, 740);
+        g.ry = Math.min(h * .31, 290);
+        return;
+      }
+      /* No celular a elipse passa da tela dos lados (como na referência) e
+         cabe entre a barra do topo e o texto do pé. O cartão da frente
+         (1,12×) passa embaixo, no vão entre a frase e o pé: não cobre a
+         frase, nem o botão de pausa, o selo ou "Ver os projetos" — um
+         toque ali cairia no cartão. Vão curto demais encolhe os cartões. */
+      var pe = Math.min(canto ? topoEm(canto) : h, acoes ? topoEm(acoes) : h) - 12;
+      var frase = linha ? topoEm(linha) + linha.offsetHeight + 12 : 0;
+      if (maior * 1.12 > pe - frase) maior = cartoes(base * Math.max(pe - frase, 40) / (maior * 1.12));
+      var frente = maior * 1.12 / 2, fundo = maior * .6 / 2;
+      g.rx = w * .6;
+      g.ry = Math.max((pe - frente - navH - fundo) / 2, 40);
+      g.cy = navH + fundo + g.ry;
+    }
+
+    function sai(t) { return 1 - Math.pow(1 - t, 3); }
+
+    function quadro(agora) {
+      if (t0 === null) t0 = agora;
+      if (antes === null) antes = agora;
+      var t = agora - t0;
+      /* o giro anda pelo tempo que passou, e só sem pausa; o teto de 64ms
+         evita o pulo quando a aba volta do segundo plano */
+      if (!quieto && !pausado) giro += Math.min(agora - antes, 64) / VOLTA * Math.PI * 2;
+      antes = agora;
+      mouse.ax += (mouse.x - mouse.ax) * .06;
+      mouse.ay += (mouse.y - mouse.ay) * .06;
+
+      var entrando = false;
+      itens.forEach(function (el, i) {
+        var e = quieto ? 1 : sai(Math.min(Math.max((t - atraso - i * 70) / ENTRADA, 0), 1));
+        if (e < 1) entrando = true;
+        var th = giro + i * (Math.PI * 2 / n) + .35;
+        var s = Math.sin(th);
+        var frente = (s + 1) / 2;                         /* 0 = fundo, 1 = frente */
+        var abre = .3 + .7 * e;                           /* sai do centro */
+        var x = g.cx + Math.cos(th) * g.rx * abre + mouse.ax * (.3 + frente);
+        var y = g.cy + s * g.ry * abre + mouse.ay * (.3 + frente);
+        var esc = (.6 + .52 * frente) * (.4 + .6 * e);
+        el.style.transform =
+          'perspective(900px) translate3d(' + (x - tam[i].w / 2).toFixed(1) + 'px,' +
+          (y - tam[i].h / 2).toFixed(1) + 'px,0) rotateY(' + (-Math.cos(th) * 16).toFixed(2) +
+          'deg) rotate(' + inclina[i] + 'deg) scale(' + esc.toFixed(3) + ')';
+        el.style.opacity = e.toFixed(3);
+        el.style.zIndex = s > .12 ? 3 : 1;
+      });
+
+      /* roda enquanto gira, entra ou segue o mouse; parada, desliga */
+      var mexendo = Math.abs(mouse.x - mouse.ax) + Math.abs(mouse.y - mouse.ay) > .05;
+      if (visivel && !quieto && (!pausado || entrando || mexendo)) requestAnimationFrame(quadro);
+      else { rodando = false; antes = null; }
+    }
+
+    function ligar() {
+      if (rodando) return;
+      rodando = true;
+      requestAnimationFrame(quadro);
+    }
+
+    /* o botão aparece antes de medir(): a altura dele conta no pé do hero */
+    var botao = document.querySelector('[data-movimento]');
+    if (botao && !quieto) {
+      botao.hidden = false;
+      botao.classList.toggle('pausado', pausado);
+      botao.addEventListener('click', function () {
+        pausado = !pausado;
+        /* o nome do botão troca junto ("Pausar" ↔ "Retomar"): a metade
+           escondida pelo CSS sai também do que o leitor de tela anuncia */
+        botao.classList.toggle('pausado', pausado);
+        try { localStorage.setItem('cassa-movimento', pausado ? 'pausado' : 'livre'); } catch (e) { /* modo anônimo */ }
+        ligar();
+      });
+    }
+
+    medir();
+    ligar();
+
+    window.addEventListener('resize', function () { medir(); ligar(); });
+    quandoVisivel(hero, function (sim) { visivel = sim; if (sim) ligar(); });
+
+    /* o mouse inclina a elipse — só mouse: no toque não há "pairar". Com a
+       pausa, nem isso: "pausar movimento" é a órbita inteira parada. */
+    hero.addEventListener('pointermove', function (e) {
+      if (e.pointerType !== 'mouse' || quieto || pausado) return;
+      var r = hero.getBoundingClientRect();
+      mouse.x = ((e.clientX - r.left) / r.width - .5) * 36;
+      mouse.y = ((e.clientY - r.top) / r.height - .5) * 22;
+      ligar();
+    });
+    hero.addEventListener('pointerleave', function () { mouse.x = 0; mouse.y = 0; ligar(); });
+
+    /* clique num cartão: desce até a loja dele no portfólio */
+    caixa.addEventListener('click', function (e) {
+      var item = e.target.closest('.orbita__item');
+      if (!item) return;
+      var i = parseInt(item.getAttribute('data-indice'), 10) || 0;
+      if (irParaPeca) irParaPeca(i);
+      else {
+        var alvo = document.getElementById('portfolio');
+        if (alvo) alvo.scrollIntoView({ behavior: suave() });
+      }
+    });
   }
 
   /* ----------------------------------------------------------------------
-     modalProjeto() — abre por id, fecha no ESC / backdrop / ✕, prende o foco
+     evidenciaRolagem() — a parede curva do portfólio.
+     A seção é alta (100svh + 80svh por projeto) e o palco fica preso na
+     tela (sticky, no CSS). Aqui só se lê quanto da seção já passou e se
+     põe cada cartão num cilindro em volta de quem olha: a uma distância d
+     do cartão da frente, ele gira d·24° e afunda. Os cartões seguem a
+     rolagem com um pouco de inércia (o "mostrado" persegue o "alvo").
+
+     Teclado: o cartão que recebe foco vem para a frente. Mouse: clicar num
+     cartão do lado traz ele para a frente; só o da frente abre o caso.
+     Com reduced-motion (ou um projeto só) a seção vira grade parada.
+     ---------------------------------------------------------------------- */
+  function evidenciaRolagem() {
+    var secao = document.querySelector('[data-evidencia]');
+    if (!secao || secao.hidden) return;
+
+    var trilho = secao.querySelector('.evidencia__trilho');
+    var pecas = Array.prototype.slice.call(secao.querySelectorAll('.peca'));
+    var n = pecas.length;
+    if (!trilho || !n) return;
+
+    if (parado() || n < 2) {
+      secao.classList.add('evidencia--estatica');
+      irParaPeca = function (i) {
+        pecas[i].scrollIntoView({ behavior: suave(), block: 'center' });
+      };
+      return;
+    }
+
+    var atual = secao.querySelector('[data-evidencia-atual]');
+    var barra = secao.querySelector('[data-evidencia-barra]');
+    var PASSO = .42;                       /* rad entre um cartão e o próximo (~24°) */
+    var curso = 1, raio = 900;
+    var alvo = 0, mostrado = 0, rodando = false;
+
+    function medir() {
+      curso = Math.max(secao.offsetHeight - window.innerHeight, 1);
+      raio = Math.max(trilho.clientWidth * 1.25, 760);
+    }
+
+    function progresso() {
+      var p = -secao.getBoundingClientRect().top / curso;
+      return Math.min(Math.max(p, 0), 1) * (n - 1);
+    }
+
+    function dois(x) { return (x < 10 ? '0' : '') + x; }
+
+    function desenhar(p) {
+      pecas.forEach(function (el, i) {
+        var d = i - p;
+        var ang = d * PASSO;
+        var dist = Math.abs(d);
+        var x = Math.sin(ang) * raio;
+        var z = (Math.cos(ang) - 1) * raio;
+        var op = Math.max(0, Math.min(1, 2.4 - dist));
+        el.style.transform = 'translate3d(' + x.toFixed(1) + 'px,0,' + z.toFixed(1) +
+                             'px) rotateY(' + (-ang * 57.2958).toFixed(2) + 'deg)';
+        el.style.opacity = op.toFixed(3);
+        el.style.zIndex = String(100 - Math.round(dist * 10));
+        el.style.setProperty('--leg', Math.max(0, 1 - dist * 2.2).toFixed(3));
+      });
+      var cur = Math.min(n - 1, Math.max(0, Math.round(p)));
+      if (atual) atual.textContent = dois(cur + 1);
+      if (barra) barra.style.setProperty('--p', (p / (n - 1)).toFixed(4));
+    }
+
+    function quadro() {
+      mostrado += (alvo - mostrado) * .14;
+      if (Math.abs(alvo - mostrado) < .0008) mostrado = alvo;
+      desenhar(mostrado);
+      if (mostrado !== alvo) requestAnimationFrame(quadro);
+      else rodando = false;
+    }
+
+    function aoRolar() {
+      alvo = progresso();
+      if (rodando) return;
+      rodando = true;
+      requestAnimationFrame(quadro);
+    }
+
+    medir();
+    alvo = mostrado = progresso();
+    desenhar(mostrado);
+
+    window.addEventListener('scroll', aoRolar, { passive: true });
+    window.addEventListener('resize', function () { medir(); aoRolar(); });
+    window.addEventListener('load', function () { medir(); aoRolar(); });
+
+    irParaPeca = function (i, ja) {
+      medir();
+      var topo = window.scrollY + secao.getBoundingClientRect().top;
+      window.scrollTo({ top: topo + (i / (n - 1)) * curso, behavior: ja ? 'auto' : suave() });
+    };
+
+    /* foco pelo teclado: a peça focada passa a ser a da frente */
+    trilho.addEventListener('focusin', function (e) {
+      var peca = e.target.closest('.peca');
+      if (!peca) return;
+      var i = pecas.indexOf(peca);
+      if (Math.round(alvo) !== i) irParaPeca(i, true);
+    });
+
+    /* clique numa peça do lado: vem para a frente em vez de abrir o caso.
+       Captura, para chegar antes do listener do modal no document. */
+    trilho.addEventListener('click', function (e) {
+      var peca = e.target.closest('.peca');
+      if (!peca) return;
+      var i = pecas.indexOf(peca);
+      if (Math.abs(i - mostrado) > .35) {
+        e.preventDefault();
+        e.stopPropagation();
+        irParaPeca(i);
+      }
+    }, true);
+  }
+
+  /* ----------------------------------------------------------------------
+     anel() — o desenho do "Como funciona": um anel em fio (um toro), com
+     uma estação para cada passo de PROCESSO, que gira até a estação do
+     passo lido e para. O passo que está
+     no meio da tela — ou sob o mouse, ou com foco — acende a estação dele.
+     Canvas puro; decoração (aria-hidden), os passos de verdade são a <ol>.
+     ---------------------------------------------------------------------- */
+  function anel() {
+    var canvas = document.querySelector('[data-anel]');
+    if (!canvas || !canvas.getContext) return;
+
+    var ctx = canvas.getContext('2d');
+    var passos = Array.prototype.slice.call(document.querySelectorAll('[data-passo]'));
+    var n = passos.length || 7;
+    var estilo = getComputedStyle(document.documentElement);
+    var cor = {
+      fio:   estilo.getPropertyValue('--escuro-mid').trim() || '#A8A8A0',
+      linha: estilo.getPropertyValue('--escuro-ac').trim()  || '#8DB2FF',
+      ponto: estilo.getPropertyValue('--escuro-tx').trim()  || '#F3F3F1'
+    };
+    var TILT = 1.08;                     /* inclinação do anel para quem olha */
+    var ativo = 0;
+    var brilho = [];
+    for (var b = 0; b < n; b++) brilho.push(b === 0 ? 1 : 0);
+
+    /* o giro que põe a estação i na frente (embaixo da elipse, o ponto
+       mais perto de quem olha) */
+    function frente(i) { return Math.PI - i / n * Math.PI * 2; }
+    var giro = frente(0), alvoGiro = giro;
+
+    var W = 0, H = 0, dpr = 1, visivel = false, rodando = false;
+    var quieto = parado();
+
+    function medir() {
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      W = canvas.clientWidth; H = canvas.clientHeight;
+      canvas.width = Math.round(W * dpr);
+      canvas.height = Math.round(H * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+
+    /* gira em torno do eixo do anel (giro) e inclina para o observador (TILT) */
+    function projeta(x, y, z) {
+      var cg = Math.cos(giro), sg = Math.sin(giro);
+      var x1 = x * cg - y * sg, y1 = x * sg + y * cg;
+      var ct = Math.cos(TILT), st = Math.sin(TILT);
+      return { x: x1, y: y1 * ct - z * st, z: y1 * st + z * ct };
+    }
+
+    function desenhar() {
+      ctx.clearRect(0, 0, W, H);
+      var R = Math.min(W, H) * .33, r = R * .3;
+      var cx = W / 2, cy = H / 2;
+      var K = 44, M = 26, k, m;
+
+      /* os aros do tubo — mais claros no fundo, mais nítidos na frente */
+      ctx.lineWidth = 1;
+      for (k = 0; k < K; k++) {
+        var fi = k / K * Math.PI * 2;
+        var ux = Math.cos(fi), uy = Math.sin(fi);
+        ctx.beginPath();
+        var prof = 0;
+        for (m = 0; m <= M; m++) {
+          var s = m / M * Math.PI * 2;
+          var p = projeta((R + r * Math.cos(s)) * ux, (R + r * Math.cos(s)) * uy, r * Math.sin(s));
+          if (m === 0) ctx.moveTo(cx + p.x, cy + p.y); else ctx.lineTo(cx + p.x, cy + p.y);
+          prof += p.z;
+        }
+        ctx.globalAlpha = .16 + .34 * ((prof / (M + 1)) / R + 1) / 2;
+        ctx.strokeStyle = cor.fio;
+        ctx.stroke();
+      }
+
+      /* a linha do caminho, no meio do tubo */
+      ctx.beginPath();
+      for (m = 0; m <= 96; m++) {
+        var a = m / 96 * Math.PI * 2;
+        var q = projeta(R * Math.cos(a), R * Math.sin(a), 0);
+        if (m === 0) ctx.moveTo(cx + q.x, cy + q.y); else ctx.lineTo(cx + q.x, cy + q.y);
+      }
+      ctx.globalAlpha = .9;
+      ctx.strokeStyle = cor.linha;
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+
+      /* as estações: uma por passo, a ativa maior e na cor de destaque */
+      for (k = 0; k < n; k++) {
+        brilho[k] += ((k === ativo ? 1 : 0) - brilho[k]) * (quieto ? 1 : .12);
+        var ang = k / n * Math.PI * 2 - Math.PI / 2;
+        var e = projeta(R * Math.cos(ang), R * Math.sin(ang), 0);
+        var raioPonto = 3.5 + brilho[k] * 6;
+        ctx.globalAlpha = .55 + .45 * Math.max(brilho[k], (e.z / R + 1) / 2);
+        ctx.fillStyle = brilho[k] > .5 ? cor.linha : cor.ponto;
+        ctx.beginPath();
+        ctx.arc(cx + e.x, cy + e.y, raioPonto, 0, Math.PI * 2);
+        ctx.fill();
+        if (brilho[k] > .05) {
+          ctx.globalAlpha = brilho[k] * .35;
+          ctx.strokeStyle = cor.linha;
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.arc(cx + e.x, cy + e.y, raioPonto + 8 * brilho[k], 0, Math.PI * 2);
+          ctx.stroke();
+        }
+      }
+      ctx.globalAlpha = 1;
+    }
+
+    /* O anel não gira sozinho: ele gira até a estação do passo que está
+       sendo lido e para (nada se mexe sozinho por mais de 5s). */
+    function quadro() {
+      giro += (alvoGiro - giro) * .08;
+      var falta = Math.abs(alvoGiro - giro);
+      if (falta < .0008) giro = alvoGiro;
+      desenhar();
+      var acendendo = brilho.some(function (v, k) { return Math.abs((k === ativo ? 1 : 0) - v) > .01; });
+      if (visivel && (giro !== alvoGiro || acendendo)) requestAnimationFrame(quadro);
+      else rodando = false;
+    }
+
+    function ligar() {
+      if (quieto || !visivel) { giro = alvoGiro; desenhar(); return; }
+      if (rodando) return;
+      rodando = true;
+      requestAnimationFrame(quadro);
+    }
+
+    function acender(i) {
+      if (i === ativo || i < 0) return;
+      ativo = i;
+      passos.forEach(function (li, j) { li.classList.toggle('ativo', j === i); });
+      /* pelo caminho mais curto até a estação nova */
+      var alvo = frente(i);
+      while (alvo - giro > Math.PI) alvo -= Math.PI * 2;
+      while (giro - alvo > Math.PI) alvo += Math.PI * 2;
+      alvoGiro = alvo;
+      ligar();
+    }
+
+    medir();
+    desenhar();
+    if (passos[0]) passos[0].classList.add('ativo');
+
+    window.addEventListener('resize', function () { medir(); desenhar(); });
+    quandoVisivel(canvas, function (sim) { visivel = sim; if (sim) ligar(); });
+
+    /* o passo que cruza o meio da tela acende a estação dele */
+    if ('IntersectionObserver' in window) {
+      var obs = new IntersectionObserver(function (entradas) {
+        entradas.forEach(function (e) {
+          if (e.isIntersecting) acender(passos.indexOf(e.target));
+        });
+      }, { rootMargin: '-45% 0px -45% 0px' });
+      passos.forEach(function (li) { obs.observe(li); });
+    }
+    passos.forEach(function (li, i) {
+      li.addEventListener('pointerenter', function () { acender(i); });
+    });
+  }
+
+  /* ----------------------------------------------------------------------
+     nuvem() — a palavra "nuvemshop" desenhada por uma nuvem de pontos.
+     A palavra é escrita num canvas escondido, na fonte dos títulos; cada
+     pixel aceso vira o destino de um ponto. Quando a seção entra na tela,
+     os pontos saem espalhados e se juntam; depois ficam quietos, e só
+     fogem do cursor (ou do dedo) num raio de ~80px.
+     Com reduced-motion: a palavra já formada, parada.
+     ---------------------------------------------------------------------- */
+  function nuvem() {
+    var canvas = document.querySelector('[data-nuvem]');
+    if (!canvas || !canvas.getContext) return;
+
+    var ctx = canvas.getContext('2d');
+    var PALAVRA = 'nuvemshop';
+    var cor = getComputedStyle(document.documentElement).getPropertyValue('--escuro-tx').trim() || '#F3F3F1';
+    var fonte = getComputedStyle(document.documentElement).getPropertyValue('--fonte-titulo').trim() || 'sans-serif';
+    var pontos = [];
+    var W = 0, H = 0, dpr = 1, lado = 2;
+    var mouse = { x: -9999, y: -9999 };
+    var visivel = false, rodando = false, formou = false;
+    var quieto = parado();
+
+    function medir() {
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      W = canvas.clientWidth; H = canvas.clientHeight;
+      canvas.width = Math.round(W * dpr);
+      canvas.height = Math.round(H * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+
+    /* os destinos: pixels acesos da palavra escrita fora da tela */
+    function alvos() {
+      if (!W || !H) return [];             /* canvas sem tamanho (escondido) */
+      var off = document.createElement('canvas');
+      off.width = W; off.height = H;
+      var o = off.getContext('2d');
+      var tam = H * .86;
+      o.font = '500 ' + tam + 'px ' + fonte;
+      var larg = o.measureText(PALAVRA).width;
+      if (larg > W * .94) { tam = tam * (W * .94) / larg; o.font = '500 ' + tam + 'px ' + fonte; }
+      o.textAlign = 'center';
+      o.textBaseline = 'middle';
+      o.fillStyle = '#000';
+      o.fillText(PALAVRA, W / 2, H / 2);
+
+      var px = o.getImageData(0, 0, W, H).data;
+      var passo = Math.max(3, Math.round(W / 280));
+      lado = Math.max(1.4, passo * .42);
+      var lista = [];
+      for (var y = 0; y < H; y += passo) {
+        for (var x = 0; x < W; x += passo) {
+          if (px[(y * W + x) * 4 + 3] > 140) lista.push(x, y);
+        }
+      }
+      return lista;
+    }
+
+    function montar() {
+      medir();
+      var a = alvos();
+      var novos = [];
+      for (var i = 0; i < a.length; i += 2) {
+        var velho = pontos[novos.length];
+        novos.push({
+          tx: a[i], ty: a[i + 1],
+          x: velho ? velho.x : Math.random() * W,
+          y: velho ? velho.y : (Math.random() < .5 ? -20 : H + 20) + (Math.random() - .5) * H,
+          vx: 0, vy: 0,
+          alfa: .45 + Math.random() * .55
+        });
+      }
+      pontos = novos;
+      if (quieto) {
+        pontos.forEach(function (p) { p.x = p.tx; p.y = p.ty; });
+        pintar();
+      }
+    }
+
+    function pintar() {
+      ctx.clearRect(0, 0, W, H);
+      ctx.fillStyle = cor;
+      for (var i = 0; i < pontos.length; i++) {
+        var p = pontos[i];
+        ctx.globalAlpha = p.alfa;
+        ctx.fillRect(p.x, p.y, lado, lado);
+      }
+      ctx.globalAlpha = 1;
+    }
+
+    /* Cada ponto é puxado para o seu destino e empurrado pelo cursor. Quando
+       todos assentam, o laço desliga: a nuvem forma a palavra e fica
+       quieta — só volta a se mexer com o mouse ou o dedo. */
+    function quadro() {
+      var energia = 0;
+      for (var i = 0; i < pontos.length; i++) {
+        var p = pontos[i];
+        var fx = (p.tx - p.x) * .018;
+        var fy = (p.ty - p.y) * .018;
+        var mx = p.x - mouse.x, my = p.y - mouse.y;
+        var d2 = mx * mx + my * my;
+        if (d2 < 6400) {
+          var f = (6400 - d2) / 6400 * 2.4;
+          var d = Math.sqrt(d2) || 1;
+          fx += mx / d * f;
+          fy += my / d * f;
+        }
+        p.vx = (p.vx + fx) * .86;
+        p.vy = (p.vy + fy) * .86;
+        p.x += p.vx;
+        p.y += p.vy;
+        /* conta a força que sobra, não só a velocidade: a velocidade passa
+           por zero na volta de cada vaivém, e o laço desligaria com os
+           pontos ainda fora do lugar */
+        energia += Math.abs(p.vx) + Math.abs(p.vy) + Math.abs(fx) + Math.abs(fy);
+      }
+      pintar();
+      if (visivel && energia > pontos.length * .01) requestAnimationFrame(quadro);
+      else rodando = false;
+    }
+
+    function ligar() {
+      if (quieto || rodando || !visivel) return;
+      rodando = true;
+      requestAnimationFrame(quadro);
+    }
+
+    function comecar() {
+      montar();
+      quandoVisivel(canvas, function (sim) {
+        visivel = sim;
+        if (sim) { formou = true; ligar(); }
+      });
+    }
+
+    /* a palavra é escrita na fonte dos títulos: espera ela carregar, senão
+       os pontos desenhariam a fonte reserva e pulariam depois */
+    if (document.fonts && document.fonts.load) {
+      document.fonts.load('500 100px ' + fonte, PALAVRA).then(comecar, comecar);
+    } else {
+      comecar();
+    }
+
+    var espera = null;
+    window.addEventListener('resize', function () {
+      clearTimeout(espera);
+      espera = setTimeout(function () { if (formou || quieto) { montar(); ligar(); } }, 200);
+    });
+
+    canvas.addEventListener('pointermove', function (e) {
+      var r = canvas.getBoundingClientRect();
+      mouse.x = e.clientX - r.left;
+      mouse.y = e.clientY - r.top;
+      ligar();
+    });
+    canvas.addEventListener('pointerleave', function () { mouse.x = -9999; mouse.y = -9999; ligar(); });
+  }
+
+  /* ----------------------------------------------------------------------
+     modalProjeto() — abre por id, fecha no ESC / backdrop / X, prende o foco
      e devolve o foco ao card de origem. O conteúdo vem do render.js.
      ---------------------------------------------------------------------- */
   function modalProjeto() {
@@ -289,10 +872,10 @@
       modal.hidden = true;
       corpo.innerHTML = '';
       document.body.classList.remove('travado');
-      if (origem) { origem.focus(); origem = null; }
+      if (origem) { origem.focus({ preventScroll: true }); origem = null; }
     }
 
-    /* delegação: vale para o carrossel e para a grade do portfolio.html */
+    /* delegação: vale para a parede da home e para a grade do portfolio.html */
     document.addEventListener('click', function (e) {
       var botao = e.target.closest('[data-projeto]');
       if (botao) { abrir(botao.getAttribute('data-projeto'), botao); return; }
@@ -312,8 +895,8 @@
   }
 
   /* ----------------------------------------------------------------------
-     abas() — troca de painel dos serviços. Setas, Home/End, aria-selected
-     e roving tabindex.
+     abas() — troca de painel dos serviços. Setas (as quatro: as palavras
+     ficam em coluna), Home/End, aria-selected e roving tabindex.
      ---------------------------------------------------------------------- */
   function abas() {
     var caixa = document.querySelector('[data-servicos]');
@@ -336,8 +919,8 @@
       b.addEventListener('click', function () { selecionar(i, false); });
       b.addEventListener('keydown', function (e) {
         var n = null;
-        if (e.key === 'ArrowRight') n = (i + 1) % botoes.length;
-        else if (e.key === 'ArrowLeft') n = (i - 1 + botoes.length) % botoes.length;
+        if (e.key === 'ArrowRight' || e.key === 'ArrowDown') n = (i + 1) % botoes.length;
+        else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') n = (i - 1 + botoes.length) % botoes.length;
         else if (e.key === 'Home') n = 0;
         else if (e.key === 'End') n = botoes.length - 1;
         if (n === null) return;
@@ -372,15 +955,43 @@
   }
 
   /* ----------------------------------------------------------------------
-     navScroll() — a nav ganha borda e sombra depois de 40px.
+     navScroll() — a barra some ao rolar para baixo e volta ao rolar para
+     cima (nos primeiros 120px ela fica sempre). Na home, o link da seção
+     que está na tela ganha aria-current="location".
      ---------------------------------------------------------------------- */
   function navScroll() {
     var nav = document.querySelector('.nav');
     if (!nav) return;
 
-    function checar() { nav.classList.toggle('rolou', window.scrollY > 40); }
+    var ultimo = window.scrollY;
+    function checar() {
+      var y = window.scrollY;
+      nav.classList.toggle('rolou', y > 40);
+      if (y > 120 && y > ultimo + 4) nav.classList.add('nav--escondida');
+      else if (y < ultimo - 4 || y <= 120) nav.classList.remove('nav--escondida');
+      ultimo = y;
+    }
     checar();
     window.addEventListener('scroll', checar, { passive: true });
+
+    if (!('IntersectionObserver' in window)) return;
+    var links = Array.prototype.filter.call(nav.querySelectorAll('.nav__link'), function (a) {
+      return a.getAttribute('href').charAt(0) === '#';
+    });
+    var obs = new IntersectionObserver(function (entradas) {
+      entradas.forEach(function (e) {
+        var id = '#' + e.target.id;
+        links.forEach(function (a) {
+          if (a.getAttribute('href') !== id) return;
+          if (e.isIntersecting) a.setAttribute('aria-current', 'location');
+          else a.removeAttribute('aria-current');
+        });
+      });
+    }, { rootMargin: '-50% 0px -50% 0px' });
+    links.forEach(function (a) {
+      var alvo = document.querySelector(a.getAttribute('href'));
+      if (alvo) obs.observe(alvo);
+    });
   }
 
   /* ----------------------------------------------------------------------
@@ -450,16 +1061,21 @@
   }
 
   /* ----------------------------------------------------------------------
-     flutuantes() — WhatsApp e voltar-ao-topo aparecem depois de 400px.
+     flutuantes() — WhatsApp e voltar-ao-topo aparecem depois de 400px e
+     saem de novo quando o rodapé entra na tela: lá o WhatsApp já está em
+     pílula, e os botões cobririam a última linha do rodapé.
      ---------------------------------------------------------------------- */
   function flutuantes() {
     var caixa = document.querySelector('.flutuantes');
     if (!caixa) return;
 
     var botoes = caixa.querySelectorAll('.flutuante');
+    var rodapeNaTela = false;
+    var rodape = document.querySelector('.rodape');
+    if (rodape) quandoVisivel(rodape, function (sim) { rodapeNaTela = sim; checar(); });
 
     function checar() {
-      var mostra = window.scrollY > 400;
+      var mostra = window.scrollY > 400 && !rodapeNaTela;
       Array.prototype.forEach.call(botoes, function (b) {
         b.classList.toggle('mostra', mostra);
         /* escondido de verdade: não entra na ordem de tabulação */
@@ -479,10 +1095,9 @@
     if (!botao) return;
 
     botao.addEventListener('click', function () {
-      var parado = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      window.scrollTo({ top: 0, behavior: parado ? 'auto' : 'smooth' });
+      window.scrollTo({ top: 0, behavior: suave() });
       var pular = document.querySelector('.pular');
-      if (pular) pular.focus();
+      if (pular) pular.focus({ preventScroll: true });
     });
   }
 
@@ -498,7 +1113,8 @@
 
   /* ----------------------------------------------------------------------
      O que o render.js precisa daqui. É a única superfície compartilhada
-     entre os dois arquivos — de propósito.
+     entre os dois arquivos — de propósito. (O <head> da home também olha
+     se window.SC existe: é como ele sabe que este arquivo carregou.)
      ---------------------------------------------------------------------- */
   window.SC = {
     WHATSAPP:  WHATSAPP,
@@ -517,12 +1133,12 @@
   if (window.SCRender) window.SCRender.montarTudo();
 
   /* 2. ligações e comportamentos — tudo que é addEventListener está aqui */
+  abertura();
   ligarZaps();
   ligarContatos();
   jsonLdSameAs();
   navScroll();
   menuMobile();
-  carrossel();
   modalProjeto();
   abas();
   filtros();
@@ -534,7 +1150,12 @@
         precisa trocar o texto antes de qualquer coisa entrar na tela */
   if (typeof iniciarI18n === 'function') iniciarI18n();
 
-  /* 4. observadores por último: só agora existem os nós gerados acima */
+  /* 4. movimento e observadores por último: só agora existem os nós
+        gerados acima. A parede vem antes da órbita, que usa irParaPeca. */
+  evidenciaRolagem();
+  orbitaMovimento();
+  anel();
+  nuvem();
   revelar();
   contadores();
 })();

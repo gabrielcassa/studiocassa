@@ -20,10 +20,11 @@
 #                  .\prepara-imagens.ps1 -Aplicar
 #
 #  MINIS: toda capa ganha tambem assets/img/portfolio/<id>-mini.jpg, 360x540.
-#         E a que gira na orbita do topo da home: as quatro capas inteiras
-#         somavam ~630 KB so na primeira dobra (o teto e 600 KB); as minis,
-#         ~160 KB. Capa sem mini (ou com mini mais velha que ela) ganha uma
-#         nova a cada rodada — inclusive capa posta na pasta sem o _prints.
+#         Era a foto que girava na orbita do topo da home (as capas inteiras
+#         estourariam o teto de 600 KB da primeira dobra). Desde 25/10/2026 a
+#         orbita e so de logos e o site nao usa as minis; elas seguem sendo
+#         feitas para a foto poder voltar. Capa sem mini (ou com mini mais
+#         velha que ela) ganha uma nova a cada rodada.
 #
 #  LOGOS: mesma ideia, pasta  _logos , PNG com fundo transparente.
 #         Saem em assets/img/logos/<id>.png com 100px de altura: o dobro do

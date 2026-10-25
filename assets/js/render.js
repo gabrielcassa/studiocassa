@@ -329,24 +329,13 @@ window.SCRender = (function () {
   }
 
   /* ----------------------------------------------------------------------
-     orbita() — os cartões que giram em volta do nome, no hero. A foto é a
-     versão -mini da capa (360x540, feita pelo prepara-imagens.ps1): as
-     capas inteiras estourariam o teto de 600 KB da primeira dobra. Se a
-     mini não existir, o site.js troca pela capa inteira (data-capa).
-
-     Com poucas lojas (menos de 6), cada uma entra com a foto E o logo, e o
-     logo fica do outro lado da elipse, não colado na foto dela: com 4 lojas
-     a ordem é foto0, logo2, foto1, logo3, foto2, logo0… Com 6 ou mais, cada
-     loja entra uma vez só, foto e logo alternados (foto0, logo1, foto2…):
-     com 11 lojas seriam 22 cartões, apertados, e 11 minis na primeira
-     dobra passam dos 600 KB.
+     orbita() — os cartões que giram em volta do nome, no hero: um por loja
+     "destaque" visível, todos no mesmo padrão — fundo preto e logo branco.
+     Pedido dele em 25/10/2026; antes a órbita alternava foto e logo. As
+     fotos das lojas ficam para a galeria, logo abaixo.
      data-indice é a posição da loja no portfólio — o site.js rola até ela
      no clique. Sem loja nenhuma, a órbita sai e o nome fica sozinho.
      ---------------------------------------------------------------------- */
-  function mini(capa) {
-    return String(capa || '').replace(/-capa\.(jpe?g)$/i, '-mini.$1');
-  }
-
   function orbita() {
     var caixa = document.querySelector('[data-orbita]');
     if (!caixa) return;
@@ -354,26 +343,10 @@ window.SCRender = (function () {
     var lojas = projetosPor('destaque');
     if (!lojas.length) { caixa.remove(); return; }
 
-    function foto(p, i) {
-      return '<div class="orbita__item orbita__item--foto" data-indice="' + i + '">' +
-               '<img src="' + esc(caminho(mini(p.capa))) + '" data-capa="' + esc(caminho(p.capa)) + '"' +
-               ' alt="" width="360" height="540" decoding="async">' +
-             '</div>';
-    }
-    function logo(p, i) {
+    caixa.innerHTML = lojas.map(function (p, i) {
       return '<div class="orbita__item orbita__item--logo" data-indice="' + i + '">' +
                '<img src="' + esc(caminho(p.logo)) + '" alt="" width="160" height="60" decoding="async">' +
              '</div>';
-    }
-
-    if (lojas.length >= 6) {
-      caixa.innerHTML = lojas.map(function (p, i) { return i % 2 ? logo(p, i) : foto(p, i); }).join('');
-      return;
-    }
-    var meio = Math.floor(lojas.length / 2);
-    caixa.innerHTML = lojas.map(function (p, i) {
-      var j = (i + meio) % lojas.length;
-      return foto(p, i) + logo(lojas[j], j);
     }).join('');
   }
 

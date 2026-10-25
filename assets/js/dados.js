@@ -12,7 +12,8 @@
      capa → assets/img/portfolio/<id>-capa.jpg   RETRATO 800x1200 (2:3)
             Foto de marca — produto, loja, gente —, não print da home e sem
             texto gravado: a peça da galeria é vertical e mostra a foto
-            inteira, em cor. O script faz junto a <id>-mini.jpg da órbita.
+            inteira, em cor. O script faz junto a <id>-mini.jpg (hoje sem
+            uso: a órbita do hero é só de logos).
             Gerar com:  .\prepara-imagens.ps1 -Aplicar
      logo → assets/img/logos/<id>.png             (fundo transparente — idem)
             O site mostra todo logo como SILHUETA de uma cor: logo colorido

@@ -330,10 +330,12 @@
 }
 .orbita__item img{ width: 100%; height: 100%; object-fit: cover; }
 
-/* logo num cartão escuro: os logos chegam em qualquer cor (dois são
-   brancos), e em silhueta branca sobre o escuro todos leem igual */
-/* padding em função da largura do cartão, e não em %: padding percentual é
-   calculado sobre a largura da .orbita inteira, e engordava o cartão */
+/* Todo cartão da órbita é este: fundo preto e logo branco (o logo vira
+   silhueta branca, então qualquer cor de origem lê igual).
+   Padding em função da largura do cartão, e não em %: padding percentual é
+   calculado sobre a largura da .orbita inteira, e engordava o cartão. O
+   mesmo respiro nos quatro lados: com menos dos lados, logo alto (Século
+   XVIII, Serra Gerais) passava da borda de baixo. */
 .orbita__item--logo{
   aspect-ratio: 4 / 3;
   display: grid;

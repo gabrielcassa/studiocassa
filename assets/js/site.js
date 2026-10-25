@@ -240,18 +240,6 @@
     var itens = Array.prototype.slice.call(caixa.querySelectorAll('.orbita__item'));
     if (!itens.length) return;
 
-    /* mini que não existe (capa nova sem rodar o prepara-imagens.ps1) → a
-       capa inteira: mais pesada, mas a órbita não fica com cartão vazio */
-    Array.prototype.forEach.call(caixa.querySelectorAll('img[data-capa]'), function (img) {
-      function troca() {
-        var capa = img.getAttribute('data-capa');
-        img.removeAttribute('data-capa');
-        if (capa) img.src = capa;
-      }
-      img.addEventListener('error', troca);
-      if (img.complete && !img.naturalWidth) troca();
-    });
-
     var n = itens.length;
     var VOLTA = 80000;                 /* ms por volta inteira */
     var ENTRADA = 1400;                /* ms da entrada de cada cartão */

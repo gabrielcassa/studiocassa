@@ -71,7 +71,7 @@ assets/
                       anel, nuvem, modal, abas, filtros
   js/i18n.js          dicionário pt completo + en vazio
   img/portfolio/      capas    <id>-capa.jpg   800x1200, retrato
-                      minis    <id>-mini.jpg   360x540, as que giram no hero
+                      minis    <id>-mini.jpg   360x540, hoje sem uso (ver abaixo)
   img/logos/          logos    <id>.png        fundo transparente
   img/og/             imagem de compartilhamento
   favicon/
@@ -91,11 +91,12 @@ HTML; todo `addEventListener` está no `site.js`.
 
    A foto é de marca — produto, loja, gente —, **não print da home** e sem
    texto gravado: a peça da galeria da home é vertical e mostra a foto
-   inteira, em cor, e uma miniatura dela gira na órbita do hero. Pode já vir
-   pronta em 800×1200, como as capas de 25/10/2026: o script só recodifica.
+   inteira, em cor. Pode já vir pronta em 800×1200, como as capas de
+   25/10/2026: o script só recodifica.
 
    O `logo` é o **branco**, transparente: é ele que aparece nos cartões
-   escuros (órbita, galeria, página do projeto). Logo colorido com fundo
+   escuros (a órbita do hero, que é só de logos — fundo preto, logo
+   branco —, a galeria e a página do projeto). Logo colorido com fundo
    próprio (adesivo, selo) vira borrão ali — precisa de uma versão de uma cor.
 
    A faixa **"Marcas que já confiaram"** mostra cada marca na cor dela: com
@@ -109,10 +110,11 @@ HTML; todo `addEventListener` está no `site.js`.
    ```
 
    Ele gera `assets/img/portfolio/<id>-capa.jpg` em **retrato 800×1200**, a
-   miniatura `<id>-mini.jpg` (360×540, a da órbita) e `assets/img/logos/<id>.png`,
-   e com `-Aplicar` já escreve os caminhos no `dados.js`. A miniatura não entra
-   no `dados.js`: o site a acha pelo nome da capa, e sem ela usa a capa inteira
-   (funciona, só pesa mais). Foto mais alta que 2:3 perde o fim de baixo
+   miniatura `<id>-mini.jpg` (360×540) e `assets/img/logos/<id>.png`, e com
+   `-Aplicar` já escreve os caminhos no `dados.js`. A miniatura era a foto que
+   girava no hero; desde 25/10/2026 a órbita é só de logos e o site não a usa
+   mais — o script segue gerando, para a foto poder voltar sem refazer
+   imagem. Foto mais alta que 2:3 perde o fim de baixo
    (`-Deslocamento 200` desce o corte); mais larga perde as laterais. Se uma
    capa passar de **200 KB** ele avisa na tela — quando avisar, rode de novo
    com `-Qualidade 70` (a da Café Serra Gerais só cabe assim).
@@ -304,10 +306,9 @@ O que decide a velocidade do site são as **imagens**, não o código.
 
 O CSS + JS passou do teto informativo com a órbita, a galeria em profundidade,
 o anel e a nuvem (antes do redesign eram 39,23 KB). A primeira dobra subiu de
-185 KB porque o hero agora carrega miniaturas e logos das lojas: por isso as
-minis existem, e por isso, **a partir de 6 lojas, cada uma entra na órbita uma
-vez só** — foto e logo alternados (com 11, são 6 minis e 5 logos). Com foto e
-logo de todas, as 11 lojas passariam dos 600 KB.
+185 KB porque o hero agora carrega os logos das lojas, um cartão por loja.
+Quando a órbita tinha fotos, eram as minis (as capas inteiras estourariam os
+600 KB); hoje ela é só de logos, ~10 KB cada.
 
 A galeria "Loja de verdade" vem logo depois do hero, então as capas grandes
 dela **não** podem ir com `src` (o navegador baixaria as 11, ~1,6 MB, na

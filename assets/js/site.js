@@ -430,8 +430,40 @@
     var n = pecas.length;
     if (!trilho || !n) return;
 
-    if (parado() || n < 2) {
+    var alvo = 0, mostrado = 0, rodando = false;
+
+    /* As capas chegam em data-src (ver evidencia() no render.js). Nada
+       baixa enquanto a galeria está só encostada no pé do hero: "perto"
+       liga quando ela entra 40px na tela — rolou, ou abriu já no meio. */
+    var perto = false, estatica = parado() || n < 2;
+    function poeCapa(img) {
+      if (estatica) img.loading = 'lazy';     /* na grade parada, o lazy do navegador basta */
+      img.src = img.getAttribute('data-src');
+      img.removeAttribute('data-src');
+    }
+    function carregarPerto(p) {
+      if (!perto) return;
+      pecas.forEach(function (el, i) {
+        if (!estatica && Math.abs(i - p) > 2.5) return;   /* a da frente e duas de cada lado */
+        var img = el.querySelector('img[data-src]');
+        if (img) poeCapa(img);
+      });
+    }
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(function (entradas) {
+        entradas.forEach(function (e) {
+          if (!e.isIntersecting || perto) return;
+          perto = true;
+          carregarPerto(mostrado);
+        });
+      }, { rootMargin: '0px 0px -40px 0px' }).observe(secao);
+    } else {
+      perto = true;
+    }
+
+    if (estatica) {
       secao.classList.add('evidencia--estatica');
+      carregarPerto(0);
       irParaPeca = function (i) {
         pecas[i].scrollIntoView({ behavior: suave(), block: 'center' });
       };
@@ -442,7 +474,6 @@
     var barra = secao.querySelector('[data-evidencia-barra]');
     var PASSO = .42;                       /* rad entre um cartão e o próximo (~24°) */
     var curso = 1, raio = 900;
-    var alvo = 0, mostrado = 0, rodando = false;
 
     function medir() {
       curso = Math.max(secao.offsetHeight - window.innerHeight, 1);
@@ -470,6 +501,7 @@
         el.style.zIndex = String(100 - Math.round(dist * 10));
         el.style.setProperty('--leg', Math.max(0, 1 - dist * 2.2).toFixed(3));
       });
+      carregarPerto(p);
       var cur = Math.min(n - 1, Math.max(0, Math.round(p)));
       if (atual) atual.textContent = dois(cur + 1);
       if (barra) barra.style.setProperty('--p', (p / (n - 1)).toFixed(4));

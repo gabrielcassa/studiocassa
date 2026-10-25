@@ -135,8 +135,8 @@
     </a>
 
     <nav class="nav__links" aria-label="Principal">
-      <a class="nav__link" href="#servicos"  data-i18n="nav.servicos">Serviços</a>
       <a class="nav__link" href="#portfolio" data-i18n="nav.portfolio">Portfólio</a>
+      <a class="nav__link" href="#servicos"  data-i18n="nav.servicos">Serviços</a>
       <a class="nav__link" href="#processo"  data-i18n="nav.processo">Como funciona</a>
       <a class="nav__link" href="#contato"   data-i18n="nav.contato">Contato</a>
     </nav>
@@ -166,8 +166,8 @@
      aria-label="Menu" data-i18n="nav.menuRotulo" data-i18n-attr="aria-label">
   <div class="container">
     <nav class="menu__lista" aria-label="Menu principal">
-      <a class="menu__link" href="#servicos"  data-i18n="nav.servicos">Serviços</a>
       <a class="menu__link" href="#portfolio" data-i18n="nav.portfolio">Portfólio</a>
+      <a class="menu__link" href="#servicos"  data-i18n="nav.servicos">Serviços</a>
       <a class="menu__link" href="#processo"  data-i18n="nav.processo">Como funciona</a>
       <a class="menu__link" href="#contato"   data-i18n="nav.contato">Contato</a>
     </nav>
@@ -256,9 +256,56 @@
   </section>
 
   <!-- ====================================================================
-       MARCAS — os logos de PROJETOS. Sem logo nenhum, a seção some.
+       PORTFÓLIO — um projeto por vez, numa parede curva em perspectiva.
+       A seção é alta e o palco fica preso na tela (sticky): rolar a página
+       é o que passa os projetos. Nada de sequestrar a rolagem — é a
+       rolagem normal do navegador, lida pelo site.js.
+       Tudo sai de PROJETOS ("destaque" que passa nas travas). Sem nenhum, a
+       seção some e os links #portfolio passam a ir para portfolio.html.
+       Com prefers-reduced-motion vira uma grade parada.
        ==================================================================== -->
-  <section class="marcas" aria-labelledby="marcas-titulo" data-logos hidden>
+  <section class="evidencia" id="portfolio" aria-labelledby="port-titulo" data-evidencia hidden>
+    <div class="evidencia__palco">
+
+      <div class="evidencia__topo container">
+        <h2 class="evidencia__titulo" id="port-titulo" data-i18n="port.h2" data-i18n-html>
+          Loja de verdade, <em>no ar agora.</em>
+        </h2>
+        <a class="evidencia__pular rotulo" href="#marcas">
+          <span data-i18n="port.pular">Pular os projetos</span>
+          <svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+            <path fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
+                  stroke-linejoin="round" d="M4 4l8 8M12 6v6H6"/>
+          </svg>
+        </a>
+      </div>
+
+      <div class="evidencia__trilho" role="group" aria-label="Projetos em destaque"
+           data-i18n="port.grupo" data-i18n-attr="aria-label"></div>
+
+      <div class="evidencia__pe container">
+        <p class="evidencia__contador rotulo" aria-hidden="true">
+          <span class="evidencia__atual" data-evidencia-atual>01</span><!-- taste-skill-ignore: contador de posição -->
+          <span class="evidencia__barra"><span data-evidencia-barra></span></span>
+          <span data-evidencia-total>04</span><!-- taste-skill-ignore: contador de posição -->
+        </p>
+        <p class="evidencia__dica rotulo">
+          <span data-i18n="port.dica">Role para ver os projetos</span>
+          <svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+            <path fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
+                  stroke-linejoin="round" d="M8 3v10M4 9l4 4 4-4"/>
+          </svg>
+        </p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ====================================================================
+       MARCAS — os logos de PROJETOS, na cor de cada marca. Vem logo
+       depois da galeria. Sem logo nenhum, a seção some.
+       ==================================================================== -->
+  <section class="marcas" id="marcas" aria-labelledby="marcas-titulo" data-logos hidden>
     <div class="container">
       <h2 class="marcas__titulo rotulo" id="marcas-titulo" data-i18n="marcas.titulo">Marcas que já confiaram</h2>
       <div class="confianca__logos"></div>
@@ -321,52 +368,6 @@
   </section>
 
   <!-- ====================================================================
-       PORTFÓLIO — um projeto por vez, numa parede curva em perspectiva.
-       A seção é alta e o palco fica preso na tela (sticky): rolar a página
-       é o que passa os projetos. Nada de sequestrar a rolagem — é a
-       rolagem normal do navegador, lida pelo site.js.
-       Tudo sai de PROJETOS ("destaque" que passa nas travas). Sem nenhum, a
-       seção some e os links #portfolio passam a ir para portfolio.html.
-       Com prefers-reduced-motion vira uma grade parada.
-       ==================================================================== -->
-  <section class="evidencia" id="portfolio" aria-labelledby="port-titulo" data-evidencia hidden>
-    <div class="evidencia__palco">
-
-      <div class="evidencia__topo container">
-        <h2 class="evidencia__titulo" id="port-titulo" data-i18n="port.h2" data-i18n-html>
-          Loja de verdade, <em>no ar agora.</em>
-        </h2>
-        <a class="evidencia__pular rotulo" href="#todos">
-          <span data-i18n="port.pular">Pular os projetos</span>
-          <svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
-            <path fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
-                  stroke-linejoin="round" d="M4 4l8 8M12 6v6H6"/>
-          </svg>
-        </a>
-      </div>
-
-      <div class="evidencia__trilho" role="group" aria-label="Projetos em destaque"
-           data-i18n="port.grupo" data-i18n-attr="aria-label"></div>
-
-      <div class="evidencia__pe container">
-        <p class="evidencia__contador rotulo" aria-hidden="true">
-          <span class="evidencia__atual" data-evidencia-atual>01</span><!-- taste-skill-ignore: contador de posição -->
-          <span class="evidencia__barra"><span data-evidencia-barra></span></span>
-          <span data-evidencia-total>04</span><!-- taste-skill-ignore: contador de posição -->
-        </p>
-        <p class="evidencia__dica rotulo">
-          <span data-i18n="port.dica">Role para ver os projetos</span>
-          <svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
-            <path fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
-                  stroke-linejoin="round" d="M8 3v10M4 9l4 4 4-4"/>
-          </svg>
-        </p>
-      </div>
-
-    </div>
-  </section>
-
-  <!-- ====================================================================
        TODOS OS PROJETOS — o link grande para o portfólio completo e, logo
        abaixo, as lojas de outras plataformas (PROJETOS com
        exibicao:"outras"). Sem nenhuma, o bloco sai.
@@ -388,7 +389,7 @@
             A Nuvemshop é a casa, <em>não a única.</em>
           </h2>
           <p class="secundario" data-i18n="outras.apoio">
-            Quando a loja já roda em outra plataforma, eu trabalho onde ela está.
+            Quando o projeto já roda em outra plataforma, eu trabalho onde ele está.
           </p>
         </div>
         <ul class="outras__lista"></ul>
@@ -646,8 +647,8 @@
       <div class="rodape__col">
         <h2 class="rotulo" data-i18n="rodape.navegar">Navegar</h2>
         <ul>
-          <li><a href="#servicos"  data-i18n="nav.servicos">Serviços</a></li>
           <li><a href="#portfolio" data-i18n="nav.portfolio">Portfólio</a></li>
+          <li><a href="#servicos"  data-i18n="nav.servicos">Serviços</a></li>
           <li><a href="#processo"  data-i18n="nav.processo">Como funciona</a></li>
           <li><a href="#contato"   data-i18n="nav.contato">Contato</a></li>
         </ul>

@@ -18,6 +18,10 @@
             O site mostra todo logo como SILHUETA de uma cor: logo colorido
             com fundo próprio (adesivo, selo) vira borrão — precisa de uma
             versão de uma cor, como a da Crochê Vitória.
+     logoCor → assets/img/logos/cor/<id>.png      (opcional — só a faixa
+            "Marcas que já confiaram" usa) o logo na cor da marca. Sem ele, a
+            faixa mostra o `logo` branco como silhueta preta: serve às marcas
+            pretas e às que só têm logo branco.
      segmento, ano, resumo, desafio, entrega
      resultado → SÓ com número real. Sem número, deixa "".
 
@@ -90,12 +94,14 @@ const PROJETOS = [
   { id:"cachaca-seculo-xviii", nome:"Empório Século XVIII", tipo:"E-commerce completo", status:"concluido", exibicao:"destaque",
     plataforma:"Nuvemshop", tema:"Ipanema", segmento:"Cachaça", ano:"",
     url:"https://cachacaseculoxviii.com.br/", capa:"assets/img/portfolio/cachaca-seculo-xviii-capa.jpg", logo:"assets/img/logos/cachaca-seculo-xviii.png",
+    logoCor:"assets/img/logos/cor/cachaca-seculo-xviii.png",
     resumo:"", desafio:"", entrega:[], resultado:"", imagens:[], depoimento:{autor:"",texto:""} },
 
   /* Era migração em voo; o domínio virou para a Nuvemshop — bloqueio liberado. */
   { id:"quero-melancia", nome:"Quero Melancia", tipo:"E-commerce completo", status:"concluido", exibicao:"destaque",
     plataforma:"Nuvemshop", tema:"Ipanema", segmento:"Moda feminina", ano:"",
     url:"https://www.queromelancia.com.br/", capa:"assets/img/portfolio/quero-melancia-capa.jpg", logo:"assets/img/logos/quero-melancia.png",
+    logoCor:"assets/img/logos/cor/quero-melancia.png",
     resumo:"", desafio:"Migração vinda da Tray.", entrega:[], resultado:"", imagens:[], depoimento:{autor:"",texto:""} },
 
   /* Loja inteira, confirmado por ele em 04/10/2026 — antes estava como
@@ -120,6 +126,7 @@ const PROJETOS = [
   { id:"neurocapsule", nome:"NeuroCapsule", tipo:"E-commerce completo", status:"concluido", exibicao:"destaque",
     plataforma:"Nuvemshop", tema:"Ipanema", segmento:"Suplementos", ano:"",
     url:"https://loja.neurocapsule.com.br/", capa:"assets/img/portfolio/neurocapsule-capa.jpg", logo:"assets/img/logos/neurocapsule.png",
+    logoCor:"assets/img/logos/cor/neurocapsule.png",
     resumo:"", desafio:"E-commerce completo mais todas as páginas de produto.", entrega:[], resultado:"", imagens:[], depoimento:{autor:"",texto:""} },
 
   /* Migração que virou em 22/10/2026 — bloqueio liberado. O endereço passou
@@ -165,6 +172,7 @@ const PROJETOS = [
   { id:"croche-vitoria", nome:"Crochê Vitória", tipo:"E-commerce completo", status:"concluido", exibicao:"destaque",
     plataforma:"Nuvemshop", tema:"Ipanema", segmento:"Decoração em crochê", ano:"",
     url:"https://www.crochevitoria.com.br/", capa:"assets/img/portfolio/croche-vitoria-capa.jpg", logo:"assets/img/logos/croche-vitoria.png",
+    logoCor:"assets/img/logos/cor/croche-vitoria.png",
     resumo:"", desafio:"Migração vinda da Yampi. Fabricante de Ibitinga desde 1987.", entrega:[], resultado:"", imagens:[], depoimento:{autor:"",texto:""} },
 
   /* Endereço passado por ele em 24/10/2026. Nuvemshop e tema Amazonas
@@ -173,6 +181,7 @@ const PROJETOS = [
   { id:"vilaz", nome:"Vilaz", tipo:"E-commerce completo", status:"concluido", exibicao:"destaque",
     plataforma:"Nuvemshop", tema:"Amazonas", segmento:"Moda feminina", ano:"",
     url:"https://www.usevilaz.com.br/", capa:"assets/img/portfolio/vilaz-capa.jpg", logo:"assets/img/logos/vilaz.png",
+    logoCor:"assets/img/logos/cor/vilaz.png",
     resumo:"", desafio:"", entrega:[], resultado:"", imagens:[], depoimento:{autor:"",texto:""} },
 
   /* Saíram da vitrine (então carrossel) por decisão dele e foram para
@@ -205,11 +214,40 @@ const PROJETOS = [
     resumo:"Loja Nuvemshop construída do zero.", desafio:"", entrega:[], resultado:"", imagens:[], depoimento:{autor:"",texto:""} },
 
   /* =====================================================================
-     SHOPIFY E OUTRAS PLATAFORMAS — lista própria, abaixo da galeria.
-     Plataforma conferida no endereço em 04/10/2026. Glaucia Goulart roda
-     em Tray, não em Shopify: por isso a seção não se chama só "Shopify".
-     FAOL entrou aqui por ser loja Shopify, como a VITAL.
+     SHOPIFY E OUTRAS PLATAFORMAS — lista própria, abaixo do "Ver todos os
+     projetos". Plataforma conferida no endereço em 04/10/2026. Glaucia
+     Goulart roda em Tray, não em Shopify: por isso a seção não se chama só
+     "Shopify". FAOL entrou aqui por ser loja Shopify, como a VITAL.
+     Em 25/10/2026 entraram, na frente, os sites completos que ele fez fora
+     da Nuvemshop, na ordem em que ele mandou; plataforma conferida no
+     código de cada página no mesmo dia.
      ===================================================================== */
+
+  /* Loja de artigos para cachorro e gato, no Reino Unido. */
+  { id:"the-hound-emporium", nome:"The Hound Emporium", tipo:"E-commerce completo", status:"concluido", exibicao:"outras",
+    plataforma:"Wix", tema:"", segmento:"Pet shop", ano:"",
+    url:"https://www.thehoundemporium.com/", capa:"", logo:"",
+    resumo:"", desafio:"", entrega:[], resultado:"", imagens:[], depoimento:{autor:"",texto:""} },
+
+  /* Voltou em 25/10/2026 como site completo (antes estava como otimização,
+     sem endereço). Enxovais e quarto de bebê. */
+  { id:"dolce-affetto", nome:"Dolce Affetto", tipo:"E-commerce completo", status:"concluido", exibicao:"outras",
+    plataforma:"Tray", tema:"", segmento:"Enxoval de bebê", ano:"",
+    url:"https://www.dolceaffetto.com.br/", capa:"", logo:"",
+    resumo:"", desafio:"", entrega:[], resultado:"", imagens:[], depoimento:{autor:"",texto:""} },
+
+  /* Voltou em 25/10/2026 como site completo (antes estava como landing
+     page). O endereço abre como "Toledo Reservatórios Metálicos". */
+  { id:"toledo-reservatorios", nome:"Toledo Reservatórios", tipo:"Site completo", status:"concluido", exibicao:"outras",
+    plataforma:"WordPress", tema:"", segmento:"Reservatórios metálicos", ano:"",
+    url:"https://xn--toledoreservatrios-31b.com.br/", capa:"", logo:"",
+    resumo:"", desafio:"", entrega:[], resultado:"", imagens:[], depoimento:{autor:"",texto:""} },
+
+  /* Voltou em 25/10/2026 como site completo (antes estava como otimização). */
+  { id:"atuale-odontologia", nome:"Atuale Odontologia Integrada", tipo:"Site completo", status:"concluido", exibicao:"outras",
+    plataforma:"WordPress", tema:"", segmento:"Odontologia", ano:"",
+    url:"https://atualeodontologiaintegrada.com.br/", capa:"", logo:"",
+    resumo:"", desafio:"", entrega:[], resultado:"", imagens:[], depoimento:{autor:"",texto:""} },
 
   { id:"vital", nome:"VITAL", tipo:"Otimização", status:"concluido", exibicao:"outras",
     plataforma:"Shopify", tema:"", segmento:"Suplementos", ano:"",
@@ -231,10 +269,12 @@ const PROJETOS = [
        - as lojas NUVEMSHOP desse corte foram para LOJAS_FEITAS, logo abaixo,
          como registro, sem aparecer no site;
        - as demais saíram deste arquivo: Just Leve, Numa Chocolates, ARZ Home
-         Design, Toledo Reservatórios, Life NT, Luna Confecções, Atuale,
-         Pátio Matosinhos, Two Beats, New Capelli, MBS Purificadores, Fraktal
-         Softwares, No Glamour, Real Conforto e Dolce Affetto. Os registros
-         completos estão no histórico do git (commit a6e23c2). */
+         Design, Life NT, Luna Confecções, Pátio Matosinhos, Two Beats, New
+         Capelli, MBS Purificadores, Fraktal Softwares, No Glamour e Real
+         Conforto. Os registros completos estão no histórico do git (commit
+         a6e23c2). Toledo Reservatórios, Atuale e Dolce Affetto, que também
+         tinham saído, voltaram em 25/10/2026 como sites completos, lá em
+         cima. */
 
 ];
 

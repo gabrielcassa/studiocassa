@@ -289,6 +289,10 @@ window.SCRender = (function () {
      logosConfianca() — a faixa "Marcas que já confiaram". Projeto sem logo
      não entra, e se não sobrar nenhum a faixa inteira some. Nada de logo
      placeholder. Serve às duas faixas da página (hero e prova social).
+     Os logos saem na cor da marca: com `logoCor` no dados.js, o arquivo
+     colorido; sem ele, o `logo` (que é branco) vira silhueta preta no CSS
+     — que é a cor das marcas pretas e o jeito de mostrar um logo branco
+     no papel.
      ---------------------------------------------------------------------- */
   function logosConfianca() {
     var faixas = document.querySelectorAll('[data-logos]');
@@ -308,7 +312,8 @@ window.SCRender = (function () {
       var limite = parseInt(faixa.getAttribute('data-logos-max'), 10) || comLogo.length;
       faixa.querySelector('.confianca__logos').innerHTML =
         comLogo.slice(0, limite).map(function (p) {
-          return '<img src="' + esc(caminho(p.logo)) + '" alt="' + esc(p.nome) +
+          var cor = p.logoCor ? ' class="logo--cor"' : '';
+          return '<img src="' + esc(caminho(p.logoCor || p.logo)) + '"' + cor + ' alt="' + esc(p.nome) +
                  '" width="160" height="60" loading="lazy" decoding="async">';
         }).join('');
       faixa.hidden = false;
@@ -376,6 +381,10 @@ window.SCRender = (function () {
      evidencia() — o portfólio da home: um cartão por loja "destaque"
      visível. Quem põe os cartões na parede curva e os faz passar com a
      rolagem é o site.js; aqui só se monta.
+     A capa vai em data-src, não em src: o site.js só a carrega quando a
+     peça chega perto da frente. A galeria mora logo abaixo do hero, e com
+     src + loading="lazy" o navegador baixaria as 11 capas (~1,6 MB) já na
+     abertura da página.
      Sem loja nenhuma, a seção sai, e todo link que apontava para
      #portfolio passa a apontar para portfolio.html — senão o "Portfólio"
      do menu e o "Ver os projetos" do hero virariam âncora morta.
@@ -398,8 +407,8 @@ window.SCRender = (function () {
       return '<article class="peca" data-peca="' + i + '">' +
                '<button class="peca__abrir" type="button" data-projeto="' + esc(p.id) + '"' +
                ' aria-label="Ver o projeto ' + esc(p.nome) + '">' +
-                 '<img class="peca__capa" src="' + esc(caminho(p.capa)) + '"' +
-                 ' alt="" width="800" height="1200" loading="lazy" decoding="async">' +
+                 '<img class="peca__capa" data-src="' + esc(caminho(p.capa)) + '"' +
+                 ' alt="" width="800" height="1200" decoding="async">' +
                '</button>' +
                '<div class="peca__legenda">' +
                  '<h3 class="peca__nome">' + esc(p.nome) + '</h3>' +
@@ -437,7 +446,7 @@ window.SCRender = (function () {
         var det = [pastilha(p), p.tipo, p.segmento, p.resumo].filter(Boolean).map(esc).join(' · ');
         return '<li class="outra">' +
                  '<a href="' + esc(p.url) + '" target="_blank" rel="noopener"' +
-                 ' aria-label="' + esc(p.nome) + ' — ver a loja no ar (abre em nova aba)">' +
+                 ' aria-label="' + esc(p.nome) + ' — ver no ar (abre em nova aba)">' +
                    '<span class="outra__nome">' + esc(p.nome) + '</span>' +
                    (det ? '<span class="outra__det">' + det + '</span>' : '') +
                    seta('outra__seta', 22) +

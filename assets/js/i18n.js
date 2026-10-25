@@ -74,7 +74,7 @@ var DICIONARIO = {
     /* --- shopify e outras plataformas ---------------------------------- */
     'outras.titulo':      'Shopify e outras plataformas',
     'outras.h2':          'A Nuvemshop é a casa, <em>não a única.</em>',
-    'outras.apoio':       'Quando a loja já roda em outra plataforma, eu trabalho onde ela está.',
+    'outras.apoio':       'Quando o projeto já roda em outra plataforma, eu trabalho onde ele está.',
 
     /* --- depoimentos -------------------------------------------------- */
     'depo.h2':            'Quem já passou por isso <em>conta melhor.</em>',

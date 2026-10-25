@@ -499,25 +499,26 @@
   color: var(--mid);
   text-align: center;
 }
+/* linhas que quebram sozinhas, centralizadas: a última, com menos logos,
+   fica no meio em vez de encostar à esquerda */
 .confianca__logos{
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 40px 24px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   align-items: center;
-  justify-items: center;
+  gap: 32px 28px;
 }
-/* Silhueta, e não escala de cinza: os logos chegam em qualquer cor,
-   inclusive BRANCOS, e um logo branco sumiria no papel. */
+/* Na cor da marca: o logo colorido (.logo--cor, do campo logoCor) entra
+   como veio; os outros chegam BRANCOS e viram silhueta preta — a cor das
+   marcas pretas, e o único jeito de um logo branco aparecer no papel. */
 .confianca__logos img{
   height: clamp(40px, 4.4vw, 60px);
   width: auto;
-  max-width: 100%;
+  max-width: min(100%, 180px);   /* logo muito largo (NEUROCAPSULE) encolhe e não domina a faixa */
   object-fit: contain;
   filter: brightness(0);
-  opacity: .62;
-  transition: opacity var(--transicao);
 }
-.confianca__logos img:hover{ opacity: 1; }
+.confianca__logos img.logo--cor{ filter: none; }
 
 /* ==========================================================================
    SERVIÇOS — título grande e centralizado; as abas viram palavras grandes
@@ -1778,7 +1779,7 @@
   .evidencia__dica span{ display: inline; }
   .evidencia__barra{ width: clamp(72px, 10vw, 140px); }
 
-  .confianca__logos{ grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+  .confianca__logos{ gap: 44px 64px; }
 
   .abas__painel.cards--2{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
 

@@ -94,10 +94,14 @@ HTML; todo `addEventListener` está no `site.js`.
    inteira, em cor, e uma miniatura dela gira na órbita do hero. Pode já vir
    pronta em 800×1200, como as capas de 25/10/2026: o script só recodifica.
 
-   O site mostra todo logo como **silhueta de uma cor** (preta na faixa de
-   marcas, branca nos cartões escuros). Mande PNG transparente, de preferência
-   a versão branca ou de uma cor: logo colorido com fundo próprio (adesivo,
-   selo) vira borrão.
+   O `logo` é o **branco**, transparente: é ele que aparece nos cartões
+   escuros (órbita, galeria, página do projeto). Logo colorido com fundo
+   próprio (adesivo, selo) vira borrão ali — precisa de uma versão de uma cor.
+
+   A faixa **"Marcas que já confiaram"** mostra cada marca na cor dela: com
+   o campo `logoCor` no `dados.js` (arquivo em `assets/img/logos/cor/<id>.png`,
+   100px de altura), entra o logo colorido; sem ele, o branco vira silhueta
+   preta — certo para as marcas pretas e para quem só tem logo branco.
 2. Rode na raiz:
 
    ```powershell
@@ -138,9 +142,11 @@ O campo `exibicao` decide onde o projeto aparece:
   agora."), órbita do hero **e** grade do portfólio. Só os melhores, e só
   Nuvemshop.
 - `"grade"` → só na grade de `portfolio.html`.
-- `"outras"` → lista **"A Nuvemshop é a casa, não a única."**, abaixo da
-  galeria, e **"Shopify e outras plataformas"**, no fim do `portfolio.html`.
-  Linha sem foto: nome, plataforma e link da loja.
+- `"outras"` → lista **"A Nuvemshop é a casa, não a única."**, embaixo do
+  "Ver todos os projetos" da home, e **"Shopify e outras plataformas"**, no
+  fim do `portfolio.html`. Linha sem foto: nome, plataforma, tipo e link.
+  Os sites completos feitos fora da Nuvemshop (Wix, Tray, WordPress) vêm
+  primeiro.
 - `"citacao"` → lista compacta "Também passaram por aqui". Hoje não tem
   nenhuma.
 
@@ -292,9 +298,9 @@ O que decide a velocidade do site são as **imagens**, não o código.
 
 | item | hoje | teto |
 |---|---|---|
-| CSS + JS (soma dos gzip) | 51,70 KB | 45 KB, informativo |
+| CSS + JS (soma dos gzip) | 53,23 KB | 45 KB, informativo |
 | cada capa | 85 a 187 KB | **200 KB** |
-| primeira dobra | ~440 KB | 600 KB |
+| primeira dobra | ~378 KB | 600 KB |
 
 O CSS + JS passou do teto informativo com a órbita, a galeria em profundidade,
 o anel e a nuvem (antes do redesign eram 39,23 KB). A primeira dobra subiu de
@@ -303,10 +309,16 @@ minis existem, e por isso, **a partir de 6 lojas, cada uma entra na órbita uma
 vez só** — foto e logo alternados (com 11, são 6 minis e 5 logos). Com foto e
 logo de todas, as 11 lojas passariam dos 600 KB.
 
-Os logos ficam acima da dobra, na órbita e na faixa de marcas logo abaixo. O
-script os gera com **100px de altura** — perto do dobro do maior tamanho em que
-o site mostra um logo (60px, na faixa de marcas), nítido em tela retina. Com
-200px, como era antes, os cinco somavam 206 KB; com 100px, os onze somam ~98 KB.
+A galeria "Loja de verdade" vem logo depois do hero, então as capas grandes
+dela **não** podem ir com `src` (o navegador baixaria as 11, ~1,6 MB, na
+abertura): vão em `data-src`, e o `site.js` só carrega a peça da frente e as
+duas de cada lado, depois que a pessoa começa a rolar até a galeria.
+
+Os logos da órbita ficam acima da dobra; os da faixa de marcas, depois da
+galeria. O script os gera com **100px de altura** — perto do dobro do maior
+tamanho em que o site mostra um logo (60px, na faixa de marcas), nítido em tela
+retina. Com 200px, como era antes, os cinco somavam 206 KB; com 100px, os onze
+somam ~98 KB.
 
 Meça o CSS/JS pela **soma dos gzip individuais**, não pelos bytes em disco e não
 juntando os arquivos antes de comprimir — o navegador baixa cada um separado.

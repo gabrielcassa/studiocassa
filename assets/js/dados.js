@@ -139,13 +139,15 @@ const PROJETOS = [
     resumo:"", desafio:"Migração vinda da Octopus. Marca no mercado desde 1994.", entrega:[], resultado:"", imagens:[], depoimento:{autor:"",texto:""} },
 
   /* Juntou os dois registros antigos (página de produto + otimização).
-     Entrou na galeria em 25/10/2026, na lista que ele mandou.
-     CONFERIR O TIPO: segue "Página de produto", o registro dele de antes.
-     A capa dele passa de 200 KB: sai com -Qualidade 70 (168 KB). */
-  { id:"cafe-serra-gerais", nome:"Café Serra Gerais", tipo:"Página de produto", status:"concluido", exibicao:"destaque",
+     Entrou na galeria em 25/10/2026, na lista que ele mandou. Era
+     "Página de produto"; virou loja completa, confirmado por ele em
+     25/10/2026: o e-commerce foi refeito, com troca de tema e o layout
+     todo melhorado. A capa dele passa de 200 KB: sai com -Qualidade 70
+     (168 KB). */
+  { id:"cafe-serra-gerais", nome:"Café Serra Gerais", tipo:"E-commerce completo", status:"concluido", exibicao:"destaque",
     plataforma:"Nuvemshop", tema:"Ipanema", segmento:"Café especial", ano:"",
     url:"https://serragerais.com.br/", capa:"assets/img/portfolio/cafe-serra-gerais-capa.jpg", logo:"assets/img/logos/cafe-serra-gerais.png",
-    resumo:"", desafio:"", entrega:["2 páginas de produto", "Melhorias de layout e implementações"], resultado:"", imagens:[], depoimento:{autor:"",texto:""} },
+    resumo:"E-commerce novo, com troca de tema e o layout todo refeito.", desafio:"", entrega:["2 páginas de produto", "Melhorias de layout e implementações"], resultado:"", imagens:[], depoimento:{autor:"",texto:""} },
 
   /* Esperava endereço e plataforma desde 04/10/2026; endereço passado por
      ele em 24/10/2026. Nuvemshop e tema Ipanema conferidos no código da
@@ -166,8 +168,8 @@ const PROJETOS = [
     resumo:"", desafio:"Migração vinda da Yampi. Fabricante de Ibitinga desde 1987.", entrega:[], resultado:"", imagens:[], depoimento:{autor:"",texto:""} },
 
   /* Endereço passado por ele em 24/10/2026. Nuvemshop e tema Amazonas
-     conferidos no código da página no mesmo dia. CONFERIR O TIPO: entrou
-     como loja completa, como as outras desta lista. */
+     conferidos no código da página no mesmo dia. Loja completa, confirmado
+     por ele em 25/10/2026. */
   { id:"vilaz", nome:"Vilaz", tipo:"E-commerce completo", status:"concluido", exibicao:"destaque",
     plataforma:"Nuvemshop", tema:"Amazonas", segmento:"Moda feminina", ano:"",
     url:"https://www.usevilaz.com.br/", capa:"assets/img/portfolio/vilaz-capa.jpg", logo:"assets/img/logos/vilaz.png",

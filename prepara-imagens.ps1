@@ -32,14 +32,18 @@
 #         em tela retina. Era 200px ate 05/10/2026 — pesava ate 4x mais sem
 #         ganhar nitidez, porque logo pequeno so era ampliado.
 #
-#  CELULAR: a home da loja que rola dentro do celular, no modal do projeto.
-#         Capture a pagina inteira no formato celular: no Chrome, F12 > icone
-#         de celular > iPhone 12 Pro (390 de largura) > menu de tres pontos >
-#         "Capture full size screenshot". Feche antes pop-up e aviso de
-#         cookies. Salve em  _prints\celular\<id>.png  e rode o script.
-#         Sai em assets/img/portfolio/<id>-celular.jpg, 500px de largura, com
-#         as 3 primeiras telas (o resto da pagina e cortado; -TelasCelular
-#         muda). Passou de 200 KB, ele avisa: rode com -QualidadeCelular 65.
+#  CELULAR: a home da loja que rola dentro do celular, no modal do projeto,
+#         do topo ao fim do rodape. Capture a pagina inteira no formato
+#         celular: no Chrome, F12 > icone de celular > iPhone 12 Pro (390 de
+#         largura) > menu de tres pontos > "Capture full size screenshot".
+#         Feche antes pop-up e aviso de cookies. Salve em
+#         _prints\celular\<id>.png  e rode o script.
+#         A pagina sai FATIADA, 500px de largura e 2400 de altura por parte:
+#         assets/img/portfolio/<id>-celular-1.jpg, -2.jpg... — o site carrega
+#         cada parte so quando a tela do celular chega perto dela (uma home
+#         inteira numa imagem so passaria de 1 MB). Com -Aplicar ele escreve
+#         celular e celularPartes no dados.js. Parte acima de 200 KB, ele
+#         avisa: rode com -QualidadeCelular 65.
 #
 #  Precisa so do Windows (System.Drawing). Nao instala nada.
 # =============================================================================
@@ -51,7 +55,6 @@ param(
   [int]$AlturaLogo  = 100,
   [int]$Qualidade   = 82,
   [int]$QualidadeCelular = 72,
-  [double]$TelasCelular  = 3,   # quantas telas de celular da home entram
   [int]$Deslocamento = 0,   # px para descer o corte, se o topo do print for feio
   [switch]$Aplicar
 )
@@ -156,29 +159,42 @@ function Redimensiona-Logo($origem, $destino) {
   } finally { $img.Dispose() }
 }
 
-function Gera-Celular($origem, $destino) {
+# Fatia a pagina inteira em partes de 500x2400 (a ultima, menor) e devolve
+# quantas sairam. 500px de largura: o celular do modal tem ~250px, nitido em
+# tela retina. 2400 de altura: ~1870px de pagina por parte, ~90 a 150 KB.
+function Gera-Celular($origem, $id) {
+  # as partes da captura anterior saem antes: a pagina nova pode ter menos
+  Get-ChildItem $saidaCapas -Filter "$id-celular*.jpg" -ErrorAction SilentlyContinue | Remove-Item -Force
   $img = [System.Drawing.Image]::FromFile($origem)
+  $partes = @()
   try {
-    # 500px de largura (o celular do modal tem ~250px: nitido em tela retina)
-    # e no maximo -TelasCelular telas de 390x844 de altura: com 4, as capturas
-    # de loja passavam de 200 KB; com 3, ficam entre ~130 e ~190 KB
     $largura = 500
-    $alturaFonte = [Math]::Min($img.Height, [int]($img.Width * $TelasCelular * 844 / 390))
-    $altura = [int]($alturaFonte * $largura / $img.Width)
-    $bmp = New-Object System.Drawing.Bitmap($largura, $altura)
-    $g = [System.Drawing.Graphics]::FromImage($bmp)
+    $parteFonte = 2400 * $img.Width / $largura          # altura de cada parte na captura
+    $n = [Math]::Ceiling($img.Height / $parteFonte)
     # sem isto o bicubico puxa a cor de fora da imagem e escurece a borda
     $atributos = New-Object System.Drawing.Imaging.ImageAttributes
     $atributos.SetWrapMode([System.Drawing.Drawing2D.WrapMode]::TileFlipXY)
     try {
-      $g.InterpolationMode = [System.Drawing.Drawing2D.InterpolationMode]::HighQualityBicubic
-      $g.PixelOffsetMode   = [System.Drawing.Drawing2D.PixelOffsetMode]::HighQuality
-      $dest = New-Object System.Drawing.Rectangle(0, 0, $largura, $altura)
-      $g.DrawImage($img, $dest, 0, 0, $img.Width, $alturaFonte, [System.Drawing.GraphicsUnit]::Pixel, $atributos)
-    } finally { $g.Dispose(); $atributos.Dispose() }
-    $bmp.Save($destino, $codecJpg, $paramsCelular)
-    $bmp.Dispose()
+      for ($k = 1; $k -le $n; $k++) {
+        $topo = [int][Math]::Round(($k - 1) * $parteFonte)
+        $fim = [int][Math]::Min([Math]::Round($k * $parteFonte), $img.Height)
+        $altura = [int][Math]::Round(($fim - $topo) * $largura / $img.Width)
+        $bmp = New-Object System.Drawing.Bitmap($largura, $altura)
+        $g = [System.Drawing.Graphics]::FromImage($bmp)
+        try {
+          $g.InterpolationMode = [System.Drawing.Drawing2D.InterpolationMode]::HighQualityBicubic
+          $g.PixelOffsetMode   = [System.Drawing.Drawing2D.PixelOffsetMode]::HighQuality
+          $dest = New-Object System.Drawing.Rectangle(0, 0, $largura, $altura)
+          $g.DrawImage($img, $dest, 0, $topo, $img.Width, ($fim - $topo), [System.Drawing.GraphicsUnit]::Pixel, $atributos)
+        } finally { $g.Dispose() }
+        $destino = Join-Path $saidaCapas "$id-celular-$k.jpg"
+        $bmp.Save($destino, $codecJpg, $paramsCelular)
+        $bmp.Dispose()
+        $partes += [int]((Get-Item $destino).Length / 1KB)
+      }
+    } finally { $atributos.Dispose() }
   } finally { $img.Dispose() }
+  return ,$partes
 }
 
 # ---------------------------------------------------------------- capas ----
@@ -232,13 +248,14 @@ $celulares = 0
 if (Test-Path $pastaCelular) {
   Get-ChildItem $pastaCelular -Include *.png,*.jpg,*.jpeg -Recurse | ForEach-Object {
     $id = $_.BaseName.ToLower()
-    $destino = Join-Path $saidaCapas "$id-celular.jpg"
-    Gera-Celular $_.FullName $destino
-    $kb = [int]((Get-Item $destino).Length / 1KB)
-    $aviso = if ($kb -gt 200) { "  << ACIMA DE 200 KB - baixe -QualidadeCelular" } else { "" }
-    Write-Host ("  celular {0,-24} 500px  {1} KB{2}" -f $id, $kb, $aviso)
+    $partes = Gera-Celular $_.FullName $id
+    $maior = ($partes | Measure-Object -Maximum).Maximum
+    $soma = ($partes | Measure-Object -Sum).Sum
+    $aviso = if ($maior -gt 200) { "  << PARTE ACIMA DE 200 KB - baixe -QualidadeCelular" } else { "" }
+    Write-Host ("  celular {0,-24} {1} parte(s), {2} KB no todo, maior {3} KB{4}" -f $id, $partes.Count, $soma, $maior, $aviso)
     if (-not $feitos.ContainsKey($id)) { $feitos[$id] = @{} }
     $feitos[$id].celular = "assets/img/portfolio/$id-celular.jpg"
+    $feitos[$id].celularPartes = $partes.Count
     $celulares++
   }
 }
@@ -263,6 +280,19 @@ if ($Aplicar -and (Test-Path $dadosJs)) {
       $novo = '${1}' + $campo + ':"' + $valor + '"'
       $antes = $txt
       $txt = [regex]::Replace($txt, $padrao, $novo)
+      if ($txt -ne $antes) { $mudou++ }
+    }
+    # celularPartes muda a cada captura nova: troca o numero se ja existe,
+    # ou entra logo antes do resumo:, dentro do bloco daquele id
+    if ($feitos[$id].ContainsKey('celularPartes')) {
+      $n = $feitos[$id].celularPartes
+      $bloco = '(\{\s*id:"' + [regex]::Escape($id) + '"(?:(?!id:")[\s\S])*?)'
+      $antes = $txt
+      if ([regex]::IsMatch($txt, $bloco + 'celularPartes:\d+')) {
+        $txt = [regex]::Replace($txt, $bloco + 'celularPartes:\d+', '${1}celularPartes:' + $n)
+      } else {
+        $txt = [regex]::Replace($txt, $bloco + 'resumo:', '${1}celularPartes:' + $n + ",`r`n    resumo:")
+      }
       if ($txt -ne $antes) { $mudou++ }
     }
   }

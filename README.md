@@ -73,7 +73,7 @@ assets/
   img/portfolio/      capas    <id>-capa.jpg   800x1200, retrato
                       minis    <id>-mini.jpg   360x540, hoje sem uso (ver abaixo)
                       cartões  <id>-cartao.png 600x900, os da galeria da home
-                      celular  <id>-celular.jpg 500 de largura, a home no modal
+                      celular  <id>-celular-N.jpg partes de 500x2400 da home no modal
   img/logos/          logos    <id>.png        fundo transparente
   img/og/             imagem de compartilhamento
   favicon/
@@ -111,13 +111,16 @@ HTML; todo `addEventListener` está no `site.js`.
    600×900, cantos arredondados de 32px já no PNG). Sem cartão, ela usa a
    `capa`. O portfólio e a página de cada projeto seguem com a foto.
 
-   O **modal do projeto** mostra a home da loja rolando dentro de um celular
-   (campo `celular`). Para ter: capture a página inteira da loja no formato
-   celular — no Chrome, F12 → ícone de celular → iPhone 12 Pro (390 de
-   largura) → menu ⋮ → *Capture full size screenshot*, com pop-up e aviso de
-   cookies fechados — e salve em `_prints/celular/<id>.png`. O script corta
-   as 3 primeiras telas e salva `assets/img/portfolio/<id>-celular.jpg` com
-   500px de largura. Sem o campo, o modal fica sem o celular.
+   O **modal do projeto** mostra a home INTEIRA da loja, do topo ao rodapé,
+   rolando dentro de um celular (campos `celular` e `celularPartes`). Para
+   ter: capture a página inteira da loja no formato celular — no Chrome,
+   F12 → ícone de celular → iPhone 12 Pro (390 de largura) → menu ⋮ →
+   *Capture full size screenshot*, com pop-up e aviso de cookies fechados —
+   e salve em `_prints/celular/<id>.png`. O script fatia a página em partes
+   de 500×2400 (`assets/img/portfolio/<id>-celular-1.jpg`, `-2.jpg`…) e, com
+   `-Aplicar`, escreve os dois campos no `dados.js`. O site só baixa cada
+   parte quando a tela do celular chega perto dela. Sem os campos, o modal
+   fica sem o celular.
 2. Rode na raiz:
 
    ```powershell
@@ -264,12 +267,14 @@ nas 7 páginas.
   Só com mouse — no celular não existe — e o "Pausar movimento" vale para ele
   também. Para o traço aparecer nas seções escuras, o fundo delas está num
   `::before` atrás do canvas (`.secao--escura` no `base.css`).
-- **Celular do modal do projeto:** a home da loja rola dentro do aparelho com
-  a roda do mouse, o dedo ou as setas do teclado; chegando ao fim, a rolagem
-  não passa para a página. Ao abrir, a tela desce um pouco e volta, uma vez,
-  para mostrar que rola. O aparelho encolhe para título, celular e botões
-  caberem juntos na janela (classe `.aparelho`, e não `.celular`: esse nome
-  é do mockup do "Resultado real", ainda comentado).
+- **Celular do modal do projeto:** a home inteira da loja, até o fim do
+  rodapé, rola dentro do aparelho com a roda do mouse, o dedo ou as setas do
+  teclado (Home e End vão ao topo e ao fim); chegando ao fim, a rolagem não
+  passa para a página. Uma barrinha fina, a do iPhone, aparece enquanto se
+  rola e mostra quanto falta. Ao abrir, a tela desce um pouco e volta, uma
+  vez, para mostrar que rola. O aparelho encolhe para título, celular e
+  botões caberem juntos na janela (classe `.aparelho`, e não `.celular`:
+  esse nome é do mockup do "Resultado real", ainda comentado).
 
 Tudo para quando sai da tela. Com **"reduzir movimento"** ligado no sistema,
 nada se mexe: sem cortina, sem rabisco, sem a espiada do celular, órbita
@@ -330,10 +335,10 @@ O que decide a velocidade do site são as **imagens**, não o código.
 
 | item | hoje | teto |
 |---|---|---|
-| CSS + JS (soma dos gzip) | 58,89 KB | 45 KB, informativo |
+| CSS + JS (soma dos gzip) | 59,94 KB | 45 KB, informativo |
 | cada capa | 85 a 187 KB | **200 KB** |
-| primeira dobra | ~238 KB | 600 KB |
-| cada celular do modal | 122 a 196 KB, só ao abrir | **200 KB** |
+| primeira dobra | ~240 KB | 600 KB |
+| cada parte do celular do modal | até 149 KB, só ao chegar nela | **200 KB** |
 
 O CSS + JS passou do teto informativo com a órbita, a galeria em profundidade,
 o anel e a nuvem (antes do redesign eram 39,23 KB). A primeira dobra subiu de

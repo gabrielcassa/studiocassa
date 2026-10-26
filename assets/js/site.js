@@ -1163,6 +1163,46 @@
       else comecar();
     }
 
+    /* As partes da home (data-src) entram quando a tela do celular chega a
+       ~1000px delas: quem rola lê a página inteira, e quem só olha o topo
+       não baixa o resto. */
+    var observador = null;
+    function carregarPartes(tela) {
+      if (observador) { observador.disconnect(); observador = null; }
+      if (!tela) return;
+      var faltam = tela.querySelectorAll('img[data-src]');
+      function poe(img) { img.src = img.getAttribute('data-src'); img.removeAttribute('data-src'); }
+      if (!('IntersectionObserver' in window)) { Array.prototype.forEach.call(faltam, poe); return; }
+      observador = new IntersectionObserver(function (entradas) {
+        entradas.forEach(function (e) {
+          if (!e.isIntersecting) return;
+          poe(e.target);
+          observador.unobserve(e.target);
+        });
+      }, { root: tela, rootMargin: '0px 0px 1000px 0px' });
+      Array.prototype.forEach.call(faltam, function (img) { observador.observe(img); });
+    }
+
+    /* A barrinha de rolagem do iPhone: o tamanho é quanto da página cabe na
+       tela, o lugar é quanto já rolou. Acende ao rolar e apaga 0,9s depois. */
+    function barraDeRolagem(tela) {
+      var caixa = tela && tela.parentNode;
+      var barra = caixa && caixa.querySelector('.aparelho__barra');
+      if (!barra) return;
+      var apaga = null;
+      tela.addEventListener('scroll', function () {
+        var vis = tela.clientHeight, total = tela.scrollHeight;
+        if (total <= vis) return;
+        var h = Math.max(24, vis * vis / total);
+        var topo = tela.offsetTop + 4 + (vis - h - 8) * tela.scrollTop / (total - vis);
+        barra.style.height = h.toFixed(1) + 'px';
+        barra.style.transform = 'translateY(' + topo.toFixed(1) + 'px)';
+        caixa.classList.add('rolando');
+        clearTimeout(apaga);
+        apaga = setTimeout(function () { caixa.classList.remove('rolando'); }, 900);
+      }, { passive: true });
+    }
+
     /* No desktop, título, celular, textos e botões cabem juntos na janela:
        se o painel passar da altura livre, a tela do celular perde a
        diferença (até 260px). Quem tem texto além do título (o desafio, o
@@ -1194,12 +1234,16 @@
       ajustarCelular();
       document.body.classList.add('travado');
       (focaveisEm(modal)[0] || fechar).focus();
-      espiarCelular(corpo.querySelector('.aparelho__rolagem'));
+      var tela = corpo.querySelector('.aparelho__rolagem');
+      carregarPartes(tela);
+      barraDeRolagem(tela);
+      espiarCelular(tela);
     }
 
     function fecharModal() {
       if (modal.hidden) return;
       clearTimeout(espiada);
+      if (observador) { observador.disconnect(); observador = null; }
       modal.hidden = true;
       corpo.innerHTML = '';
       document.body.classList.remove('travado');

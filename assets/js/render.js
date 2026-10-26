@@ -444,19 +444,34 @@ window.SCRender = (function () {
            '</div>';
   }
 
-  /* O celular do modal: a home da loja (captura de 390px de largura, ~3
-     telas, campo `celular` no dados.js) dentro de um aparelho desenhado só
-     com CSS. A tela é uma região que rola sozinha — roda do mouse, dedo ou
-     setas do teclado (tabindex). Quem faz a espiada de entrada é o site.js. */
+  /* O celular do modal: a home INTEIRA da loja, do topo ao rodapé, dentro de
+     um aparelho desenhado só com CSS. A captura vem fatiada em partes de
+     500x2400 (`celular` + `celularPartes` no dados.js: <id>-celular-1.jpg,
+     -2.jpg...): só a primeira parte vem em src; as outras, em data-src, e o
+     site.js põe cada uma quando a tela chega perto dela. Sem celularPartes,
+     `celular` é uma imagem só. A tela é uma região que rola sozinha — roda
+     do mouse, dedo ou setas do teclado (tabindex). A barrinha é a de rolagem
+     do iPhone, desenhada: aparece enquanto se rola. */
   function htmlCelular(p) {
+    var nome = esc(p.nome);
+    var alt = 'Página inicial de ' + nome + ' no celular, do topo ao rodapé';
+    var partes = p.celularPartes || 0;
+    var imgs = '';
+    if (!partes) {
+      imgs = '<img src="' + esc(caminho(p.celular)) + '" alt="' + alt + '" width="500" decoding="async">';
+    }
+    for (var k = 1; k <= partes; k++) {
+      var src = esc(caminho(String(p.celular).replace(/\.jpg$/i, '-' + k + '.jpg')));
+      imgs += k === 1
+        ? '<img src="' + src + '" alt="' + alt + '" width="500" height="2400" decoding="async">'
+        : '<img data-src="' + src + '" alt="" width="500" height="2400" decoding="async">';
+    }
     return '<figure class="aparelho">' +
              '<div class="aparelho__corpo">' +
                '<div class="aparelho__tela">' +
                  '<div class="aparelho__rolagem" tabindex="0" role="region"' +
-                 ' aria-label="Celular com a loja ' + esc(p.nome) + '">' +
-                   '<img src="' + esc(caminho(p.celular)) + '" alt="Página inicial de ' + esc(p.nome) +
-                   ' no celular" width="500" height="3246" decoding="async">' +
-                 '</div>' +
+                 ' aria-label="Celular com a loja ' + nome + '">' + imgs + '</div>' +
+                 '<span class="aparelho__barra" aria-hidden="true"></span>' +
                '</div>' +
              '</div>' +
              '<figcaption class="aparelho__dica rotulo">' +

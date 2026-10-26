@@ -1441,6 +1441,7 @@
   transform: translateX(-50%);
 }
 .aparelho__tela{
+  position: relative;
   width: calc(var(--tela-h) * .4621);
   height: var(--tela-h);
   padding-top: calc(var(--tela-h) * .058);   /* a faixa de status: o site começa abaixo dela */
@@ -1448,6 +1449,22 @@
   overflow: hidden;
   background: #fff;
 }
+/* a barrinha de rolagem do iPhone: o site.js a põe no lugar e no tamanho
+   certos e acende enquanto a tela rola; parada, some */
+.aparelho__barra{
+  position: absolute;
+  top: 0;
+  right: 3px;
+  width: 3px;
+  height: 40px;
+  border-radius: 3px;
+  background: rgba(19,19,19,.38);
+  box-shadow: 0 0 0 1px rgba(255,255,255,.35);   /* taste-skill-ignore: contorno claro, a barra aparece sobre foto escura */
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .4s;
+}
+.aparelho__tela.rolando .aparelho__barra{ opacity: 1; transition-duration: .1s; }
 /* só esta parte rola: roda do mouse, dedo, ou setas com o foco nela.
    Chegando ao fim, a rolagem não passa para o modal nem para a página. */
 .aparelho__rolagem{
@@ -1459,6 +1476,8 @@
 }
 .aparelho__rolagem::-webkit-scrollbar{ display: none; }
 .aparelho__rolagem:focus-visible{ outline-offset: -3px; border-radius: 0; }
+/* as partes da página, uma embaixo da outra, sem fresta; a que ainda não
+   chegou já ocupa a altura dela (width/height no HTML) */
 .aparelho__rolagem img{ width: 100%; height: auto; }
 .aparelho__dica{
   display: inline-flex;

@@ -211,7 +211,17 @@ p strong{ font-weight: 600; }
 
 .secao{ padding-block: var(--secao-y); }
 .secao--papel2{ background: var(--papel-2); }
-.secao--escura{ background: var(--escuro); color: var(--escuro-tx); }
+/* O fundo escuro mora num ::before em z-index -2, e não no background da
+   seção: assim o rabisco do cursor (canvas em -1, atrás de todo conteúdo)
+   aparece também aqui, entre o fundo e o texto. */
+.secao--escura{ position: relative; color: var(--escuro-tx); }
+.secao--escura::before{
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  background: var(--escuro);
+}
 .secao--escura h1,
 .secao--escura h2,
 .secao--escura h3{ color: var(--escuro-tx); }

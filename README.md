@@ -246,9 +246,18 @@ nas 7 páginas.
   lido, e para.
 - **Nuvem "nuvemshop":** os pontos formam a palavra em ~2 s e param; depois só
   se mexem com o cursor ou o dedo.
+- **Rabisco do cursor** (`rabiscoCursor()` no `site.js`): um traço fino que
+  segue o mouse e some em ~1 s, nas cores dos rabiscos do site (azul, laranja,
+  amarelo), trocando de cor a cada ~7 s. Mora num canvas **atrás** de todo o
+  conteúdo e só nasce no papel livre: não passa por texto, link, botão,
+  imagem, desenho nem cartão (fica a ~10 px de qualquer um). Rolar não risca.
+  Só com mouse — no celular não existe — e o "Pausar movimento" vale para ele
+  também. Para o traço aparecer nas seções escuras, o fundo delas está num
+  `::before` atrás do canvas (`.secao--escura` no `base.css`).
 
 Tudo para quando sai da tela. Com **"reduzir movimento"** ligado no sistema,
-nada se mexe: sem cortina, órbita parada e a galeria vira uma grade comum.
+nada se mexe: sem cortina, sem rabisco, órbita parada e a galeria vira uma
+grade comum.
 
 ---
 
@@ -305,9 +314,9 @@ O que decide a velocidade do site são as **imagens**, não o código.
 
 | item | hoje | teto |
 |---|---|---|
-| CSS + JS (soma dos gzip) | 53,23 KB | 45 KB, informativo |
+| CSS + JS (soma dos gzip) | 56,85 KB | 45 KB, informativo |
 | cada capa | 85 a 187 KB | **200 KB** |
-| primeira dobra | ~378 KB | 600 KB |
+| primeira dobra | ~236 KB | 600 KB |
 
 O CSS + JS passou do teto informativo com a órbita, a galeria em profundidade,
 o anel e a nuvem (antes do redesign eram 39,23 KB). A primeira dobra subiu de

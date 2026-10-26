@@ -864,6 +864,265 @@
   }
 
   /* ----------------------------------------------------------------------
+     rabiscoCursor() — um traço de caneta que segue o mouse e some em ~1s.
+     Mora num canvas fixo ATRÁS de todo o conteúdo (.rabisco-cursor no CSS):
+     texto, cartões, fotos e logos ficam sempre por cima. E nem por trás ele
+     passa: só nasce ponto onde, a ~10px em volta, não há texto, link, botão,
+     imagem, desenho, canvas nem bloco com fundo próprio (card).
+     A cor vem dos rabiscos do site (--risco-*) e troca devagar: cada uma
+     dura 7s e passa para a próxima no último terço. Os pontos guardam a
+     posição na PÁGINA, então o traço vai junto com o conteúdo; rolar não
+     risca — e apaga depressa o que havia, porque o que é preso na tela (o
+     título da galeria, o anel) não rola junto. Só com mouse; não liga com
+     reduced-motion, e "Pausar movimento" também para o rabisco.
+     ---------------------------------------------------------------------- */
+  function rabiscoCursor() {
+    if (parado() || !window.matchMedia) return;
+    if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+
+    var canvas = document.createElement('canvas');
+    if (!canvas.getContext) return;
+    canvas.className = 'rabisco-cursor';
+    canvas.setAttribute('aria-hidden', 'true');
+    document.body.appendChild(canvas);
+    var ctx = canvas.getContext('2d');
+
+    /* [r, g, b, peso da opacidade] — o amarelo é claro e precisa de mais
+       opacidade para aparecer no papel */
+    var estilo = getComputedStyle(document.documentElement);
+    var cores = [['--risco-azul', 1], ['--risco-laranja', 1], ['--risco-amarelo', 1.6]].map(function (c) {
+      var h = estilo.getPropertyValue(c[0]).trim().replace('#', '');
+      var n = parseInt(h.length === 3 ? h.replace(/./g, '$&$&') : h, 16);
+      if (isNaN(n)) n = 0x2F6BFF;
+      return [n >> 16 & 255, n >> 8 & 255, n & 255, c[1]];
+    });
+    var VIDA = 1100;      /* ms até um ponto sumir */
+    var TROCA = 7000;     /* ms de cada cor */
+    var FAIXAS = 10;      /* degraus em que o traço afina e apaga */
+    var FOLGA = 10;       /* px de distância de qualquer conteúdo */
+    var ALFA_CLARO = .42, ALFA_ESCURO = .7, ALFA_MAX = .75;
+
+    var pontos = [];      /* { x, y (na página), t, c, e } — x null corta o traço */
+    var mouse = null, pena = null, base = null, andado = 0, rodando = false;
+    var W = 0, H = 0;
+
+    /* na home, o botão diz se está pausado; nas outras páginas vale o que
+       ficou guardado no navegador */
+    var botao = document.querySelector('[data-movimento]');
+    var pausadoAntes = false;
+    try { pausadoAntes = localStorage.getItem('cassa-movimento') === 'pausado'; } catch (e) { /* modo anônimo */ }
+    function pausado() {
+      return botao && !botao.hidden ? botao.classList.contains('pausado') : pausadoAntes;
+    }
+
+    function medir() {
+      var dpr = Math.min(window.devicePixelRatio || 1, 2);
+      W = window.innerWidth; H = window.innerHeight;
+      canvas.width = Math.round(W * dpr);
+      canvas.height = Math.round(H * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+
+    function corAgora(agora) {
+      var f = agora / TROCA, k = Math.floor(f) % cores.length, r = f - Math.floor(f);
+      var m = r < 2 / 3 ? 0 : (r - 2 / 3) * 3;
+      m = m * m * (3 - 2 * m);
+      var a = cores[k], b = cores[(k + 1) % cores.length];
+      return a.map(function (v, i) { return v + (b[i] - v) * m; });
+    }
+
+    /* conteúdo: texto, link, botão, imagem, desenho, canvas, os cartões da
+       órbita e da galeria, todo elemento com texto solto dentro e todo
+       bloco com fundo próprio (lido uma vez por elemento) */
+    var CONTEUDO = 'a,button,img,svg,canvas,video,picture,iframe,input,textarea,select,label,' +
+                   'h1,h2,h3,h4,h5,h6,p,li,dt,dd,blockquote,figcaption,span,em,strong,small,time,' +
+                   '.orbita__item,.peca';
+    var fundo = typeof WeakMap === 'function' ? new WeakMap() : null;
+    function temFundo(el) {
+      if (!fundo) return false;
+      for (; el && el !== document.body; el = el.parentElement) {
+        var v = fundo.get(el);
+        if (v === undefined) {
+          var cs = getComputedStyle(el), cor = cs.backgroundColor;
+          v = cs.backgroundImage !== 'none' || !(cor === 'transparent' || /,\s*0\)$/.test(cor));
+          fundo.set(el, v);
+        }
+        if (v) return true;
+      }
+      return false;
+    }
+    function ocupado(el) {
+      if (!el) return true;                                  /* fora da janela */
+      if (el === document.documentElement || el === document.body) return false;
+      if (el.closest(CONTEUDO)) return true;
+      for (var n = el.firstChild; n; n = n.nextSibling) {
+        if (n.nodeType === 3 && /\S/.test(n.nodeValue)) return true;
+      }
+      return temFundo(el);
+    }
+
+    /* os rabiscos desenhados do site não respondem ao mouse (pointer-events:
+       none) e o elementFromPoint não os vê: vão à parte, pela caixa */
+    var desenhos = document.querySelectorAll('.riscos, .rabisco');
+    function pertoDeDesenho(x, y) {
+      for (var i = 0; i < desenhos.length; i++) {
+        var b = desenhos[i].getBoundingClientRect();
+        if (b.width && x > b.left - FOLGA && x < b.right + FOLGA &&
+            y > b.top - FOLGA && y < b.bottom + FOLGA) return true;
+      }
+      return false;
+    }
+
+    /* o ponto e oito vizinhos em volta: em cruz não basta, um canto de
+       caixa na diagonal passaria rente */
+    var VOLTA = [[0, 0], [FOLGA, 0], [-FOLGA, 0], [0, FOLGA], [0, -FOLGA],
+                 [7, 7], [-7, 7], [7, -7], [-7, -7]];
+    /* o elemento sob o ponto, se a vizinhança está livre; null se não */
+    function livre(x, y) {
+      if (document.body.classList.contains('travado')) return null;   /* modal ou menu aberto */
+      if (pertoDeDesenho(x, y)) return null;
+      var centro = null;
+      for (var i = 0; i < VOLTA.length; i++) {
+        var el = document.elementFromPoint(x + VOLTA[i][0], y + VOLTA[i][1]);
+        if (ocupado(el)) return null;
+        if (!i) centro = el;
+      }
+      return centro;
+    }
+
+    function cortar(agora) {
+      var ult = pontos[pontos.length - 1];
+      if (ult && ult.x !== null) pontos.push({ x: null, y: null, t: agora });
+    }
+
+    function ponto(x, y, ux, uy, agora) {
+      var el = livre(x - window.scrollX, y - window.scrollY);
+      if (!el) { cortar(agora); return; }
+      /* um tremor de mão, bem leve, de lado em relação ao caminho */
+      var onda = (Math.sin(andado / 23) + .6 * Math.sin(andado / 9.7)) * 1.1;
+      pontos.push({ x: x - uy * onda, y: y + ux * onda, t: agora, c: corAgora(agora),
+                    e: !!el.closest('.secao--escura') });
+    }
+
+    /* risca da última posição até (x, y), na página, em passos de até 5px:
+       cada passo é conferido, para o traço não cortar o canto de um bloco */
+    function riscar(x, y, agora) {
+      if (!base) {
+        cortar(agora);
+        base = { x: x, y: y };
+        ponto(x, y, 0, 0, agora);
+        return;
+      }
+      var dx = x - base.x, dy = y - base.y, dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist < 2.5) return;
+      var n = Math.ceil(dist / 5);
+      for (var k = 1; k <= n; k++) {
+        andado += dist / n;
+        ponto(base.x + dx * k / n, base.y + dy * k / n, dx / dist, dy / dist, agora);
+      }
+      base = { x: x, y: y };
+    }
+
+    function faixaDe(p, agora) {
+      return Math.min(FAIXAS - 1, Math.floor((agora - p.t) / VIDA * FAIXAS));
+    }
+
+    function comprimento(a, b) {
+      var s = 0;
+      for (var i = a + 1; i < b; i++) {
+        s += Math.abs(pontos[i].x - pontos[i - 1].x) + Math.abs(pontos[i].y - pontos[i - 1].y);
+      }
+      return s;
+    }
+
+    /* Um traço, de pontos[a] a pontos[b - 1]. Cada pedaço com a mesma idade
+       (faixa) e o mesmo fundo vira um caminho só, desenhado de uma vez:
+       segmentos transparentes desenhados um a um se sobrepõem nas juntas e
+       o traço sai pontilhado. */
+    function tracar(a, b, agora, sx, sy) {
+      var i = a + 1;
+      while (i < b) {
+        var q = pontos[i], faixa = faixaDe(q, agora), e = q.e;
+        ctx.beginPath();
+        ctx.moveTo(pontos[i - 1].x - sx, pontos[i - 1].y - sy);
+        while (i < b && pontos[i].e === e && faixaDe(pontos[i], agora) === faixa) {
+          q = pontos[i];
+          ctx.lineTo(q.x - sx, q.y - sy);
+          i++;
+        }
+        var vida = 1 - (faixa + .5) / FAIXAS;
+        ctx.strokeStyle = 'rgb(' + Math.round(q.c[0]) + ',' + Math.round(q.c[1]) + ',' + Math.round(q.c[2]) + ')';
+        ctx.globalAlpha = Math.min(ALFA_MAX, (e ? ALFA_ESCURO : ALFA_CLARO) * q.c[3]) * vida;
+        ctx.lineWidth = .4 + 1.9 * vida;                     /* afina até sumir */
+        ctx.stroke();
+      }
+    }
+
+    function desenhar(agora) {
+      ctx.clearRect(0, 0, W, H);
+      var sx = window.scrollX, sy = window.scrollY;
+      ctx.lineCap = 'butt';
+      ctx.lineJoin = 'round';
+      var ini = 0;
+      for (var fim = 0; fim <= pontos.length; fim++) {
+        if (fim < pontos.length && pontos[fim].x !== null) continue;
+        /* [ini, fim) é um traço. Pedaço curto preso entre dois obstáculos
+           (fechado por um corte) não é desenhado: viraria um tracinho solto
+           colado no conteúdo. O traço que ainda está crescendo, sim. */
+        if (fim - ini >= 2 && (fim === pontos.length || comprimento(ini, fim) >= 24)) {
+          tracar(ini, fim, agora, sx, sy);
+        }
+        ini = fim + 1;
+      }
+      ctx.globalAlpha = 1;
+    }
+
+    function quadro(agora) {
+      if (mouse && pena) {
+        /* a pena persegue o mouse com folga: o traço sai fluido */
+        var dx = (mouse.x - pena.x) * .35, dy = (mouse.y - pena.y) * .35;
+        if (Math.abs(dx) + Math.abs(dy) > .05) {
+          pena.x += dx; pena.y += dy;
+          riscar(pena.x + window.scrollX, pena.y + window.scrollY, agora);
+        }
+      }
+      while (pontos.length && (agora - pontos[0].t > VIDA || pontos[0].x === null)) pontos.shift();
+      desenhar(agora);
+
+      var andando = mouse && pena && Math.abs(mouse.x - pena.x) + Math.abs(mouse.y - pena.y) > .5;
+      if (pontos.length || andando) requestAnimationFrame(quadro);
+      else rodando = false;
+    }
+
+    function ligar() {
+      if (rodando) return;
+      rodando = true;
+      requestAnimationFrame(quadro);
+    }
+
+    window.addEventListener('pointermove', function (e) {
+      if (e.pointerType !== 'mouse') return;
+      if (pausado()) { mouse = pena = base = null; return; }
+      mouse = { x: e.clientX, y: e.clientY };
+      if (!pena) pena = { x: mouse.x, y: mouse.y };
+      ligar();
+    }, { passive: true });
+    /* saiu da janela: o traço termina ali, e a volta começa um novo */
+    document.documentElement.addEventListener('mouseleave', function () {
+      mouse = pena = base = null;
+    });
+    window.addEventListener('scroll', function () {
+      base = null;
+      if (!pontos.length) return;
+      var limite = performance.now() - VIDA + 200;           /* some em 0,2s */
+      for (var i = 0; i < pontos.length; i++) if (pontos[i].t > limite) pontos[i].t = limite;
+      ligar();
+    }, { passive: true });
+    window.addEventListener('resize', function () { pontos.length = 0; medir(); ligar(); });
+    medir();
+  }
+
+  /* ----------------------------------------------------------------------
      modalProjeto() — abre por id, fecha no ESC / backdrop / X, prende o foco
      e devolve o foco ao card de origem. O conteúdo vem do render.js.
      ---------------------------------------------------------------------- */
@@ -1176,6 +1435,7 @@
   orbitaMovimento();
   anel();
   nuvem();
+  rabiscoCursor();
   revelar();
   contadores();
 })();

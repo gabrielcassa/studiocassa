@@ -32,6 +32,15 @@
 #         em tela retina. Era 200px ate 05/10/2026 — pesava ate 4x mais sem
 #         ganhar nitidez, porque logo pequeno so era ampliado.
 #
+#  CELULAR: a home da loja que rola dentro do celular, no modal do projeto.
+#         Capture a pagina inteira no formato celular: no Chrome, F12 > icone
+#         de celular > iPhone 12 Pro (390 de largura) > menu de tres pontos >
+#         "Capture full size screenshot". Feche antes pop-up e aviso de
+#         cookies. Salve em  _prints\celular\<id>.png  e rode o script.
+#         Sai em assets/img/portfolio/<id>-celular.jpg, 500px de largura, com
+#         as 3 primeiras telas (o resto da pagina e cortado; -TelasCelular
+#         muda). Passou de 200 KB, ele avisa: rode com -QualidadeCelular 65.
+#
 #  Precisa so do Windows (System.Drawing). Nao instala nada.
 # =============================================================================
 
@@ -41,6 +50,8 @@ param(
   [int]$Altura      = 1200,
   [int]$AlturaLogo  = 100,
   [int]$Qualidade   = 82,
+  [int]$QualidadeCelular = 72,
+  [double]$TelasCelular  = 3,   # quantas telas de celular da home entram
   [int]$Deslocamento = 0,   # px para descer o corte, se o topo do print for feio
   [switch]$Aplicar
 )
@@ -49,6 +60,9 @@ $ErrorActionPreference = 'Stop'
 Add-Type -AssemblyName System.Drawing
 
 $pastaPrints = Join-Path $Raiz '_prints'
+# subpasta das capturas de celular: fica de fora do laco das capas
+$pastaCelular = Join-Path $pastaPrints 'celular'
+$celularCompleta = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($pastaCelular)
 $pastaLogos  = Join-Path $Raiz '_logos'
 $saidaCapas  = Join-Path $Raiz 'assets\img\portfolio'
 $saidaLogos  = Join-Path $Raiz 'assets\img\logos'
@@ -68,6 +82,9 @@ $paramsJpg.Param[0] = New-Object System.Drawing.Imaging.EncoderParameter(
 $paramsMini = New-Object System.Drawing.Imaging.EncoderParameters(1)
 $paramsMini.Param[0] = New-Object System.Drawing.Imaging.EncoderParameter(
                         [System.Drawing.Imaging.Encoder]::Quality, [long]80)
+$paramsCelular = New-Object System.Drawing.Imaging.EncoderParameters(1)
+$paramsCelular.Param[0] = New-Object System.Drawing.Imaging.EncoderParameter(
+                        [System.Drawing.Imaging.Encoder]::Quality, [long]$QualidadeCelular)
 
 function Redimensiona-Capa($origem, $destino) {
   $img = [System.Drawing.Image]::FromFile($origem)
@@ -139,12 +156,39 @@ function Redimensiona-Logo($origem, $destino) {
   } finally { $img.Dispose() }
 }
 
+function Gera-Celular($origem, $destino) {
+  $img = [System.Drawing.Image]::FromFile($origem)
+  try {
+    # 500px de largura (o celular do modal tem ~250px: nitido em tela retina)
+    # e no maximo -TelasCelular telas de 390x844 de altura: com 4, as capturas
+    # de loja passavam de 200 KB; com 3, ficam entre ~130 e ~190 KB
+    $largura = 500
+    $alturaFonte = [Math]::Min($img.Height, [int]($img.Width * $TelasCelular * 844 / 390))
+    $altura = [int]($alturaFonte * $largura / $img.Width)
+    $bmp = New-Object System.Drawing.Bitmap($largura, $altura)
+    $g = [System.Drawing.Graphics]::FromImage($bmp)
+    # sem isto o bicubico puxa a cor de fora da imagem e escurece a borda
+    $atributos = New-Object System.Drawing.Imaging.ImageAttributes
+    $atributos.SetWrapMode([System.Drawing.Drawing2D.WrapMode]::TileFlipXY)
+    try {
+      $g.InterpolationMode = [System.Drawing.Drawing2D.InterpolationMode]::HighQualityBicubic
+      $g.PixelOffsetMode   = [System.Drawing.Drawing2D.PixelOffsetMode]::HighQuality
+      $dest = New-Object System.Drawing.Rectangle(0, 0, $largura, $altura)
+      $g.DrawImage($img, $dest, 0, 0, $img.Width, $alturaFonte, [System.Drawing.GraphicsUnit]::Pixel, $atributos)
+    } finally { $g.Dispose(); $atributos.Dispose() }
+    $bmp.Save($destino, $codecJpg, $paramsCelular)
+    $bmp.Dispose()
+  } finally { $img.Dispose() }
+}
+
 # ---------------------------------------------------------------- capas ----
 $feitos = @{}
 $capas = 0
 $pesoCapas = 0
 if (Test-Path $pastaPrints) {
-  Get-ChildItem $pastaPrints -Include *.png,*.jpg,*.jpeg -Recurse | ForEach-Object {
+  Get-ChildItem $pastaPrints -Include *.png,*.jpg,*.jpeg -Recurse |
+  Where-Object { -not $_.FullName.StartsWith($celularCompleta + '\', [System.StringComparison]::OrdinalIgnoreCase) } |
+  ForEach-Object {
     $id = $_.BaseName.ToLower()
     $destino = Join-Path $saidaCapas "$id-capa.jpg"
     Redimensiona-Capa $_.FullName $destino
@@ -183,8 +227,24 @@ if (Test-Path $pastaLogos) {
   }
 } else { Write-Host "  (pasta _logos nao existe — pulei os logos)" }
 
+# -------------------------------------------------------------- celular ----
+$celulares = 0
+if (Test-Path $pastaCelular) {
+  Get-ChildItem $pastaCelular -Include *.png,*.jpg,*.jpeg -Recurse | ForEach-Object {
+    $id = $_.BaseName.ToLower()
+    $destino = Join-Path $saidaCapas "$id-celular.jpg"
+    Gera-Celular $_.FullName $destino
+    $kb = [int]((Get-Item $destino).Length / 1KB)
+    $aviso = if ($kb -gt 200) { "  << ACIMA DE 200 KB - baixe -QualidadeCelular" } else { "" }
+    Write-Host ("  celular {0,-24} 500px  {1} KB{2}" -f $id, $kb, $aviso)
+    if (-not $feitos.ContainsKey($id)) { $feitos[$id] = @{} }
+    $feitos[$id].celular = "assets/img/portfolio/$id-celular.jpg"
+    $celulares++
+  }
+}
+
 Write-Host ""
-Write-Host "$capas capa(s), $minis mini(s) e $logos logo(s) gerados."
+Write-Host "$capas capa(s), $minis mini(s), $logos logo(s) e $celulares celular(es) gerados."
 if ($capas -gt 0) { Write-Host ("Peso somado das capas: {0} KB (media {1} KB). Orcamento: 200 KB por capa." -f $pesoCapas, [int]($pesoCapas/$capas)) }
 
 # ------------------------------------------------- escreve no dados.js ----
@@ -192,7 +252,7 @@ if ($Aplicar -and (Test-Path $dadosJs)) {
   $txt = [System.IO.File]::ReadAllText($dadosJs, [System.Text.Encoding]::UTF8)
   $mudou = 0
   foreach ($id in $feitos.Keys) {
-    foreach ($campo in @('capa','logo')) {
+    foreach ($campo in @('capa','logo','celular')) {
       if (-not $feitos[$id].ContainsKey($campo)) { continue }
       $valor = $feitos[$id][$campo]
       # Troca campo:"" pelo caminho, apenas dentro do bloco daquele id.

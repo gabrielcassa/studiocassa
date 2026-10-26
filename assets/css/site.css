@@ -1330,13 +1330,18 @@
 /* ==========================================================================
    MODAL DE PROJETO
    ========================================================================== */
+/* No celular, folha que sobe do pé da tela: a margem automática encosta o
+   painel embaixo quando ele cabe; quando não cabe (o do celular da loja),
+   ele começa a 64px do topo e o modal rola — com align-items: flex-end o
+   topo ficaria cortado, sem jeito de rolar até ele. */
 .modal{
   position: fixed;
   inset: 0;
   z-index: 200;
   display: flex;
-  align-items: flex-end;
+  align-items: flex-start;
   justify-content: center;
+  padding-top: var(--s-8);
   background: rgba(19,19,19,.6);
   overflow-y: auto;
   overscroll-behavior: contain;
@@ -1346,7 +1351,7 @@
   position: relative;
   width: 100%;
   max-width: 720px;
-  margin-top: var(--s-8);
+  margin-top: auto;
   padding: var(--s-7) var(--gutter) var(--s-8);
   border-radius: var(--r-lg) var(--r-lg) 0 0;
   background: var(--papel);
@@ -1400,6 +1405,65 @@
   align-items: center;
   gap: var(--s-5);
   margin-top: var(--s-4);
+}
+
+/* --- o celular do modal: a home da loja rolando dentro de um aparelho ----
+   (.aparelho, e não .celular: esse nome é do mockup do "Resultado real")
+   A altura da tela acompanha a da janela, para título, celular e botões
+   caberem juntos (a conta: ~420px de tudo o mais no modal). A largura sai
+   da proporção da captura, 390x844. Tudo do aparelho é medido na altura. */
+.aparelho{
+  display: grid;
+  justify-items: center;
+  gap: var(--s-3);
+  margin: var(--s-2) 0 0;
+}
+.aparelho__corpo{
+  --tela-h: clamp(260px, 100svh - 420px, 560px);
+  position: relative;
+  padding: 8px;
+  border-radius: calc(var(--tela-h) * .075 + 8px);
+  background: var(--tinta);
+  box-shadow: 0 28px 50px -28px rgba(19,19,19,.5); /* taste-skill-ignore: o aparelho flutua, como os cartões da órbita */
+  animation: subir .7s var(--sai-forte) .08s both;
+}
+/* a ilha da câmera, sobre a faixa de status do topo da tela */
+.aparelho__corpo::before{
+  content: "";
+  position: absolute;
+  z-index: 1;
+  top: calc(8px + var(--tela-h) * .013);
+  left: 50%;
+  width: calc(var(--tela-h) * .13);
+  height: calc(var(--tela-h) * .034);
+  border-radius: 999px;
+  background: var(--tinta);
+  transform: translateX(-50%);
+}
+.aparelho__tela{
+  width: calc(var(--tela-h) * .4621);
+  height: var(--tela-h);
+  padding-top: calc(var(--tela-h) * .058);   /* a faixa de status: o site começa abaixo dela */
+  border-radius: calc(var(--tela-h) * .075);
+  overflow: hidden;
+  background: #fff;
+}
+/* só esta parte rola: roda do mouse, dedo, ou setas com o foco nela.
+   Chegando ao fim, a rolagem não passa para o modal nem para a página. */
+.aparelho__rolagem{
+  height: 100%;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+  background: var(--papel-3);
+}
+.aparelho__rolagem::-webkit-scrollbar{ display: none; }
+.aparelho__rolagem:focus-visible{ outline-offset: -3px; border-radius: 0; }
+.aparelho__rolagem img{ width: 100%; height: auto; }
+.aparelho__dica{
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
 }
 
 /* ==========================================================================
@@ -1814,8 +1878,11 @@
   .grade-projetos{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .modal__galeria{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
 
-  .modal{ align-items: center; padding: var(--s-6); }
-  .modal__painel{ margin-top: 0; padding: var(--s-8); border-radius: var(--r-lg); }
+  /* centralizado pela margem automática, e não por align-items: center —
+     painel mais alto que a tela (o do celular, em tela baixa) centralizado
+     assim teria o topo cortado sem jeito de rolar até ele */
+  .modal{ align-items: flex-start; padding: var(--s-6); }
+  .modal__painel{ margin-block: auto; padding: var(--s-8); border-radius: var(--r-lg); }
 
   .razoes{ grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .numeros__lista{ grid-template-columns: repeat(4, minmax(0, 1fr)); }

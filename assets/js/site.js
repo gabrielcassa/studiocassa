@@ -1133,6 +1133,54 @@
     var corpo  = modal.querySelector('.modal__corpo');
     var fechar = modal.querySelector('[data-modal-fechar]');
     var origem = null;
+    var espiada = null;
+
+    /* A tela do celular desce um pouco e volta, uma vez, logo que a imagem
+       chega: mostra que ela rola. O primeiro gesto da pessoa interrompe, e
+       com reduced-motion não acontece. */
+    function espiarCelular(tela) {
+      if (!tela || parado()) return;
+      var img = tela.querySelector('img');
+      var parou = false;
+      ['wheel', 'touchstart', 'pointerdown', 'keydown'].forEach(function (ev) {
+        tela.addEventListener(ev, function () { parou = true; }, { passive: true, once: true });
+      });
+      function comecar() {
+        espiada = setTimeout(function () {
+          var fundo = tela.clientHeight * .4, t0 = null, DURA = 1800;
+          function passo(agora) {
+            if (parou || modal.hidden) return;
+            if (t0 === null) t0 = agora;
+            var f = Math.min((agora - t0) / DURA, 1);
+            var ida = f < .5 ? f * 2 : (1 - f) * 2;           /* 0 → 1 → 0 */
+            tela.scrollTop = fundo * ida * ida * (3 - 2 * ida);
+            if (f < 1) requestAnimationFrame(passo);
+          }
+          requestAnimationFrame(passo);
+        }, 700);
+      }
+      if (img && !img.complete) img.addEventListener('load', comecar, { once: true });
+      else comecar();
+    }
+
+    /* No desktop, título, celular, textos e botões cabem juntos na janela:
+       se o painel passar da altura livre, a tela do celular perde a
+       diferença (até 260px). Quem tem texto além do título (o desafio, o
+       resumo) ganha um celular menor. No celular, a folha simplesmente rola. */
+    var largo = window.matchMedia('(min-width: 760px)');
+    function ajustarCelular() {
+      var aparelho = corpo.querySelector('.aparelho__corpo');
+      if (!aparelho || modal.hidden) return;
+      aparelho.style.removeProperty('--tela-h');
+      if (!largo.matches) return;
+      var cs = getComputedStyle(modal);
+      var livre = modal.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom);
+      var excesso = modal.querySelector('.modal__painel').offsetHeight - livre;
+      if (excesso <= 0) return;
+      var tela = corpo.querySelector('.aparelho__tela').offsetHeight;
+      aparelho.style.setProperty('--tela-h', Math.max(260, tela - excesso) + 'px');
+    }
+    window.addEventListener('resize', ajustarCelular);
 
     function abrir(id, botao) {
       var p = window.SCRender.projetoPorId(id);
@@ -1142,12 +1190,16 @@
       corpo.innerHTML = window.SCRender.htmlModal(p);
       ligarZaps();
       modal.hidden = false;
+      modal.scrollTop = 0;
+      ajustarCelular();
       document.body.classList.add('travado');
       (focaveisEm(modal)[0] || fechar).focus();
+      espiarCelular(corpo.querySelector('.aparelho__rolagem'));
     }
 
     function fecharModal() {
       if (modal.hidden) return;
+      clearTimeout(espiada);
       modal.hidden = true;
       corpo.innerHTML = '';
       document.body.classList.remove('travado');

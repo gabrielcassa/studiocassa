@@ -444,10 +444,35 @@ window.SCRender = (function () {
            '</div>';
   }
 
+  /* O celular do modal: a home da loja (captura de 390px de largura, ~3
+     telas, campo `celular` no dados.js) dentro de um aparelho desenhado só
+     com CSS. A tela é uma região que rola sozinha — roda do mouse, dedo ou
+     setas do teclado (tabindex). Quem faz a espiada de entrada é o site.js. */
+  function htmlCelular(p) {
+    return '<figure class="aparelho">' +
+             '<div class="aparelho__corpo">' +
+               '<div class="aparelho__tela">' +
+                 '<div class="aparelho__rolagem" tabindex="0" role="region"' +
+                 ' aria-label="Celular com a loja ' + esc(p.nome) + '">' +
+                   '<img src="' + esc(caminho(p.celular)) + '" alt="Página inicial de ' + esc(p.nome) +
+                   ' no celular" width="500" height="3246" decoding="async">' +
+                 '</div>' +
+               '</div>' +
+             '</div>' +
+             '<figcaption class="aparelho__dica rotulo">' +
+               '<svg width="12" height="12" viewBox="0 0 16 16" aria-hidden="true" focusable="false">' +
+                 '<path fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"' +
+                 ' stroke-linejoin="round" d="M8 2v12M4.5 5.5L8 2l3.5 3.5M4.5 10.5L8 14l3.5-3.5"/></svg>' +
+               'Role a tela do celular' +
+             '</figcaption>' +
+           '</figure>';
+  }
+
   /* ----------------------------------------------------------------------
      htmlModal(p) — devolve o miolo do modal de um projeto, como texto.
      Só monta; quem abre, fecha, prende o foco e devolve o foco ao card de
-     origem é o site.js.
+     origem é o site.js. Com `celular`, o aparelho entra logo abaixo da
+     linha de dados, antes dos textos e dos botões.
      ---------------------------------------------------------------------- */
   function htmlModal(p) {
       var pas = pastilha(p);
@@ -461,6 +486,8 @@ window.SCRender = (function () {
       if (pas) meta.push(esc(pas));
       if (p.ano) meta.push(esc(p.ano));
       if (meta.length) h += '<p class="modal__meta">' + meta.join(' · ') + '</p>';
+
+      if (p.celular) h += htmlCelular(p);
 
       if (p.resumo)  h += '<p class="lead">' + esc(p.resumo) + '</p>';
 

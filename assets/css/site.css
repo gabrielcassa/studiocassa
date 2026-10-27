@@ -888,7 +888,8 @@
 }
 .outras__cabeca{ display: grid; gap: var(--s-4); align-content: start; }
 .outras__titulo{ font-size: var(--t-h2); }
-.outras__cabeca p{ max-width: 40ch; font-size: var(--t-lead); line-height: 1.5; }
+/* só o parágrafo de apoio (filho direto): o do cartão de destaque, não */
+.outras__cabeca > p{ max-width: 40ch; font-size: var(--t-lead); line-height: 1.5; }
 
 .outras__lista{ border-top: 1px solid var(--borda); } /* taste-skill-ignore: filete da referência anubi.io */
 .outra a{
@@ -920,6 +921,61 @@
 }
 .outra a:hover{ color: var(--marca); }
 .outra a:hover .outra__seta{ transform: translate(3px, -3px); }
+
+/* --- o projeto em destaque, embaixo do título (emDestaque no dados.js) ---
+   Celular à esquerda, nome e botões à direita; numa coluna estreita (o
+   celular da página), o texto desce para baixo do aparelho. A home rola
+   sozinha (site.js): a tela não aceita roda nem dedo — overflow: hidden —
+   e a roda ou o dedo em cima dela rolam a página. Para isso o
+   overscroll-behavior volta a auto: com o contain do modal, o Chrome
+   parava a página quando a roda passava pelo celular. */
+.outras__destaque{ margin-top: var(--s-4); }
+.destaque{
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: var(--s-5) var(--s-6);
+  padding: clamp(20px, 3vw, 32px);
+  border-radius: var(--r-lg);
+  background: var(--papel-2);
+}
+.destaque__aparelho{ flex: none; cursor: pointer; }
+.destaque__aparelho .aparelho__corpo{
+  --tela-h: 420px;
+  animation: none;
+  transition: transform .5s var(--sai-forte);
+}
+.destaque__aparelho:hover .aparelho__corpo{ transform: translateY(-4px); }
+.destaque__aparelho .aparelho__rolagem{ overflow: hidden; overscroll-behavior: auto; }
+/* 140px é a largura do botão "Ver o projeto", o item mais largo: com ela,
+   o texto fica ao lado do celular de 1200px de janela para cima (com 180,
+   em 1280 ele descia). De 960 a 1199 a coluna é estreita e o texto desce,
+   como no celular; abaixo de 960 o cartão ocupa a largura toda e ele sobe. */
+.destaque__texto{
+  flex: 1 1 140px;
+  display: grid;
+  justify-items: start;
+  gap: var(--s-3);
+}
+.destaque__rotulo{ color: var(--marca); }
+.destaque__nome{ font-size: var(--t-h2); }
+/* plataforma, tipo e segmento, um por linha: na coluna estreita ao lado
+   do celular, os três numa linha quebravam com o "·" pendurado */
+.destaque__meta{
+  display: grid;
+  gap: 2px;
+  font-family: var(--fonte-rotulo);
+  font-size: var(--t-rotulo);
+  color: var(--mid);
+}
+.destaque__acoes{
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-3) var(--s-5);
+  margin-top: var(--s-3);
+}
 
 /* --- "Também passaram por aqui" ------------------------------------------ */
 .citacoes{ margin-top: var(--s-9); }

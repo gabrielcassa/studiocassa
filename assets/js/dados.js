@@ -45,6 +45,10 @@
      "outras"   → lista "A Nuvemshop é a casa, não a única." na home e
                   "Shopify e outras plataformas" no portfolio.html. Sem foto:
                   nome, plataforma e link.
+                  Com emDestaque:true (e celular + celularPartes), o projeto
+                  sai da lista da home e vira o cartão de destaque embaixo
+                  do título, com a home dele rolando num celular. Vale o
+                  primeiro marcado. No portfolio.html ele segue na lista.
      "citacao"  → lista compacta "Também passaram por aqui". Hoje vazia.
 
    LOJAS_FEITAS, depois de PROJETOS, é outra coisa: registro de loja
@@ -272,9 +276,13 @@ const PROJETOS = [
     url:"https://atualeodontologiaintegrada.com.br/", capa:"", logo:"",
     resumo:"", desafio:"", entrega:[], resultado:"", imagens:[], depoimento:{autor:"",texto:""} },
 
-  { id:"vital", nome:"VITAL", tipo:"Otimização", status:"concluido", exibicao:"outras",
+  /* Em destaque na lista da home, pedido dele em 27/10/2026: cartão com a
+     home da loja rolando num celular, embaixo do título da seção. A home
+     foi capturada no mesmo dia (Shopify, tema "Speed"). */
+  { id:"vital", nome:"VITAL", tipo:"Otimização", status:"concluido", exibicao:"outras", emDestaque:true,
     plataforma:"Shopify", tema:"", segmento:"Suplementos", ano:"",
-    url:"https://bevital.com.br/", capa:"", logo:"",
+    url:"https://bevital.com.br/", capa:"", logo:"", celular:"assets/img/portfolio/vital-celular.jpg",
+    celularPartes:7,
     resumo:"", desafio:"", entrega:[], resultado:"", imagens:[], depoimento:{autor:"",texto:""} },
 
   { id:"glaucia-goulart", nome:"Glaucia Goulart Bolsas", tipo:"Otimização", status:"concluido", exibicao:"outras",

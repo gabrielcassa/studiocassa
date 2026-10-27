@@ -75,6 +75,10 @@ var DICIONARIO = {
     'outras.titulo':      'Shopify e outras plataformas',
     'outras.h2':          'A Nuvemshop é a casa, <em>não a única.</em>',
     'outras.apoio':       'Quando o projeto já roda em outra plataforma, eu trabalho onde ele está.',
+    /* o cartão do projeto em destaque, que o render.js monta */
+    'outras.destaque':    'Em destaque',
+    'outras.verProjeto':  'Ver o projeto',
+    'outras.noAr':        'Ver loja no ar',
 
     /* --- depoimentos -------------------------------------------------- */
     'depo.h2':            'Quem já passou por isso <em>conta melhor.</em>',

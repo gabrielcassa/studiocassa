@@ -166,7 +166,12 @@ O campo `exibicao` decide onde o projeto aparece:
   "Ver todos os projetos" da home, e **"Shopify e outras plataformas"**, no
   fim do `portfolio.html`. Linha sem foto: nome, plataforma, tipo e link.
   Os sites completos feitos fora da Nuvemshop (Wix, Tray, WordPress) vêm
-  primeiro.
+  primeiro. Com **`emDestaque:true`** (e os campos `celular` e
+  `celularPartes`), o projeto sai da lista da home e vira o **cartão de
+  destaque** embaixo do título: a home da loja rolando sozinha num celular,
+  com "Ver o projeto" (abre o modal) e "Ver loja no ar". É um cartão só: com
+  dois marcados, vale o primeiro da lista. No `portfolio.html` ele continua
+  na lista. Hoje é a VITAL.
 - `"citacao"` → lista compacta "Também passaram por aqui". Hoje não tem
   nenhuma.
 
@@ -275,10 +280,20 @@ nas 7 páginas.
   vez, para mostrar que rola. O aparelho encolhe para título, celular e
   botões caberem juntos na janela (classe `.aparelho`, e não `.celular`:
   esse nome é do mockup do "Resultado real", ainda comentado).
+- **Cartão de destaque** da lista "A Nuvemshop é a casa, não a única."
+  (`destaqueCelular()` no `site.js`): a home da loja desce sozinha dentro do
+  celular, devagar (36 px/s, a constante `VEL`), para 2,5 s no rodapé, volta
+  ao topo e recomeça — uma volta da VITAL leva ~2,5 min. Para com o mouse
+  andando em cima do celular (a página passando por baixo de um mouse
+  parado não conta), com o foco do teclado no cartão, com o modal aberto e
+  com o "Pausar movimento". A roda do mouse e o dedo em cima dele rolam a
+  **página**, nunca a loja: quem desce o site não fica preso ali. Para
+  rolar a loja à mão, o clique no celular abre o modal.
 
 Tudo para quando sai da tela. Com **"reduzir movimento"** ligado no sistema,
-nada se mexe: sem cortina, sem rabisco, sem a espiada do celular, órbita
-parada e a galeria vira uma grade comum.
+nada se mexe: sem cortina, sem rabisco, sem a espiada do celular, cartão de
+destaque parado no topo da loja, órbita parada e a galeria vira uma grade
+comum.
 
 ---
 
@@ -335,10 +350,10 @@ O que decide a velocidade do site são as **imagens**, não o código.
 
 | item | hoje | teto |
 |---|---|---|
-| CSS + JS (soma dos gzip) | 59,94 KB | 45 KB, informativo |
+| CSS + JS (soma dos gzip) | 62,66 KB | 45 KB, informativo |
 | cada capa | 85 a 187 KB | **200 KB** |
-| primeira dobra | ~240 KB | 600 KB |
-| cada parte do celular do modal | até 149 KB, só ao chegar nela | **200 KB** |
+| primeira dobra | ~243 KB | 600 KB |
+| cada parte do celular (modal e cartão de destaque) | até 149 KB, só ao chegar nela | **200 KB** |
 
 O CSS + JS passou do teto informativo com a órbita, a galeria em profundidade,
 o anel e a nuvem (antes do redesign eram 39,23 KB). A primeira dobra subiu de

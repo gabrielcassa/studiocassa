@@ -1122,6 +1122,27 @@
     medir();
   }
 
+  /* observarPartes(tela) — as partes da home de uma loja (data-src) entram
+     quando a tela do celular chega a ~1000px delas: quem rola lê a página
+     inteira, e quem só olha o topo não baixa o resto. Vale para o celular
+     do modal e para o do cartão de destaque. Devolve o observador, para
+     quem precisar desligá-lo (o modal, ao fechar). */
+  function observarPartes(tela) {
+    if (!tela) return null;
+    var faltam = tela.querySelectorAll('img[data-src]');
+    function poe(img) { img.src = img.getAttribute('data-src'); img.removeAttribute('data-src'); }
+    if (!('IntersectionObserver' in window)) { Array.prototype.forEach.call(faltam, poe); return null; }
+    var obs = new IntersectionObserver(function (entradas) {
+      entradas.forEach(function (e) {
+        if (!e.isIntersecting) return;
+        poe(e.target);
+        obs.unobserve(e.target);
+      });
+    }, { root: tela, rootMargin: '0px 0px 1000px 0px' });
+    Array.prototype.forEach.call(faltam, function (img) { obs.observe(img); });
+    return obs;
+  }
+
   /* ----------------------------------------------------------------------
      modalProjeto() — abre por id, fecha no ESC / backdrop / X, prende o foco
      e devolve o foco ao card de origem. O conteúdo vem do render.js.
@@ -1163,24 +1184,11 @@
       else comecar();
     }
 
-    /* As partes da home (data-src) entram quando a tela do celular chega a
-       ~1000px delas: quem rola lê a página inteira, e quem só olha o topo
-       não baixa o resto. */
+    /* o observador das partes da home no celular aberto (ver observarPartes) */
     var observador = null;
     function carregarPartes(tela) {
       if (observador) { observador.disconnect(); observador = null; }
-      if (!tela) return;
-      var faltam = tela.querySelectorAll('img[data-src]');
-      function poe(img) { img.src = img.getAttribute('data-src'); img.removeAttribute('data-src'); }
-      if (!('IntersectionObserver' in window)) { Array.prototype.forEach.call(faltam, poe); return; }
-      observador = new IntersectionObserver(function (entradas) {
-        entradas.forEach(function (e) {
-          if (!e.isIntersecting) return;
-          poe(e.target);
-          observador.unobserve(e.target);
-        });
-      }, { root: tela, rootMargin: '0px 0px 1000px 0px' });
-      Array.prototype.forEach.call(faltam, function (img) { observador.observe(img); });
+      observador = observarPartes(tela);
     }
 
     /* A barrinha de rolagem do iPhone: o tamanho é quanto da página cabe na
@@ -1267,6 +1275,95 @@
       if (e.key === 'Escape') { fecharModal(); return; }
       prendeTab(e, focaveisEm(modal));
     });
+  }
+
+  /* ----------------------------------------------------------------------
+     destaqueCelular() — no cartão de destaque da lista "outras", a home da
+     loja desce sozinha dentro do celular, devagar (36px/s), para 2,5s no
+     rodapé, volta ao topo em 1,4s e recomeça. Só anda com o cartão na
+     tela e nada aberto por cima; para com o mouse andando em cima do
+     celular, com o foco do teclado dentro, com "Pausar movimento" e com
+     reduced-motion (aí fica o topo da loja, parado). As partes da home
+     entram conforme ela desce.
+     ---------------------------------------------------------------------- */
+  function destaqueCelular() {
+    var cartao = document.querySelector('[data-destaque]');
+    var tela = cartao && cartao.querySelector('.aparelho__rolagem');
+    if (!tela || parado()) return;
+
+    var VEL = 36, FIM = 2500, VOLTA = 1400, TOPO = 1500;
+    var botao = document.querySelector('[data-movimento]');
+    var pausadoAntes = false;
+    try { pausadoAntes = localStorage.getItem('cassa-movimento') === 'pausado'; } catch (e) { /* modo anônimo */ }
+    function pausado() {
+      return botao && !botao.hidden ? botao.classList.contains('pausado') : pausadoAntes;
+    }
+
+    var visivel = false, mouseDentro = false, focoDentro = false, rodando = false;
+    var antes = null, pos = 0, fase = 'topo', espera = TOPO, de = 0, t0 = 0, partes = false;
+
+    function pode() {
+      return visivel && !mouseDentro && !focoDentro && !pausado() &&
+             !document.body.classList.contains('travado');
+    }
+
+    function quadro(agora) {
+      if (!pode()) { rodando = false; antes = null; return; }
+      var dt = antes === null ? 0 : Math.min(agora - antes, 64);
+      antes = agora;
+      var max = tela.scrollHeight - tela.clientHeight;
+      if (fase === 'descendo') {
+        pos = Math.min(pos + VEL * dt / 1000, max);
+        if (pos >= max) { fase = 'fim'; espera = FIM; }
+      } else if (fase === 'subindo') {
+        var f = Math.min((agora - t0) / VOLTA, 1);
+        pos = de * (1 - f * f * (3 - 2 * f));
+        if (f >= 1) { fase = 'topo'; espera = TOPO; }
+      } else {                                   /* 'fim' ou 'topo': um respiro */
+        espera -= dt;
+        if (espera <= 0) {
+          if (fase === 'fim') { fase = 'subindo'; de = pos; t0 = agora; }
+          else fase = 'descendo';
+        }
+      }
+      tela.scrollTop = pos;
+      requestAnimationFrame(quadro);
+    }
+
+    function ligar() {
+      if (rodando || !pode()) return;
+      rodando = true;
+      requestAnimationFrame(quadro);
+    }
+
+    /* as partes só começam a vir quando o cartão chega perto da tela: quem
+       não desce até aqui não baixa nada além da primeira */
+    quandoVisivel(cartao, function (sim) {
+      visivel = sim;
+      if (sim && !partes) { partes = true; observarPartes(tela); }
+      ligar();
+    });
+    /* só o mouse que anda em cima do celular para a tela. A página rolando
+       por baixo de um mouse parado não conta: o Chrome dá mouseenter nesse
+       caso, e o celular ficaria parado sem ninguém pedir. Dedo, também não
+       (o toque abre o projeto). */
+    var aparelho = cartao.querySelector('.destaque__aparelho');
+    var px = -1, py = -1;
+    document.addEventListener('pointermove', function (e) {
+      if (e.pointerType !== 'mouse') return;
+      var mexeu = e.clientX !== px || e.clientY !== py;
+      px = e.clientX; py = e.clientY;
+      if (mexeu && aparelho.contains(e.target)) mouseDentro = true;
+    }, { passive: true });
+    aparelho.addEventListener('pointerleave', function () { mouseDentro = false; ligar(); });
+    /* foco de teclado pausa; o clique do mouse no botão, não */
+    cartao.addEventListener('focusin', function (e) {
+      focoDentro = !!(e.target.matches && e.target.matches(':focus-visible'));
+    });
+    cartao.addEventListener('focusout', function () { focoDentro = false; ligar(); });
+    /* "Pausar movimento", modal ou menu: ao fechar ou retomar, volta a andar */
+    document.addEventListener('click', function () { setTimeout(ligar, 0); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') setTimeout(ligar, 0); });
   }
 
   /* ----------------------------------------------------------------------
@@ -1532,6 +1629,7 @@
   anel();
   nuvem();
   rabiscoCursor();
+  destaqueCelular();
   revelar();
   contadores();
 })();

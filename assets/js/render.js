@@ -411,13 +411,24 @@ window.SCRender = (function () {
     if (!caixas.length) return;
 
     var lista = projetosPor('outras');
+    /* o primeiro com emDestaque (e a home capturada) vira o cartão de
+       destaque onde houver vaga para ele — hoje, só na home */
+    var destaque = lista.filter(function (p) { return p.emDestaque && p.celular; })[0] || null;
 
     Array.prototype.forEach.call(caixas, function (caixa) {
       /* Remove só o próprio [data-outras]: na home ele é um bloco da seção
          "todos"; no portfolio.html, um bloco dentro da seção da grade. */
       if (!lista.length) { caixa.remove(); return; }
 
-      caixa.querySelector('.outras__lista').innerHTML = lista.map(function (p) {
+      var itens = lista;
+      var vaga = caixa.querySelector('[data-outras-destaque]');
+      if (vaga && destaque) {
+        vaga.innerHTML = htmlDestaque(destaque);
+        vaga.hidden = false;
+        itens = lista.filter(function (p) { return p !== destaque; });
+      }
+
+      caixa.querySelector('.outras__lista').innerHTML = itens.map(function (p) {
         var det = [pastilha(p), p.tipo, p.segmento, p.resumo].filter(Boolean).map(esc).join(' · ');
         return '<li class="outra">' +
                  '<a href="' + esc(p.url) + '" target="_blank" rel="noopener"' +
@@ -444,6 +455,25 @@ window.SCRender = (function () {
            '</div>';
   }
 
+  /* as partes da home, uma <img> por parte (ver htmlCelular). `preguica`: a
+     primeira também espera a tela chegar perto (o celular do cartão de
+     destaque mora longe do topo da página; o do modal, não) */
+  function partesCelular(p, alt, preguica) {
+    var partes = p.celularPartes || 0;
+    var lazy = preguica ? ' loading="lazy"' : '';
+    if (!partes) {
+      return '<img src="' + esc(caminho(p.celular)) + '" alt="' + alt + '" width="500"' + lazy + ' decoding="async">';
+    }
+    var imgs = '';
+    for (var k = 1; k <= partes; k++) {
+      var src = esc(caminho(String(p.celular).replace(/\.jpg$/i, '-' + k + '.jpg')));
+      imgs += k === 1
+        ? '<img src="' + src + '" alt="' + alt + '" width="500" height="2400"' + lazy + ' decoding="async">'
+        : '<img data-src="' + src + '" alt="" width="500" height="2400" decoding="async">';
+    }
+    return imgs;
+  }
+
   /* O celular do modal: a home INTEIRA da loja, do topo ao rodapé, dentro de
      um aparelho desenhado só com CSS. A captura vem fatiada em partes de
      500x2400 (`celular` + `celularPartes` no dados.js: <id>-celular-1.jpg,
@@ -454,18 +484,7 @@ window.SCRender = (function () {
      do iPhone, desenhada: aparece enquanto se rola. */
   function htmlCelular(p) {
     var nome = esc(p.nome);
-    var alt = 'Página inicial de ' + nome + ' no celular, do topo ao rodapé';
-    var partes = p.celularPartes || 0;
-    var imgs = '';
-    if (!partes) {
-      imgs = '<img src="' + esc(caminho(p.celular)) + '" alt="' + alt + '" width="500" decoding="async">';
-    }
-    for (var k = 1; k <= partes; k++) {
-      var src = esc(caminho(String(p.celular).replace(/\.jpg$/i, '-' + k + '.jpg')));
-      imgs += k === 1
-        ? '<img src="' + src + '" alt="' + alt + '" width="500" height="2400" decoding="async">'
-        : '<img data-src="' + src + '" alt="" width="500" height="2400" decoding="async">';
-    }
+    var imgs = partesCelular(p, 'Página inicial de ' + nome + ' no celular, do topo ao rodapé', false);
     return '<figure class="aparelho">' +
              '<div class="aparelho__corpo">' +
                '<div class="aparelho__tela">' +
@@ -481,6 +500,42 @@ window.SCRender = (function () {
                'Role a tela do celular' +
              '</figcaption>' +
            '</figure>';
+  }
+
+  /* O cartão de destaque da lista "outras", embaixo do título: o mesmo
+     celular, mas a home rola sozinha, devagar (o site.js anda com ela) —
+     nada de rolar pela roda aqui, ou quem desce a página com o cursor em
+     cima ficaria preso rolando a loja inteira. Clicar no celular ou em
+     "Ver o projeto" abre o modal, onde ela rola à vontade. */
+  function htmlDestaque(p) {
+    var meta = [p.plataforma, p.tipo, p.segmento].filter(Boolean)
+      .map(function (m) { return '<li>' + esc(m) + '</li>'; }).join('');
+    return '<article class="destaque" data-destaque>' +
+             '<div class="destaque__aparelho" data-projeto="' + esc(p.id) + '" aria-hidden="true">' +
+               '<div class="aparelho__corpo">' +
+                 '<div class="aparelho__tela">' +
+                   '<div class="aparelho__rolagem">' + partesCelular(p, '', true) + '</div>' +
+                 '</div>' +
+               '</div>' +
+             '</div>' +
+             '<div class="destaque__texto">' +
+               '<p class="destaque__rotulo rotulo" data-i18n="outras.destaque">Em destaque</p>' +
+               '<h3 class="destaque__nome">' + esc(p.nome) + '</h3>' +
+               (meta ? '<ul class="destaque__meta">' + meta + '</ul>' : '') +
+               /* o nome da loja vai só para o leitor de tela, fora do
+                  data-i18n: o texto visível se traduz, o nome não */
+               '<div class="destaque__acoes">' +
+                 '<button class="btn btn--tinta" type="button" data-projeto="' + esc(p.id) + '">' +
+                   '<span data-i18n="outras.verProjeto">Ver o projeto</span>' +
+                   '<span class="so-leitor"> ' + esc(p.nome) + '</span>' +
+                 '</button>' +
+                 '<a class="link-sub" href="' + esc(p.url) + '" target="_blank" rel="noopener">' +
+                   '<span data-i18n="outras.noAr">Ver loja no ar</span>' +
+                   '<span class="so-leitor"> ' + esc(p.nome) + ' (abre em nova aba)</span>' +
+                 '</a>' +
+               '</div>' +
+             '</div>' +
+           '</article>';
   }
 
   /* ----------------------------------------------------------------------

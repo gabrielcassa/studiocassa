@@ -18,7 +18,9 @@
      capaGaleria → assets/img/portfolio/<id>-cartao.png   (opcional) o cartão
             desenhado da marca, 600x900 (2:3), que só a galeria "Loja de
             verdade" usa. Sem ele, a galeria mostra a `capa`. Portfólio e
-            página do projeto seguem com a foto da `capa`.
+            página do projeto seguem com a foto da `capa`. Cartão com foto
+            vai em .jpg (o da Crochê Vitória): em PNG passa de 900 KB, e o
+            canto arredondado a galeria faz no CSS, com o mesmo raio.
      celular + celularPartes → (opcionais) a home INTEIRA da loja, do topo ao
             rodapé, que rola dentro do celular desenhado no modal do projeto.
             Vem fatiada: celular:"assets/img/portfolio/<id>-celular.jpg" é o
@@ -196,7 +198,7 @@ const PROJETOS = [
      branco, é só trocar. A capa dele cabe no teto na qualidade padrão. */
   { id:"croche-vitoria", nome:"Crochê Vitória", tipo:"E-commerce completo", status:"concluido", exibicao:"destaque",
     plataforma:"Nuvemshop", tema:"Ipanema", segmento:"Decoração em crochê", ano:"",
-    url:"https://www.crochevitoria.com.br/", capa:"assets/img/portfolio/croche-vitoria-capa.jpg", capaGaleria:"assets/img/portfolio/croche-vitoria-cartao.png", celular:"assets/img/portfolio/croche-vitoria-celular.jpg", logo:"assets/img/logos/croche-vitoria.png",
+    url:"https://www.crochevitoria.com.br/", capa:"assets/img/portfolio/croche-vitoria-capa.jpg", capaGaleria:"assets/img/portfolio/croche-vitoria-cartao.jpg", celular:"assets/img/portfolio/croche-vitoria-celular.jpg", logo:"assets/img/logos/croche-vitoria.png",
     logoCor:"assets/img/logos/cor/croche-vitoria.png",
     celularPartes:5,
     resumo:"", desafio:"Migração vinda da Yampi. Fabricante de Ibitinga desde 1987.", entrega:[], resultado:"", imagens:[], depoimento:{autor:"",texto:""} },

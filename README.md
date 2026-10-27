@@ -73,6 +73,7 @@ assets/
   img/portfolio/      capas    <id>-capa.jpg   800x1200, retrato
                       minis    <id>-mini.jpg   360x540, hoje sem uso (ver abaixo)
                       cartões  <id>-cartao.png 600x900, os da galeria da home
+                               (o cartão com foto vai em .jpg)
                       celular  <id>-celular-N.jpg partes de 500x2400 da home no modal
   img/logos/          logos    <id>.png        fundo transparente
   img/og/             imagem de compartilhamento
@@ -110,6 +111,9 @@ HTML; todo `addEventListener` está no `site.js`.
    (campo `capaGaleria`, arquivo `assets/img/portfolio/<id>-cartao.png`,
    600×900, cantos arredondados de 32px já no PNG). Sem cartão, ela usa a
    `capa`. O portfólio e a página de cada projeto seguem com a foto.
+   Cartão com **foto** vai em JPG (`<id>-cartao.jpg`, até 200 KB), como o
+   da Crochê Vitória: em PNG, a foto passa de 900 KB. Ele pode vir de canto
+   reto, porque a galeria arredonda no CSS com o mesmo raio de 32px.
 
    O **modal do projeto** mostra a home INTEIRA da loja, do topo ao rodapé,
    rolando dentro de um celular (campos `celular` e `celularPartes`). Para

@@ -125,6 +125,16 @@ HTML; todo `addEventListener` está no `site.js`.
    `-Aplicar`, escreve os dois campos no `dados.js`. O site só baixa cada
    parte quando a tela do celular chega perto dela. Sem os campos, o modal
    fica sem o celular.
+
+   Quando a loja mudar, é capturar de novo e rodar o script. Duas
+   armadilhas da captura: o carrossel do topo sai no slide em que estiver
+   (deixe no primeiro, o que se vê ao abrir a loja), e vídeo embutido do
+   YouTube sai como um retângulo vazio — fotografe a tela com ele tocando e
+   cole o quadro por cima antes de fatiar (foi o que se fez na Café Serra
+   Gerais em 28/10/2026). O script refaz também as capas de tudo o que
+   estiver em `_prints/`: para refazer só um celular, rode-o com `-Raiz`
+   apontando para uma pasta que tenha apenas `_prints/celular/<id>.png` e
+   uma cópia do `assets/js/dados.js`, e traga as partes de volta.
 2. Rode na raiz:
 
    ```powershell

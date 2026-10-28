@@ -279,8 +279,9 @@ const PROJETOS = [
     resumo:"", desafio:"", entrega:[], resultado:"", imagens:[], depoimento:{autor:"",texto:""} },
 
   /* Em destaque na lista da home, pedido dele em 27/10/2026: cartão com a
-     home da loja rolando num celular, embaixo do título da seção. A home
-     foi capturada no mesmo dia (Shopify, tema "Speed"). */
+     home da loja rolando num celular, embaixo do título da seção (Shopify,
+     tema "Speed"). Home recapturada em 28/10/2026, já com a Black Friday,
+     no primeiro slide do carrossel do topo. */
   { id:"vital", nome:"VITAL", tipo:"Otimização", status:"concluido", exibicao:"outras", emDestaque:true,
     plataforma:"Shopify", tema:"", segmento:"Suplementos", ano:"",
     url:"https://bevital.com.br/", capa:"", logo:"", celular:"assets/img/portfolio/vital-celular.jpg",

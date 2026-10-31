@@ -41,6 +41,8 @@ direto no navegador — funciona por `file://`, sem servidor.
 | Pôr uma loja pronta na galeria da home | `assets/js/dados.js`: `status:"concluido"` |
 | Liberar uma loja que migrou | `assets/js/dados.js`, campo `bloqueio` |
 | Tirar uma loja Nuvemshop do site sem perder o registro | mover para `LOJAS_FEITAS`, no `dados.js` |
+| Atualizar a prévia de uma loja em que mexi | ver "A prévia" |
+| Uma loja saiu do ar | `dados.js`: `semLink:true` e `aviso`; ver "A prévia" |
 | Trocar o selo do hero/rodapé | `assets/js/dados.js`, objeto `SELO` |
 | Trocar um texto do site | o próprio HTML **e** `assets/js/i18n.js` |
 | Trocar fontes ou cores | ver "Identidade visual (provisória)" |
@@ -61,7 +63,8 @@ blog/<slug>.html      idem
 404.html
 CNAME                 só o domínio
 robots.txt  sitemap.xml
-prepara-imagens.ps1   trata as fotos e as logos
+prepara-imagens.ps1   trata as fotos, as logos e as prévias
+captura-previa.js     fotografa a loja como ela está agora (nenhuma página usa)
 assets/
   css/base.css        tokens, reset, tipografia, utilitários
   css/site.css        seções e componentes
@@ -74,7 +77,7 @@ assets/
                       minis    <id>-mini.jpg   360x540, hoje sem uso (ver abaixo)
                       cartões  <id>-cartao.png 600x900, os da galeria da home
                                (o cartão com foto vai em .jpg)
-                      celular  <id>-celular-N.jpg partes de 500x2400 da home no modal
+  img/previa/<id>/    <pagina>-<aparelho>-N.jpg  a loja congelada, em partes
   img/logos/          logos    <id>.png        fundo transparente
   img/og/             imagem de compartilhamento
   favicon/
@@ -115,26 +118,8 @@ HTML; todo `addEventListener` está no `site.js`.
    da Crochê Vitória: em PNG, a foto passa de 900 KB. Ele pode vir de canto
    reto, porque a galeria arredonda no CSS com o mesmo raio de 32px.
 
-   O **modal do projeto** mostra a home INTEIRA da loja, do topo ao rodapé,
-   rolando dentro de um celular (campos `celular` e `celularPartes`). Para
-   ter: capture a página inteira da loja no formato celular — no Chrome,
-   F12 → ícone de celular → iPhone 12 Pro (390 de largura) → menu ⋮ →
-   *Capture full size screenshot*, com pop-up e aviso de cookies fechados —
-   e salve em `_prints/celular/<id>.png`. O script fatia a página em partes
-   de 500×2400 (`assets/img/portfolio/<id>-celular-1.jpg`, `-2.jpg`…) e, com
-   `-Aplicar`, escreve os dois campos no `dados.js`. O site só baixa cada
-   parte quando a tela do celular chega perto dela. Sem os campos, o modal
-   fica sem o celular.
-
-   Quando a loja mudar, é capturar de novo e rodar o script. Duas
-   armadilhas da captura: o carrossel do topo sai no slide em que estiver
-   (deixe no primeiro, o que se vê ao abrir a loja), e vídeo embutido do
-   YouTube sai como um retângulo vazio — fotografe a tela com ele tocando e
-   cole o quadro por cima antes de fatiar (foi o que se fez na Café Serra
-   Gerais em 28/10/2026). O script refaz também as capas de tudo o que
-   estiver em `_prints/`: para refazer só um celular, rode-o com `-Raiz`
-   apontando para uma pasta que tenha apenas `_prints/celular/<id>.png` e
-   uma cópia do `assets/js/dados.js`, e traga as partes de volta.
+   Na entrega, salve também a **prévia**, com a loja ainda como você a deixou:
+   `node captura-previa.js <id>`. Ver "A prévia".
 2. Rode na raiz:
 
    ```powershell
@@ -153,7 +138,7 @@ HTML; todo `addEventListener` está no `site.js`.
 3. Confira o card na home, em `portfolio.html` e em `projeto.html?id=<id>`.
 4. Some a URL do projeto ao `sitemap.xml` (tem um comentário lá explicando).
 
-As pastas `_prints/` e `_logos/` estão no `.gitignore`: o cru não é publicado.
+As pastas `_prints/`, `_logos/` e `_previas/` estão no `.gitignore`: o cru não é publicado.
 
 ### Por que um projeto pode não aparecer
 
@@ -164,7 +149,7 @@ São **três travas**, todas no `dados.js`:
    já estão com `exibicao:"destaque"`, e entram no dia em que o status mudar.
 2. **`url` + `capa` + `logo`.** Faltando um, o card não existe — de propósito,
    para não haver card quebrado. `"outras"` e `"citacao"` precisam só de `url`,
-   porque não têm foto.
+   porque não têm foto. Sem `url`, vale a prévia: loja que saiu do ar não some.
 3. **`bloqueio` vazio.** Com qualquer texto, o projeto some **mesmo completo**.
    É a loja pronta cujo domínio ainda aponta para a plataforma antiga: publicar
    o card antes da virada mandaria o visitante para a loja que você substituiu.
@@ -174,14 +159,15 @@ O campo `exibicao` decide onde o projeto aparece:
 
 - `"destaque"` → galeria em profundidade da home ("Loja de verdade, no ar
   agora."), órbita do hero **e** grade do portfólio. Só os melhores, e só
-  Nuvemshop.
+  Nuvemshop. Loja com `semLink` não entra: o título da seção diz "no ar agora".
 - `"grade"` → só na grade de `portfolio.html`.
 - `"outras"` → lista **"A Nuvemshop é a casa, não a única."**, embaixo do
   "Ver todos os projetos" da home, e **"Shopify e outras plataformas"**, no
-  fim do `portfolio.html`. Linha sem foto: nome, plataforma, tipo e link.
+  fim do `portfolio.html`. Linha sem foto: nome, plataforma, tipo e link; com
+  prévia, a linha abre o projeto aqui dentro em vez de levar à loja.
   Os sites completos feitos fora da Nuvemshop (Wix, Tray, WordPress) vêm
-  primeiro. Com **`emDestaque:true`** (e os campos `celular` e
-  `celularPartes`), o projeto sai da lista da home e vira o **cartão de
+  primeiro. Com **`emDestaque:true`** (e a home salva no celular, no
+  `previa`), o projeto sai da lista da home e vira o **cartão de
   destaque** embaixo do título: a home da loja rolando sozinha num celular,
   com "Ver o projeto" (abre o modal) e "Ver loja no ar". É um cartão só: com
   dois marcados, vale o primeiro da lista. No `portfolio.html` ele continua
@@ -204,6 +190,79 @@ Os filtros de `portfolio.html` são gerados dos `tipo` que de fato existem entre
 os projetos visíveis — não há lista de filtros escrita à mão — e só aparecem
 com **dois tipos ou mais**. Hoje todas as lojas com card são "E-commerce
 completo", então a barra de filtros não aparece.
+
+---
+
+## A prévia
+
+**Depois da entrega, a loja é do cliente.** O banner muda, a promoção entra, o tema
+é trocado, a loja fecha, e nada disso avisa. Por isso o site mostra a loja como você
+entregou, e não como ela está hoje. O modal e o `projeto.html` mostram páginas
+inteiras da loja, que rolam dentro de um celular ou de uma janela de navegador:
+são fotos, guardadas aqui, que continuam de pé mesmo que a loja suma.
+
+**A regra:** a prévia só muda quando você disser que mexeu na loja. Nada aqui
+olha a loja sozinho. Quem segue com você é atualizado a cada alteração; quem não
+segue fica congelado como foi entregue.
+
+### Salvar ou atualizar
+
+```powershell
+# 1. fotografa: só a home, ou as páginas que você escolher
+node captura-previa.js <id>
+node captura-previa.js <id> "Início=/" "Produto=/produtos/um-produto/" "Sobre=/sobre/"
+
+# 2. fatia e escreve o previa no dados.js
+.\prepara-imagens.ps1 -So <id> -Aplicar
+```
+
+Rodar sem páginas recaptura as que a loja já tem. O nome antes do `=` é o que
+aparece no botão da prévia. No Git Bash, ponha `MSYS_NO_PATHCONV=1` na frente do
+`node` (o script recusa o caminho errado, se você esquecer). Se o Windows recusar o
+segundo comando ("a execução de scripts foi desabilitada"), rode
+`powershell -ExecutionPolicy Bypass -File .\prepara-imagens.ps1 -So <id> -Aplicar`.
+
+O cru fica em `_previas/<id>/<data>/`, fora do git e do site: a página inteira em
+PNG e um `.mhtml`, com um `previa.json` dizendo quais páginas foram capturadas. A
+referência é o PNG: o `.mhtml` abre sem internet, mas sem as fontes da loja e com
+diferenças de estilo.
+**Faça cópia dessa pasta.** De loja que fechou, ela é o único original. Cada dia tem
+a sua pasta e uma nunca apaga a outra (no mesmo dia, a nova escreve por cima), então
+dá para voltar a uma captura mais antiga:
+`.\prepara-imagens.ps1 -So <id> -Usar 2026-10-31 -Aplicar`.
+
+Captura feita à mão também vale: no Chrome, F12 → ícone de celular → iPhone 12 Pro →
+menu ⋮ → *Capture full size screenshot*. Salve como
+`_previas/<id>/<data>/inicio-celular.png`, com um `previa.json` copiado de uma captura
+anterior da loja. Foi assim que entraram as homes de celular de 26 e 28/10/2026.
+
+O script fotografa a loja tela por tela e emenda, sem pop-up, cookies e WhatsApp
+flutuante, com os carrosséis no primeiro slide e as imagens deles carregadas. No
+lugar de vídeo do YouTube, entra a capa dele. O que ele não resolve: a foto mostra a
+loja de hoje, com a promoção que estiver no ar, então **olhe a foto antes de publicar**.
+
+No fim, ele avisa o que estranhou (`status`, imagem quebrada, página que redirecionou).
+
+### Quando a loja já mudou
+
+Se o cliente pôs campanha na loja, fotografá-la congelaria a campanha. Ainda dá
+para tirar a foto certa enquanto a loja existe: `--limpeza=_previas/<id>/limpeza.js`
+acerta a página no navegador da captura, e a loja de verdade não muda. Sai numa
+pasta `<data>-limpa`, ao lado da real, e tem preferência sobre ela. O exemplo é
+`_previas/colado/limpeza.js`, que volta a Colado ao estado de antes da despedida
+com os banners e os títulos originais. Isso é uma reconstrução: confira o resultado.
+Esse arquivo mora no `_previas/`, fora do git, junto do cru da loja.
+
+Para usar a captura real em vez da limpa: `.\prepara-imagens.ps1 -So colado -Usar
+2026-10-31 -Aplicar`. Quem decide as páginas é o `previa.json` da pasta: a real da
+Colado tem 20, então apague de lá as que não devem virar botão.
+
+### Quando a loja sai do ar
+
+No `dados.js`, ponha `semLink:true` (todo botão que leva à loja some) e um `aviso`
+com a frase que aparece embaixo da prévia. Tire a loja de `"destaque"`, porque o
+título da galeria diz "no ar agora", e refaça a conta do selo. Foi o que se fez com a
+Colado em 30/10/2026.
 
 ---
 
@@ -286,14 +345,15 @@ nas 7 páginas.
   Só com mouse — no celular não existe — e o "Pausar movimento" vale para ele
   também. Para o traço aparecer nas seções escuras, o fundo delas está num
   `::before` atrás do canvas (`.secao--escura` no `base.css`).
-- **Celular do modal do projeto:** a home inteira da loja, até o fim do
-  rodapé, rola dentro do aparelho com a roda do mouse, o dedo ou as setas do
-  teclado (Home e End vão ao topo e ao fim); chegando ao fim, a rolagem não
-  passa para a página. Uma barrinha fina, a do iPhone, aparece enquanto se
-  rola e mostra quanto falta. Ao abrir, a tela desce um pouco e volta, uma
-  vez, para mostrar que rola. O aparelho encolhe para título, celular e
-  botões caberem juntos na janela (classe `.aparelho`, e não `.celular`:
-  esse nome é do mockup do "Resultado real", ainda comentado).
+- **Prévia do projeto:** a página inteira da loja, até o fim do rodapé, rola
+  dentro do aparelho com a roda do mouse, o dedo ou as setas do teclado (Home e
+  End vão ao topo e ao fim); chegando ao fim, a rolagem não passa para a página.
+  Uma barrinha fina, a do iPhone, aparece enquanto se rola e mostra quanto falta.
+  Ao abrir no modal, a tela do celular desce um pouco e volta, uma vez, para
+  mostrar que rola. O quadro encolhe para título, prévia e botões caberem juntos
+  na janela (classes `.aparelho__corpo` e `.janela`; `.celular` é o mockup do
+  "Resultado real", ainda comentado). No computador, o painel do modal alarga de
+  720 para 1040px.
 - **Cartão de destaque** da lista "A Nuvemshop é a casa, não a única."
   (`destaqueCelular()` no `site.js`): a home da loja desce sozinha dentro do
   celular, devagar (36 px/s, a constante `VEL`), para 2,5 s no rodapé, volta
@@ -364,10 +424,11 @@ O que decide a velocidade do site são as **imagens**, não o código.
 
 | item | hoje | teto |
 |---|---|---|
-| CSS + JS (soma dos gzip) | 62,66 KB | 45 KB, informativo |
+| CSS + JS (soma dos gzip) | 66,43 KB | 45 KB, informativo |
 | cada capa | 85 a 187 KB | **200 KB** |
 | primeira dobra | ~243 KB | 600 KB |
-| cada parte do celular (modal e cartão de destaque) | até 149 KB, só ao chegar nela | **200 KB** |
+| cada parte da prévia no celular | até 162 KB, só ao chegar nela | **200 KB** |
+| cada parte da prévia no computador | até 338 KB, só ao chegar nela | **350 KB** |
 
 O CSS + JS passou do teto informativo com a órbita, a galeria em profundidade,
 o anel e a nuvem (antes do redesign eram 39,23 KB). A primeira dobra subiu de
@@ -402,10 +463,11 @@ fonte, e legibilidade vale mais que 1 KB.
 
 ## Limitações conhecidas
 
-- **Quando o inglês for ligado, duas coisas continuam em português:** as mensagens
+- **Quando o inglês for ligado, três coisas continuam em português:** as mensagens
   do WhatsApp (estão escritas à mão no `data-zap` de cada HTML; a chave
-  `flut.zapPadrao` existe no dicionário e ninguém a lê) e o corpo do artigo do
-  blog (o `<main>` do post não tem `data-i18n`).
+  `flut.zapPadrao` existe no dicionário e ninguém a lê), o corpo do artigo do
+  blog (o `<main>` do post não tem `data-i18n`) e o que o modal monta ao abrir,
+  prévia inclusive: a tradução roda uma vez, no arranque da página.
 - **Não existe formulário de contato.** Site estático precisaria de um serviço de
   terceiro, e a página de contato funciona pelo WhatsApp. Se um dia entrar um
   formulário, ele vai precisar de uma página de agradecimento — a antiga

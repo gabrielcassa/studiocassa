@@ -3,7 +3,11 @@
 # <meta name="robots" content="noindex"> das próprias páginas, e um
 # Disallow impediria o Google de LER esse noindex.
 
+# As prévias são fotos datadas de lojas de clientes, com preço e promoção da
+# época: não servem como resultado no Google Imagens.
+
 User-agent: *
 Allow: /
+Disallow: /assets/img/previa/
 
 Sitemap: https://studiocassa.com.br/sitemap.xml

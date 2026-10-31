@@ -21,13 +21,21 @@
             página do projeto seguem com a foto da `capa`. Cartão com foto
             vai em .jpg (o da Crochê Vitória): em PNG passa de 900 KB, e o
             canto arredondado a galeria faz no CSS, com o mesmo raio.
-     celular + celularPartes → (opcionais) a home INTEIRA da loja, do topo ao
-            rodapé, que rola dentro do celular desenhado no modal do projeto.
-            Vem fatiada: celular:"assets/img/portfolio/<id>-celular.jpg" é o
-            nome-base e celularPartes:N diz quantas partes existem
-            (<id>-celular-1.jpg … -N.jpg, 500x2400 cada). Sem os dois, o modal
-            fica sem o celular. Gerar com o prepara-imagens.ps1 -Aplicar (ver
-            CELULAR no cabeçalho dele): ele fatia e escreve os dois campos.
+     previa → (opcional, e o normal) a loja congelada, que rola no celular e na
+            janela do computador, no modal e no projeto.html. Quem escreve é o
+            prepara-imagens.ps1 -Aplicar, a partir das capturas do
+            captura-previa.js; não se edita à mão:
+              previa:{data:"2026-10-30",paginas:[{nome:"Início",arquivo:"inicio",
+                      url:"/",celular:5,computador:4}]}
+            celular e computador dizem em quantas partes a página foi fatiada
+            (assets/img/previa/<id>/inicio-celular-1.jpg…).
+            REGRA: a prévia é a foto da loja como foi entregue. Só muda com o
+            aviso de que houve alteração nela; sozinha, nunca. Ver "A prévia" no
+            README.
+     semLink:true → (opcional) a loja saiu do ar, ou mudou tanto que não
+            representa mais o trabalho: some todo botão que leva até ela, e fica
+            a prévia. Tira do site um "Ver loja no ar" morto ou enganoso.
+     aviso → (opcional, com semLink) a frase que explica, embaixo da prévia.
      logo → assets/img/logos/<id>.png             (fundo transparente — idem)
             O site mostra todo logo como SILHUETA de uma cor: logo colorido
             com fundo próprio (adesivo, selo) vira borrão — precisa de uma
@@ -42,12 +50,14 @@
    ONDE CADA PROJETO APARECE  (campo `exibicao`)
      "destaque" → galeria da home ("Loja de verdade, no ar agora."), órbita
                   do hero + grade do portfolio.html.
-                  Só os melhores, e só Nuvemshop. É a vitrine.
+                  Só os melhores, e só Nuvemshop. É a vitrine. Loja com semLink
+                  não entra aqui: o título da seção diz "no ar agora".
      "grade"    → só na grade de portfolio.html, com card completo.
      "outras"   → lista "A Nuvemshop é a casa, não a única." na home e
                   "Shopify e outras plataformas" no portfolio.html. Sem foto:
-                  nome, plataforma e link.
-                  Com emDestaque:true (e celular + celularPartes), o projeto
+                  nome, plataforma e o link da loja; com prévia, a linha abre o
+                  projeto aqui dentro.
+                  Com emDestaque:true (e a home salva no celular), o projeto
                   sai da lista da home e vira o cartão de destaque embaixo
                   do título, com a home dele rolando num celular. Vale o
                   primeiro marcado. No portfolio.html ele segue na lista.
@@ -59,21 +69,22 @@
    TRÊS TRAVAS — um projeto só aparece se passar pelas três
      1. status:"concluido". Com "andamento", não aparece em lugar nenhum.
      2. url + capa + logo preenchidos. "outras" e "citacao" precisam só de url.
+        Sem url, vale a prévia: loja que saiu do ar não some do site.
         Faltando algo, o card não existe — não há card quebrado no site.
      3. `bloqueio` vazio. Com texto, o projeto some mesmo completo: é a loja
         pronta cujo domínio ainda aponta para a plataforma antiga. Apagar o
         texto libera.
    ========================================================================== */
 
-/* "22 lojas Nuvemshop no ar" = lojas Nuvemshop DISTINTAS, no ar e conferidas,
+/* "21 lojas Nuvemshop no ar" = lojas Nuvemshop DISTINTAS, no ar e conferidas,
    em que ele trabalhou — construídas, migradas ou melhoradas.
-   As 22 estão neste arquivo:
+   As 21 estão neste arquivo:
      PROJETOS, concluído .............. Empório Século XVIII, Quero Melancia,
-                                        Fazenda Giori, Colado, NeuroCapsule,
+                                        Fazenda Giori, NeuroCapsule,
                                         GA Equestre, Romance Enxovais, Café
                                         Serra Gerais, Bella Caza Decor,
                                         Crochê Vitória, Vilaz, EA Labs,
-                                        GIORNI                             13
+                                        GIORNI                             12
      só registro (LOJAS_FEITAS) ....... Livraria Shalom Adonai, Ideal Forma,
                                         Casa Rigo, Zanelli, Flora, Galerie
                                         Du Parfum, VL Dicas, Aventtura X,
@@ -85,10 +96,12 @@
    GA Equestre viraram, conferido em 22/10/2026; 21 com Vilaz, Crochê Vitória
    e Bella Caza Decor, endereços passados por ele e conferidos em 24/10/2026;
    22 com a Romance Enxovais, conferida em 25/10/2026 (a Café Serra Gerais
-   já contava desde antes, como "em andamento"). */
+   já contava desde antes, como "em andamento"); 21 sem a Colado, que encerra as
+   vendas em poucos dias (aviso de 30/10/2026): ela saiu da conta antes de
+   fechar, porque o selo diz "no ar". */
 const SELO = {
   ativo:  true,
-  texto:  "22 lojas Nuvemshop no ar",
+  texto:  "21 lojas Nuvemshop no ar",
   imagem: "",
   link:   ""
 };
@@ -111,33 +124,40 @@ const PROJETOS = [
      Nuvemshop e tema Ipanema conferidos no código da página em 05/10/2026. */
   { id:"cachaca-seculo-xviii", nome:"Empório Século XVIII", tipo:"E-commerce completo", status:"concluido", exibicao:"destaque",
     plataforma:"Nuvemshop", tema:"Ipanema", segmento:"Cachaça", ano:"",
-    url:"https://cachacaseculoxviii.com.br/", capa:"assets/img/portfolio/cachaca-seculo-xviii-capa.jpg", capaGaleria:"assets/img/portfolio/cachaca-seculo-xviii-cartao.png", celular:"assets/img/portfolio/cachaca-seculo-xviii-celular.jpg", logo:"assets/img/logos/cachaca-seculo-xviii.png",
+    url:"https://cachacaseculoxviii.com.br/", capa:"assets/img/portfolio/cachaca-seculo-xviii-capa.jpg", capaGaleria:"assets/img/portfolio/cachaca-seculo-xviii-cartao.png", logo:"assets/img/logos/cachaca-seculo-xviii.png",
     logoCor:"assets/img/logos/cor/cachaca-seculo-xviii.png",
-    celularPartes:6,
+    previa:{data:"2026-10-31",paginas:[{nome:"Início",arquivo:"inicio",url:"/",celular:6,computador:3}]},
     resumo:"", desafio:"", entrega:[], resultado:"", imagens:[], depoimento:{autor:"",texto:""} },
 
   /* Era migração em voo; o domínio virou para a Nuvemshop — bloqueio liberado. */
   { id:"quero-melancia", nome:"Quero Melancia", tipo:"E-commerce completo", status:"concluido", exibicao:"destaque",
     plataforma:"Nuvemshop", tema:"Ipanema", segmento:"Moda feminina", ano:"",
-    url:"https://www.queromelancia.com.br/", capa:"assets/img/portfolio/quero-melancia-capa.jpg", capaGaleria:"assets/img/portfolio/quero-melancia-cartao.png", celular:"assets/img/portfolio/quero-melancia-celular.jpg", logo:"assets/img/logos/quero-melancia.png",
+    url:"https://www.queromelancia.com.br/", capa:"assets/img/portfolio/quero-melancia-capa.jpg", capaGaleria:"assets/img/portfolio/quero-melancia-cartao.png", logo:"assets/img/logos/quero-melancia.png",
     logoCor:"assets/img/logos/cor/quero-melancia.png",
-    celularPartes:13,
+    previa:{data:"2026-10-31",paginas:[{nome:"Início",arquivo:"inicio",url:"/",celular:13,computador:8}]},
     resumo:"", desafio:"Migração vinda da Tray.", entrega:[], resultado:"", imagens:[], depoimento:{autor:"",texto:""} },
 
   /* Loja inteira, confirmado por ele em 04/10/2026 — antes estava como
      Página de produto. */
   { id:"fazenda-giori", nome:"Fazenda Giori", tipo:"E-commerce completo", status:"concluido", exibicao:"destaque",
     plataforma:"Nuvemshop", tema:"Flex", segmento:"Café especial", ano:"",
-    url:"https://giori.farm/", capa:"assets/img/portfolio/fazenda-giori-capa.jpg", capaGaleria:"assets/img/portfolio/fazenda-giori-cartao.png", celular:"assets/img/portfolio/fazenda-giori-celular.jpg", logo:"assets/img/logos/fazenda-giori.png",
-    celularPartes:4,
+    url:"https://giori.farm/", capa:"assets/img/portfolio/fazenda-giori-capa.jpg", capaGaleria:"assets/img/portfolio/fazenda-giori-cartao.png", logo:"assets/img/logos/fazenda-giori.png",
+    previa:{data:"2026-10-31",paginas:[{nome:"Início",arquivo:"inicio",url:"/",celular:4,computador:3}]},
     resumo:"Loja completa, com melhoria de CRO e páginas de produto.", desafio:"", entrega:[], resultado:"", imagens:[], depoimento:{autor:"",texto:""} },
 
   /* Loja inteira, confirmado por ele em 04/10/2026 — antes estava como
-     Otimização. Junta os dois registros antigos (loja + manutenção). */
-  { id:"colado", nome:"Colado", tipo:"E-commerce completo", status:"concluido", exibicao:"destaque",
+     Otimização. Junta os dois registros antigos (loja + manutenção).
+     A marca encerra as vendas em poucos dias, depois de uma queima de estoque.
+     Pedido de 30/10/2026: o projeto não pode sair do site. Por isso a
+     prévia, a versão limpa da captura de 31/10 (sem a campanha de despedida);
+     a real está em _previas/colado/2026-10-31/. Saiu da galeria da home, cujo
+     título diz "no ar agora", e segue na grade do portfólio. Para voltar à
+     galeria, o título precisa mudar. */
+  { id:"colado", nome:"Colado", tipo:"E-commerce completo", status:"concluido", exibicao:"grade", semLink:true,
+    aviso:"A marca pausou as vendas em 2026.",
     plataforma:"Nuvemshop", tema:"Flex", segmento:"", ano:"",
-    url:"https://www.colado.art.br/", capa:"assets/img/portfolio/colado-capa.jpg", capaGaleria:"assets/img/portfolio/colado-cartao.png", celular:"assets/img/portfolio/colado-celular.jpg", logo:"assets/img/logos/colado.png",
-    celularPartes:4,
+    url:"https://www.colado.art.br/", capa:"assets/img/portfolio/colado-capa.jpg", capaGaleria:"assets/img/portfolio/colado-cartao.png", logo:"assets/img/logos/colado.png",
+    previa:{data:"2026-10-31",paginas:[{nome:"Início",arquivo:"inicio",url:"/",celular:3,computador:3},{nome:"Lambe-lambe",arquivo:"lambe-lambe",url:"/produtos/kit-lambe-lambe-fragmentos-esmeralda-colagem-decorativo-estiloso-arte-brasileira/",celular:4,computador:2},{nome:"Quadro",arquivo:"quadro",url:"/produtos/quadro-a3-carranca/",celular:4,computador:2},{nome:"Sobre",arquivo:"sobre",url:"/sobre-a-colado/",celular:3,computador:1},{nome:"Como aplicar",arquivo:"como-aplicar",url:"/como-aplicar/",celular:2,computador:1}]},
     resumo:"Loja completa e contrato de manutenção do e-commerce.", desafio:"Migração vinda da Shopify.", entrega:[], resultado:"", imagens:[], depoimento:{autor:"",texto:""} },
 
   /* Migração que virou: em 22/10/2026 os DNS públicos (Google, Cloudflare)
@@ -147,9 +167,9 @@ const PROJETOS = [
      Brasília). Capa e logo chegaram em 25/10/2026. */
   { id:"neurocapsule", nome:"NeuroCapsule", tipo:"E-commerce completo", status:"concluido", exibicao:"destaque",
     plataforma:"Nuvemshop", tema:"Ipanema", segmento:"Suplementos", ano:"",
-    url:"https://loja.neurocapsule.com.br/", capa:"assets/img/portfolio/neurocapsule-capa.jpg", capaGaleria:"assets/img/portfolio/neurocapsule-cartao.png", celular:"assets/img/portfolio/neurocapsule-celular.jpg", logo:"assets/img/logos/neurocapsule.png",
+    url:"https://loja.neurocapsule.com.br/", capa:"assets/img/portfolio/neurocapsule-capa.jpg", capaGaleria:"assets/img/portfolio/neurocapsule-cartao.png", logo:"assets/img/logos/neurocapsule.png",
     logoCor:"assets/img/logos/cor/neurocapsule.png",
-    celularPartes:4,
+    previa:{data:"2026-10-31",paginas:[{nome:"Início",arquivo:"inicio",url:"/",celular:4,computador:3}]},
     resumo:"", desafio:"E-commerce completo mais todas as páginas de produto.", entrega:[], resultado:"", imagens:[], depoimento:{autor:"",texto:""} },
 
   /* Migração que virou em 22/10/2026 — bloqueio liberado. O endereço passou
@@ -158,16 +178,16 @@ const PROJETOS = [
      chegaram em 25/10/2026. */
   { id:"ga-equestre", nome:"GA Equestre", tipo:"E-commerce completo", status:"concluido", exibicao:"destaque",
     plataforma:"Nuvemshop", tema:"Ipanema", segmento:"Equitação", ano:"",
-    url:"https://gaequestre.com.br/", capa:"assets/img/portfolio/ga-equestre-capa.jpg", capaGaleria:"assets/img/portfolio/ga-equestre-cartao.png", celular:"assets/img/portfolio/ga-equestre-celular.jpg", logo:"assets/img/logos/ga-equestre.png",
-    celularPartes:5,
+    url:"https://gaequestre.com.br/", capa:"assets/img/portfolio/ga-equestre-capa.jpg", capaGaleria:"assets/img/portfolio/ga-equestre-cartao.png", logo:"assets/img/logos/ga-equestre.png",
+    previa:{data:"2026-10-31",paginas:[{nome:"Início",arquivo:"inicio",url:"/",celular:5,computador:3}]},
     resumo:"", desafio:"Migração vinda da iSet, com estruturação de automações.", entrega:[], resultado:"", imagens:[], depoimento:{autor:"",texto:""} },
 
   /* Esperava o endereço desde 04/10/2026; passado por ele em 25/10/2026.
      Nuvemshop e tema Ipanema conferidos no código da página no mesmo dia. */
   { id:"romance-enxovais", nome:"Romance Enxovais", tipo:"E-commerce completo", status:"concluido", exibicao:"destaque",
     plataforma:"Nuvemshop", tema:"Ipanema", segmento:"Cama, mesa e banho", ano:"",
-    url:"https://romanceenxovais.com.br/", capa:"assets/img/portfolio/romance-enxovais-capa.jpg", capaGaleria:"assets/img/portfolio/romance-enxovais-cartao.png", celular:"assets/img/portfolio/romance-enxovais-celular.jpg", logo:"assets/img/logos/romance-enxovais.png",
-    celularPartes:6,
+    url:"https://romanceenxovais.com.br/", capa:"assets/img/portfolio/romance-enxovais-capa.jpg", capaGaleria:"assets/img/portfolio/romance-enxovais-cartao.png", logo:"assets/img/logos/romance-enxovais.png",
+    previa:{data:"2026-10-31",paginas:[{nome:"Início",arquivo:"inicio",url:"/",celular:6,computador:4}]},
     resumo:"", desafio:"Migração vinda da Octopus. Marca no mercado desde 1994.", entrega:[], resultado:"", imagens:[], depoimento:{autor:"",texto:""} },
 
   /* Juntou os dois registros antigos (página de produto + otimização).
@@ -178,8 +198,8 @@ const PROJETOS = [
      (168 KB). */
   { id:"cafe-serra-gerais", nome:"Café Serra Gerais", tipo:"E-commerce completo", status:"concluido", exibicao:"destaque",
     plataforma:"Nuvemshop", tema:"Ipanema", segmento:"Café especial", ano:"",
-    url:"https://serragerais.com.br/", capa:"assets/img/portfolio/cafe-serra-gerais-capa.jpg", capaGaleria:"assets/img/portfolio/cafe-serra-gerais-cartao.png", celular:"assets/img/portfolio/cafe-serra-gerais-celular.jpg", logo:"assets/img/logos/cafe-serra-gerais.png",
-    celularPartes:5,
+    url:"https://serragerais.com.br/", capa:"assets/img/portfolio/cafe-serra-gerais-capa.jpg", capaGaleria:"assets/img/portfolio/cafe-serra-gerais-cartao.png", logo:"assets/img/logos/cafe-serra-gerais.png",
+    previa:{data:"2026-10-31",paginas:[{nome:"Início",arquivo:"inicio",url:"/",celular:5,computador:3}]},
     resumo:"E-commerce novo, com troca de tema e o layout todo refeito.", desafio:"", entrega:["2 páginas de produto", "Melhorias de layout e implementações"], resultado:"", imagens:[], depoimento:{autor:"",texto:""} },
 
   /* Esperava endereço e plataforma desde 04/10/2026; endereço passado por
@@ -187,8 +207,8 @@ const PROJETOS = [
      página no mesmo dia. */
   { id:"bella-caza-decor", nome:"Bella Caza Decor", tipo:"E-commerce completo", status:"concluido", exibicao:"destaque",
     plataforma:"Nuvemshop", tema:"Ipanema", segmento:"Decoração", ano:"",
-    url:"https://bellacazadecor.com.br/", capa:"assets/img/portfolio/bella-caza-decor-capa.jpg", capaGaleria:"assets/img/portfolio/bella-caza-decor-cartao.png", celular:"assets/img/portfolio/bella-caza-decor-celular.jpg", logo:"assets/img/logos/bella-caza-decor.png",
-    celularPartes:5,
+    url:"https://bellacazadecor.com.br/", capa:"assets/img/portfolio/bella-caza-decor-capa.jpg", capaGaleria:"assets/img/portfolio/bella-caza-decor-cartao.png", logo:"assets/img/logos/bella-caza-decor.png",
+    previa:{data:"2026-10-31",paginas:[{nome:"Início",arquivo:"inicio",url:"/",celular:5,computador:3}]},
     resumo:"", desafio:"", entrega:[], resultado:"", imagens:[], depoimento:{autor:"",texto:""} },
 
   /* Esperava o endereço desde 04/10/2026; passado por ele em 24/10/2026.
@@ -198,9 +218,9 @@ const PROJETOS = [
      branco, é só trocar. A capa dele cabe no teto na qualidade padrão. */
   { id:"croche-vitoria", nome:"Crochê Vitória", tipo:"E-commerce completo", status:"concluido", exibicao:"destaque",
     plataforma:"Nuvemshop", tema:"Ipanema", segmento:"Decoração em crochê", ano:"",
-    url:"https://www.crochevitoria.com.br/", capa:"assets/img/portfolio/croche-vitoria-capa.jpg", capaGaleria:"assets/img/portfolio/croche-vitoria-cartao.jpg", celular:"assets/img/portfolio/croche-vitoria-celular.jpg", logo:"assets/img/logos/croche-vitoria.png",
+    url:"https://www.crochevitoria.com.br/", capa:"assets/img/portfolio/croche-vitoria-capa.jpg", capaGaleria:"assets/img/portfolio/croche-vitoria-cartao.jpg", logo:"assets/img/logos/croche-vitoria.png",
     logoCor:"assets/img/logos/cor/croche-vitoria.png",
-    celularPartes:5,
+    previa:{data:"2026-10-31",paginas:[{nome:"Início",arquivo:"inicio",url:"/",celular:5,computador:3}]},
     resumo:"", desafio:"Migração vinda da Yampi. Fabricante de Ibitinga desde 1987.", entrega:[], resultado:"", imagens:[], depoimento:{autor:"",texto:""} },
 
   /* Endereço passado por ele em 24/10/2026. Nuvemshop e tema Amazonas
@@ -208,14 +228,15 @@ const PROJETOS = [
      por ele em 25/10/2026. */
   { id:"vilaz", nome:"Vilaz", tipo:"E-commerce completo", status:"concluido", exibicao:"destaque",
     plataforma:"Nuvemshop", tema:"Amazonas", segmento:"Moda feminina", ano:"",
-    url:"https://www.usevilaz.com.br/", capa:"assets/img/portfolio/vilaz-capa.jpg", capaGaleria:"assets/img/portfolio/vilaz-cartao.png", celular:"assets/img/portfolio/vilaz-celular.jpg", logo:"assets/img/logos/vilaz.png",
+    url:"https://www.usevilaz.com.br/", capa:"assets/img/portfolio/vilaz-capa.jpg", capaGaleria:"assets/img/portfolio/vilaz-cartao.png", logo:"assets/img/logos/vilaz.png",
     logoCor:"assets/img/logos/cor/vilaz.png",
-    celularPartes:6,
+    previa:{data:"2026-10-31",paginas:[{nome:"Início",arquivo:"inicio",url:"/",celular:6,computador:3}]},
     resumo:"", desafio:"", entrega:[], resultado:"", imagens:[], depoimento:{autor:"",texto:""} },
 
   /* Saíram da vitrine (então carrossel) por decisão dele e foram para
      LOJAS_FEITAS, como registro: Ideal Forma em 05/10/2026 e Livraria
-     Shalom Adonai em 22/10/2026. */
+     Shalom Adonai em 22/10/2026. A Colado saiu da galeria em 30/10/2026 e segue
+     na grade do portfólio, com a prévia. */
 
   /* =====================================================================
      ⏳ GALERIA — AINDA NÃO PRONTAS. Ficam aqui com exibicao:"destaque" e
@@ -230,6 +251,7 @@ const PROJETOS = [
   /* =====================================================================
      SÓ NA GRADE DO PORTFOLIO.HTML — fora da galeria da home.
      Lojas completas que não entraram na lista dos melhores de 04/10/2026.
+     Sem prévia, por decisão de 31/10/2026.
      ===================================================================== */
 
   { id:"ea-labs", nome:"EA Labs Nutrition", tipo:"E-commerce completo", status:"concluido", exibicao:"grade",
@@ -256,6 +278,7 @@ const PROJETOS = [
   { id:"the-hound-emporium", nome:"The Hound Emporium", tipo:"E-commerce completo", status:"concluido", exibicao:"outras",
     plataforma:"Wix", tema:"", segmento:"Pet shop", ano:"",
     url:"https://www.thehoundemporium.com/", capa:"", logo:"",
+    previa:{data:"2026-10-31",paginas:[{nome:"Início",arquivo:"inicio",url:"/",celular:5,computador:2}]},
     resumo:"", desafio:"", entrega:[], resultado:"", imagens:[], depoimento:{autor:"",texto:""} },
 
   /* Voltou em 25/10/2026 como site completo (antes estava como otimização,
@@ -263,6 +286,7 @@ const PROJETOS = [
   { id:"dolce-affetto", nome:"Dolce Affetto", tipo:"E-commerce completo", status:"concluido", exibicao:"outras",
     plataforma:"Tray", tema:"", segmento:"Enxoval de bebê", ano:"",
     url:"https://www.dolceaffetto.com.br/", capa:"", logo:"",
+    previa:{data:"2026-10-31",paginas:[{nome:"Início",arquivo:"inicio",url:"/",celular:5,computador:3}]},
     resumo:"", desafio:"", entrega:[], resultado:"", imagens:[], depoimento:{autor:"",texto:""} },
 
   /* Voltou em 25/10/2026 como site completo (antes estava como landing
@@ -270,32 +294,40 @@ const PROJETOS = [
   { id:"toledo-reservatorios", nome:"Toledo Reservatórios", tipo:"Site completo", status:"concluido", exibicao:"outras",
     plataforma:"WordPress", tema:"", segmento:"Reservatórios metálicos", ano:"",
     url:"https://xn--toledoreservatrios-31b.com.br/", capa:"", logo:"",
+    previa:{data:"2026-10-31",paginas:[{nome:"Início",arquivo:"inicio",url:"/",celular:6,computador:3}]},
     resumo:"", desafio:"", entrega:[], resultado:"", imagens:[], depoimento:{autor:"",texto:""} },
 
   /* Voltou em 25/10/2026 como site completo (antes estava como otimização). */
   { id:"atuale-odontologia", nome:"Atuale Odontologia Integrada", tipo:"Site completo", status:"concluido", exibicao:"outras",
     plataforma:"WordPress", tema:"", segmento:"Odontologia", ano:"",
     url:"https://atualeodontologiaintegrada.com.br/", capa:"", logo:"",
+    previa:{data:"2026-10-31",paginas:[{nome:"Início",arquivo:"inicio",url:"/",celular:4,computador:2}]},
     resumo:"", desafio:"", entrega:[], resultado:"", imagens:[], depoimento:{autor:"",texto:""} },
 
   /* Em destaque na lista da home, pedido dele em 27/10/2026: cartão com a
      home da loja rolando num celular, embaixo do título da seção (Shopify,
      tema "Speed"). Home recapturada em 28/10/2026, já com a Black Friday,
-     no primeiro slide do carrossel do topo. */
+     no primeiro slide do carrossel do topo. Projeto ativo: a Black Friday é
+     ajuste do próprio estúdio (confirmado em 31/10/2026), não alteração do
+     cliente. */
   { id:"vital", nome:"VITAL", tipo:"Otimização", status:"concluido", exibicao:"outras", emDestaque:true,
     plataforma:"Shopify", tema:"", segmento:"Suplementos", ano:"",
-    url:"https://bevital.com.br/", capa:"", logo:"", celular:"assets/img/portfolio/vital-celular.jpg",
-    celularPartes:7,
+    url:"https://bevital.com.br/", capa:"", logo:"",
+    previa:{data:"2026-10-31",paginas:[{nome:"Início",arquivo:"inicio",url:"/",celular:7,computador:4}]},
     resumo:"", desafio:"", entrega:[], resultado:"", imagens:[], depoimento:{autor:"",texto:""} },
 
+  /* Sem prévia, por decisão de 31/10/2026: a linha leva direto à loja. */
   { id:"glaucia-goulart", nome:"Glaucia Goulart Bolsas", tipo:"Otimização", status:"concluido", exibicao:"outras",
     plataforma:"Tray", tema:"", segmento:"Bolsas no atacado", ano:"",
     url:"https://www.glauciagoulartbolsas.com.br/", capa:"", logo:"",
     resumo:"Implementação de layout.", desafio:"", entrega:[], resultado:"", imagens:[], depoimento:{autor:"",texto:""} },
 
+  /* A prévia no computador passa do teto de 350 KB por parte: sai com
+     -QualidadeCelular 65 (338 KB). */
   { id:"faol-apicultura", nome:"FAOL Apicultura", tipo:"Otimização", status:"concluido", exibicao:"outras",
     plataforma:"Shopify", tema:"Glozin", segmento:"Apicultura", ano:"",
     url:"https://faolapicultura.com.br/", capa:"", logo:"",
+    previa:{data:"2026-10-31",paginas:[{nome:"Início",arquivo:"inicio",url:"/",celular:5,computador:3}]},
     resumo:"", desafio:"", entrega:[], resultado:"", imagens:[], depoimento:{autor:"",texto:""} }
 
   /* Fora do site por decisão dele em 04/10/2026 — o foco é só loja Nuvemshop

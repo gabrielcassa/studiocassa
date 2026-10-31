@@ -80,6 +80,10 @@ var DICIONARIO = {
     'outras.verProjeto':  'Ver o projeto',
     'outras.noAr':        'Ver loja no ar',
 
+    'previa.celular':     'Ver no celular',
+    'previa.computador':  'Ver no computador',
+    'previa.dica':        'Role a tela',
+
     /* --- depoimentos -------------------------------------------------- */
     'depo.h2':            'Quem já passou por isso <em>conta melhor.</em>',
 

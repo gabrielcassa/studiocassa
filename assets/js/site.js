@@ -1122,11 +1122,10 @@
     medir();
   }
 
-  /* observarPartes(tela) — as partes da home de uma loja (data-src) entram
-     quando a tela do celular chega a ~1000px delas: quem rola lê a página
-     inteira, e quem só olha o topo não baixa o resto. Vale para o celular
-     do modal e para o do cartão de destaque. Devolve o observador, para
-     quem precisar desligá-lo (o modal, ao fechar). */
+  /* observarPartes(tela) — as partes de uma página da prévia (data-src) entram
+     quando a tela chega a ~1000px delas: quem rola lê a página inteira, e quem
+     só olha o topo não baixa o resto. Vale para a prévia e para o celular do
+     cartão de destaque. Devolve o observador, para quem precisar desligá-lo. */
   function observarPartes(tela) {
     if (!tela) return null;
     var faltam = tela.querySelectorAll('img[data-src]');
@@ -1143,6 +1142,85 @@
     return obs;
   }
 
+  /* A barrinha de rolagem do iPhone: o tamanho é quanto da página cabe na
+     tela, o lugar é quanto já rolou. Acende ao rolar e apaga 0,9s depois. */
+  function barraDeRolagem(tela) {
+    var caixa = tela && tela.parentNode;
+    var barra = caixa && caixa.querySelector('.aparelho__barra');
+    if (!barra) return;
+    var apaga = null;
+    tela.addEventListener('scroll', function () {
+      var vis = tela.clientHeight, total = tela.scrollHeight;
+      if (total <= vis) return;
+      var h = Math.max(24, vis * vis / total);
+      var topo = tela.offsetTop + 4 + (vis - h - 8) * tela.scrollTop / (total - vis);
+      barra.style.height = h.toFixed(1) + 'px';
+      barra.style.transform = 'translateY(' + topo.toFixed(1) + 'px)';
+      caixa.classList.add('rolando');
+      clearTimeout(apaga);
+      apaga = setTimeout(function () { caixa.classList.remove('rolando'); }, 900);
+    }, { passive: true });
+  }
+
+  /* ----------------------------------------------------------------------
+     ligarPrevia(caixa, aoTrocar) — os botões da prévia trocam a página e o
+     aparelho. O quadro inteiro é refeito a cada troca e a rolagem volta ao
+     topo. Vale para o modal e para o projeto.html. `aoTrocar(tela, aparelho)`
+     roda a cada quadro novo, inclusive o primeiro. Página que não tem o
+     aparelho escolhido passa para o que ela tem.
+     ---------------------------------------------------------------------- */
+  function ligarPrevia(caixa, aoTrocar) {
+    var p = window.SCRender.projetoPorId(caixa.getAttribute('data-previa'));
+    var palco = caixa.querySelector('[data-previa-palco]');
+    var paginas = p.previa.paginas;
+    var indice = 0;
+    var aparelho = caixa.getAttribute('data-previa-aparelho-atual');
+    var observador = null;
+    var tela = null;
+
+    function ligarTela() {
+      tela = palco.querySelector('[data-previa-tela]');
+      if (observador) observador.disconnect();
+      observador = observarPartes(tela);
+      barraDeRolagem(tela);
+      if (aoTrocar) aoTrocar(tela, aparelho);
+    }
+
+    function trocar() {
+      if (!paginas[indice][aparelho]) aparelho = aparelho === 'celular' ? 'computador' : 'celular';
+      palco.innerHTML = window.SCRender.htmlPalco(p, indice, aparelho);
+      Array.prototype.forEach.call(caixa.querySelectorAll('[data-previa-pagina]'), function (b) {
+        b.setAttribute('aria-pressed', String(+b.getAttribute('data-previa-pagina') === indice));
+      });
+      Array.prototype.forEach.call(caixa.querySelectorAll('[data-previa-aparelho]'), function (b) {
+        var a = b.getAttribute('data-previa-aparelho');
+        b.setAttribute('aria-pressed', String(a === aparelho));
+        b.disabled = !paginas[indice][a];
+      });
+      ligarTela();
+    }
+
+    caixa.addEventListener('click', function (e) {
+      var botao = e.target.closest('[data-previa-pagina], [data-previa-aparelho]');
+      if (!botao) return;
+      if (botao.hasAttribute('data-previa-pagina')) indice = +botao.getAttribute('data-previa-pagina');
+      else aparelho = botao.getAttribute('data-previa-aparelho');
+      trocar();
+    });
+
+    ligarTela();
+    return {
+      tela: function () { return tela; },
+      desligar: function () { if (observador) { observador.disconnect(); observador = null; } }
+    };
+  }
+
+  /* a prévia do projeto.html: a página já nasce montada pelo render.js */
+  function previaDaPagina() {
+    var caixa = document.querySelector('[data-projeto-pagina] [data-previa]');
+    if (caixa && window.SCRender) ligarPrevia(caixa);
+  }
+
   /* ----------------------------------------------------------------------
      modalProjeto() — abre por id, fecha no ESC / backdrop / X, prende o foco
      e devolve o foco ao card de origem. O conteúdo vem do render.js.
@@ -1152,6 +1230,7 @@
     if (!modal || !window.SCRender) return;
 
     var corpo  = modal.querySelector('.modal__corpo');
+    var painel = modal.querySelector('.modal__painel');
     var fechar = modal.querySelector('[data-modal-fechar]');
     var origem = null;
     var espiada = null;
@@ -1184,37 +1263,14 @@
       else comecar();
     }
 
-    /* o observador das partes da home no celular aberto (ver observarPartes) */
-    var observador = null;
-    function carregarPartes(tela) {
-      if (observador) { observador.disconnect(); observador = null; }
-      observador = observarPartes(tela);
-    }
+    /* a prévia aberta (ver ligarPrevia): quem desliga as partes ao fechar */
+    var previa = null;
 
-    /* A barrinha de rolagem do iPhone: o tamanho é quanto da página cabe na
-       tela, o lugar é quanto já rolou. Acende ao rolar e apaga 0,9s depois. */
-    function barraDeRolagem(tela) {
-      var caixa = tela && tela.parentNode;
-      var barra = caixa && caixa.querySelector('.aparelho__barra');
-      if (!barra) return;
-      var apaga = null;
-      tela.addEventListener('scroll', function () {
-        var vis = tela.clientHeight, total = tela.scrollHeight;
-        if (total <= vis) return;
-        var h = Math.max(24, vis * vis / total);
-        var topo = tela.offsetTop + 4 + (vis - h - 8) * tela.scrollTop / (total - vis);
-        barra.style.height = h.toFixed(1) + 'px';
-        barra.style.transform = 'translateY(' + topo.toFixed(1) + 'px)';
-        caixa.classList.add('rolando');
-        clearTimeout(apaga);
-        apaga = setTimeout(function () { caixa.classList.remove('rolando'); }, 900);
-      }, { passive: true });
-    }
-
-    /* No desktop, título, celular, textos e botões cabem juntos na janela:
-       se o painel passar da altura livre, a tela do celular perde a
-       diferença (até 260px). Quem tem texto além do título (o desafio, o
-       resumo) ganha um celular menor. No celular, a folha simplesmente rola. */
+    /* No desktop, título, celular, textos e botões cabem juntos na janela: se o
+       painel passar da altura livre, a tela do celular perde a diferença (até
+       260px). Quem tem texto além do título (o desafio, o resumo) ganha um
+       celular menor. No celular, a folha simplesmente rola. A janela do
+       computador fica de fora: ali quem manda é a loja, e os textos ficam abaixo. */
     var largo = window.matchMedia('(min-width: 760px)');
     function ajustarCelular() {
       var aparelho = corpo.querySelector('.aparelho__corpo');
@@ -1223,7 +1279,7 @@
       if (!largo.matches) return;
       var cs = getComputedStyle(modal);
       var livre = modal.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom);
-      var excesso = modal.querySelector('.modal__painel').offsetHeight - livre;
+      var excesso = painel.offsetHeight - livre;
       if (excesso <= 0) return;
       var tela = corpo.querySelector('.aparelho__tela').offsetHeight;
       aparelho.style.setProperty('--tela-h', Math.max(260, tela - excesso) + 'px');
@@ -1239,19 +1295,26 @@
       ligarZaps();
       modal.hidden = false;
       modal.scrollTop = 0;
-      ajustarCelular();
       document.body.classList.add('travado');
       (focaveisEm(modal)[0] || fechar).focus();
-      var tela = corpo.querySelector('.aparelho__rolagem');
-      carregarPartes(tela);
-      barraDeRolagem(tela);
-      espiarCelular(tela);
+
+      var caixa = corpo.querySelector('[data-previa]');
+      if (!caixa) return;
+      /* o computador pede o painel mais largo: a loja de 1440px não cabe nos
+         720px de um modal de texto */
+      previa = ligarPrevia(caixa, function (tela, aparelho) {
+        clearTimeout(espiada);
+        painel.classList.toggle('modal__painel--largo', aparelho === 'computador');
+        ajustarCelular();
+      });
+      if (corpo.querySelector('.aparelho__corpo')) espiarCelular(previa.tela());
     }
 
     function fecharModal() {
       if (modal.hidden) return;
       clearTimeout(espiada);
-      if (observador) { observador.disconnect(); observador = null; }
+      if (previa) { previa.desligar(); previa = null; }
+      painel.classList.remove('modal__painel--largo');
       modal.hidden = true;
       corpo.innerHTML = '';
       document.body.classList.remove('travado');
@@ -1612,6 +1675,7 @@
   navScroll();
   menuMobile();
   modalProjeto();
+  previaDaPagina();
   abas();
   filtros();
   flutuantes();

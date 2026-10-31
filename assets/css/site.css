@@ -892,7 +892,8 @@
 .outras__cabeca > p{ max-width: 40ch; font-size: var(--t-lead); line-height: 1.5; }
 
 .outras__lista{ border-top: 1px solid var(--borda); } /* taste-skill-ignore: filete da referência anubi.io */
-.outra a{
+.outra a,
+.outra__abrir{
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   gap: 6px var(--s-4);
@@ -901,6 +902,8 @@
   border-bottom: 1px solid var(--borda); /* taste-skill-ignore: filete da referência anubi.io */
   transition: color var(--transicao);
 }
+/* com prévia, a linha é um botão que abre o projeto; sem ela, o link da loja */
+.outra__abrir{ width: 100%; text-align: left; }
 .outra__nome{
   font-family: var(--fonte-titulo);
   font-size: var(--t-h3);
@@ -919,8 +922,10 @@
   grid-row: 1 / span 2;
   transition: transform var(--transicao);
 }
-.outra a:hover{ color: var(--marca); }
-.outra a:hover .outra__seta{ transform: translate(3px, -3px); }
+.outra a:hover,
+.outra__abrir:hover{ color: var(--marca); }
+.outra a:hover .outra__seta,
+.outra__abrir:hover .outra__seta{ transform: translate(3px, -3px); }
 
 /* --- o projeto em destaque, embaixo do título (emDestaque no dados.js) ---
    Celular à esquerda, nome e botões à direita; numa coluna estreita (o
@@ -1463,17 +1468,43 @@
   margin-top: var(--s-4);
 }
 
-/* --- o celular do modal: a home da loja rolando dentro de um aparelho ----
+/* o computador pede espaço: com 1040px, a loja de 1440px sai a ~65%, e dá para
+   ler. O site.js põe a classe quando o aparelho escolhido é o computador. */
+.modal__painel--largo{ max-width: 1040px; }
+
+/* --- a prévia: a loja congelada, com a página e o aparelho à escolha ------ */
+.previa{
+  display: grid;
+  gap: var(--s-3);
+  min-width: 0;
+  margin: var(--s-2) 0 0;
+}
+.previa__controles{
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-2) var(--s-4);
+}
+.previa__grupo{ display: flex; flex-wrap: wrap; gap: var(--s-1); }
+.previa .filtro{ min-height: 36px; padding: 6px var(--s-3); font-size: .875rem; }
+.previa .filtro:disabled{ opacity: .4; cursor: not-allowed; }
+/* o botão do aparelho é só o ícone: 40px de largura, para o dedo */
+.previa__aparelhos .filtro{ justify-content: center; width: 40px; padding: 0; }
+.previa__palco{ display: grid; justify-items: center; min-width: 0; }
+.previa__legenda{
+  display: grid;
+  justify-items: center;
+  gap: var(--s-1);
+  text-align: center;
+}
+.previa__data{ color: var(--mid); }
+
+/* --- o celular: a loja rolando dentro de um aparelho -----------------------
    (.aparelho, e não .celular: esse nome é do mockup do "Resultado real")
    A altura da tela acompanha a da janela, para título, celular e botões
    caberem juntos (a conta: ~420px de tudo o mais no modal). A largura sai
    da proporção da captura, 390x844. Tudo do aparelho é medido na altura. */
-.aparelho{
-  display: grid;
-  justify-items: center;
-  gap: var(--s-3);
-  margin: var(--s-2) 0 0;
-}
 .aparelho__corpo{
   --tela-h: clamp(260px, 100svh - 420px, 560px);
   position: relative;
@@ -1520,7 +1551,8 @@
   pointer-events: none;
   transition: opacity .4s;
 }
-.aparelho__tela.rolando .aparelho__barra{ opacity: 1; transition-duration: .1s; }
+.aparelho__tela.rolando .aparelho__barra,
+.janela__tela.rolando .aparelho__barra{ opacity: 1; transition-duration: .1s; }
 /* só esta parte rola: roda do mouse, dedo, ou setas com o foco nela.
    Chegando ao fim, a rolagem não passa para o modal nem para a página. */
 .aparelho__rolagem{
@@ -1540,6 +1572,65 @@
   align-items: center;
   gap: 8px;
 }
+
+/* --- o computador: a loja numa janela de navegador desenhada ------------- */
+/* A altura sobra para a loja: título e botões ficam em cima (~300px), e os textos
+   do projeto, abaixo da dobra. O modal rola pelas margens da janela. */
+.janela{
+  --tela-h: clamp(320px, 100svh - 300px, 800px);
+  width: 100%;
+  min-width: 0;
+  overflow: hidden;
+  border-radius: var(--r-md);
+  background: var(--tinta);
+  box-shadow: 0 28px 50px -28px rgba(19,19,19,.5); /* taste-skill-ignore: flutua, como o aparelho */
+  animation: subir .7s var(--sai-forte) .08s both;
+}
+.janela__topo{
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  padding: 8px var(--s-3);
+}
+.janela__botoes{ display: flex; flex: none; gap: 5px; }
+.janela__botoes i{
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--escuro-bd);
+}
+.janela__endereco{
+  flex: 1;
+  min-width: 0;
+  max-width: 320px;
+  margin-inline: auto;
+  overflow: hidden;
+  padding: 3px var(--s-3);
+  border-radius: var(--r-pill);
+  background: var(--escuro-2);
+  font-family: var(--fonte-rotulo);
+  font-size: .75rem;
+  color: var(--escuro-mid);
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.janela__tela{
+  position: relative;
+  height: var(--tela-h);
+  overflow: hidden;
+  background: #fff;
+}
+.janela__rolagem{
+  height: 100%;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+  background: var(--papel-3);
+}
+.janela__rolagem::-webkit-scrollbar{ display: none; }
+.janela__rolagem:focus-visible{ outline-offset: -3px; border-radius: 0; }
+.janela__rolagem img{ width: 100%; height: auto; }
 
 /* ==========================================================================
    PÁGINAS INTERNAS — portfolio.html e projeto.html

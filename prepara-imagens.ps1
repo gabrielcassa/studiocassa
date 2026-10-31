@@ -32,18 +32,21 @@
 #         em tela retina. Era 200px ate 05/10/2026 — pesava ate 4x mais sem
 #         ganhar nitidez, porque logo pequeno so era ampliado.
 #
-#  CELULAR: a home da loja que rola dentro do celular, no modal do projeto,
-#         do topo ao fim do rodape. Capture a pagina inteira no formato
-#         celular: no Chrome, F12 > icone de celular > iPhone 12 Pro (390 de
-#         largura) > menu de tres pontos > "Capture full size screenshot".
-#         Feche antes pop-up e aviso de cookies. Salve em
-#         _prints\celular\<id>.png  e rode o script.
-#         A pagina sai FATIADA, 500px de largura e 2400 de altura por parte:
-#         assets/img/portfolio/<id>-celular-1.jpg, -2.jpg... — o site carrega
-#         cada parte so quando a tela do celular chega perto dela (uma home
-#         inteira numa imagem so passaria de 1 MB). Com -Aplicar ele escreve
-#         celular e celularPartes no dados.js. Parte acima de 200 KB, ele
+#  PREVIAS: a loja congelada, que o site mostra no celular e no computador.
+#         Quem captura e o captura-previa.js, em _previas\<id>\<data>\. Aqui
+#         cada pagina sai FATIADA, com 2400 de altura por parte:
+#         assets/img/previa/<id>/<arquivo>-<aparelho>-1.jpg, -2.jpg...
+#         O celular tem 500 de largura e o computador, 1200. O site carrega cada
+#         parte so quando a tela chega perto dela (uma pagina inteira numa imagem
+#         so passaria de 1 MB). Com -Aplicar ele escreve o previa no dados.js.
+#         Vale a captura MAIS NOVA de cada loja: ela diz quais paginas existem,
+#         e cada foto vem da pasta mais nova que a tenha. A -limpa de um dia passa
+#         na frente da real do mesmo dia. Para ficar numa captura mais antiga:
+#                  .\prepara-imagens.ps1 -So colado -Usar 2026-10-31 -Aplicar
+#         Parte de celular acima de 200 KB ou de computador acima de 350 KB, ele
 #         avisa: rode com -QualidadeCelular 65.
+#
+#  -So <id> faz so a previa daquela loja, sem tocar em capa nem logo.
 #
 #  Precisa so do Windows (System.Drawing). Nao instala nada.
 # =============================================================================
@@ -56,6 +59,8 @@ param(
   [int]$Qualidade   = 82,
   [int]$QualidadeCelular = 72,
   [int]$Deslocamento = 0,   # px para descer o corte, se o topo do print for feio
+  [string]$So       = "",   # so esta loja (o id do dados.js)
+  [string]$Usar     = "",   # a captura de _previas\<id>\ a usar, em vez da mais nova
   [switch]$Aplicar
 )
 
@@ -63,16 +68,15 @@ $ErrorActionPreference = 'Stop'
 Add-Type -AssemblyName System.Drawing
 
 $pastaPrints = Join-Path $Raiz '_prints'
-# subpasta das capturas de celular: fica de fora do laco das capas
-$pastaCelular = Join-Path $pastaPrints 'celular'
-$celularCompleta = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($pastaCelular)
+$pastaPrevias = Join-Path $Raiz '_previas'
 $pastaLogos  = Join-Path $Raiz '_logos'
 $saidaCapas  = Join-Path $Raiz 'assets\img\portfolio'
 $saidaLogos  = Join-Path $Raiz 'assets\img\logos'
+$saidaPrevias = Join-Path $Raiz 'assets\img\previa'
 $dadosJs     = Join-Path $Raiz 'assets\js\dados.js'
 if (-not (Test-Path $dadosJs)) { $dadosJs = Join-Path $Raiz 'dados.js' }
 
-foreach ($d in @($saidaCapas, $saidaLogos)) {
+foreach ($d in @($saidaCapas, $saidaLogos, $saidaPrevias)) {
   if (-not (Test-Path $d)) { $null = New-Item -ItemType Directory -Path $d -Force }
 }
 
@@ -85,8 +89,8 @@ $paramsJpg.Param[0] = New-Object System.Drawing.Imaging.EncoderParameter(
 $paramsMini = New-Object System.Drawing.Imaging.EncoderParameters(1)
 $paramsMini.Param[0] = New-Object System.Drawing.Imaging.EncoderParameter(
                         [System.Drawing.Imaging.Encoder]::Quality, [long]80)
-$paramsCelular = New-Object System.Drawing.Imaging.EncoderParameters(1)
-$paramsCelular.Param[0] = New-Object System.Drawing.Imaging.EncoderParameter(
+$paramsPrevia = New-Object System.Drawing.Imaging.EncoderParameters(1)
+$paramsPrevia.Param[0] = New-Object System.Drawing.Imaging.EncoderParameter(
                         [System.Drawing.Imaging.Encoder]::Quality, [long]$QualidadeCelular)
 
 function Redimensiona-Capa($origem, $destino) {
@@ -159,16 +163,14 @@ function Redimensiona-Logo($origem, $destino) {
   } finally { $img.Dispose() }
 }
 
-# Fatia a pagina inteira em partes de 500x2400 (a ultima, menor) e devolve
-# quantas sairam. 500px de largura: o celular do modal tem ~250px, nitido em
-# tela retina. 2400 de altura: ~1870px de pagina por parte, ~90 a 150 KB.
-function Gera-Celular($origem, $id) {
-  # as partes da captura anterior saem antes: a pagina nova pode ter menos
-  Get-ChildItem $saidaCapas -Filter "$id-celular*.jpg" -ErrorAction SilentlyContinue | Remove-Item -Force
+# Fatia a pagina inteira em partes de 2400 de altura (a ultima, menor) e devolve
+# o peso de cada uma. No celular, 500px de largura: a tela do aparelho tem ~250px,
+# nitida em tela retina; ~1870px de pagina por parte. No computador, 1200px: a
+# janela do modal tem ate ~950px; ~2880px de pagina por parte.
+function Fatia-Pagina($origem, $prefixo, $largura) {
   $img = [System.Drawing.Image]::FromFile($origem)
   $partes = @()
   try {
-    $largura = 500
     $parteFonte = 2400 * $img.Width / $largura          # altura de cada parte na captura
     $n = [Math]::Ceiling($img.Height / $parteFonte)
     # sem isto o bicubico puxa a cor de fora da imagem e escurece a borda
@@ -187,8 +189,8 @@ function Gera-Celular($origem, $id) {
           $dest = New-Object System.Drawing.Rectangle(0, 0, $largura, $altura)
           $g.DrawImage($img, $dest, 0, $topo, $img.Width, ($fim - $topo), [System.Drawing.GraphicsUnit]::Pixel, $atributos)
         } finally { $g.Dispose() }
-        $destino = Join-Path $saidaCapas "$id-celular-$k.jpg"
-        $bmp.Save($destino, $codecJpg, $paramsCelular)
+        $destino = "$prefixo-$k.jpg"
+        $bmp.Save($destino, $codecJpg, $paramsPrevia)
         $bmp.Dispose()
         $partes += [int]((Get-Item $destino).Length / 1KB)
       }
@@ -202,10 +204,9 @@ $feitos = @{}
 $capas = 0
 $pesoCapas = 0
 if (Test-Path $pastaPrints) {
-  Get-ChildItem $pastaPrints -Include *.png,*.jpg,*.jpeg -Recurse |
-  Where-Object { -not $_.FullName.StartsWith($celularCompleta + '\', [System.StringComparison]::OrdinalIgnoreCase) } |
-  ForEach-Object {
+  Get-ChildItem $pastaPrints -Include *.png,*.jpg,*.jpeg -Recurse | ForEach-Object {
     $id = $_.BaseName.ToLower()
+    if ($So) { return }   # -So e so a previa: a capa pode ter saido com outra -Qualidade
     $destino = Join-Path $saidaCapas "$id-capa.jpg"
     Redimensiona-Capa $_.FullName $destino
     $kb = [int]((Get-Item $destino).Length / 1KB)
@@ -222,6 +223,7 @@ if (Test-Path $pastaPrints) {
 # ---------------------------------------------------------------- minis ----
 $minis = 0
 Get-ChildItem $saidaCapas -Filter '*-capa.jpg' -ErrorAction SilentlyContinue | ForEach-Object {
+  if ($So) { return }
   $mini = Join-Path $saidaCapas ($_.Name -replace '-capa\.jpg$', '-mini.jpg')
   if ((Test-Path $mini) -and ((Get-Item $mini).LastWriteTime -ge $_.LastWriteTime)) { return }
   Gera-Mini $_.FullName $mini
@@ -234,6 +236,7 @@ $logos = 0
 if (Test-Path $pastaLogos) {
   Get-ChildItem $pastaLogos -Include *.png,*.jpg,*.jpeg -Recurse | ForEach-Object {
     $id = $_.BaseName.ToLower()
+    if ($So) { return }
     $destino = Join-Path $saidaLogos "$id.png"
     Redimensiona-Logo $_.FullName $destino
     Write-Host ("  logo  {0,-26} altura {1}px" -f $id, $AlturaLogo)
@@ -243,25 +246,63 @@ if (Test-Path $pastaLogos) {
   }
 } else { Write-Host "  (pasta _logos nao existe — pulei os logos)" }
 
-# -------------------------------------------------------------- celular ----
-$celulares = 0
-if (Test-Path $pastaCelular) {
-  Get-ChildItem $pastaCelular -Include *.png,*.jpg,*.jpeg -Recurse | ForEach-Object {
-    $id = $_.BaseName.ToLower()
-    $partes = Gera-Celular $_.FullName $id
-    $maior = ($partes | Measure-Object -Maximum).Maximum
-    $soma = ($partes | Measure-Object -Sum).Sum
-    $aviso = if ($maior -gt 200) { "  << PARTE ACIMA DE 200 KB - baixe -QualidadeCelular" } else { "" }
-    Write-Host ("  celular {0,-24} {1} parte(s), {2} KB no todo, maior {3} KB{4}" -f $id, $partes.Count, $soma, $maior, $aviso)
+# -------------------------------------------------------------- previas ----
+$previas = 0
+if (Test-Path $pastaPrevias) {
+  Get-ChildItem $pastaPrevias -Directory | ForEach-Object {
+    $id = $_.Name
+    if ($So -and $id -ne $So) { return }
+
+    # em ordem de nome: e a ordem das datas, com a -limpa logo depois da real do dia
+    $capturas = @(Get-ChildItem $_.FullName -Directory | Sort-Object Name |
+                  Where-Object { Test-Path (Join-Path $_.FullName 'previa.json') })
+    if ($Usar) {
+      $ate = [array]::IndexOf(@($capturas | ForEach-Object { $_.Name }), $Usar)
+      if ($ate -lt 0) { throw "$id nao tem a captura $Usar em _previas\$id" }
+      $capturas = @($capturas[0..$ate])
+    }
+    if ($capturas.Count -eq 0) { return }
+
+    $maisNova = $capturas[$capturas.Count - 1]
+    $json = Get-Content (Join-Path $maisNova.FullName 'previa.json') -Raw -Encoding UTF8 | ConvertFrom-Json
+
+    # as partes da captura anterior saem antes: a nova pode ter menos paginas
+    $pastaSaida = Join-Path $saidaPrevias $id
+    if (Test-Path $pastaSaida) { Get-ChildItem $pastaSaida -Filter '*.jpg' | Remove-Item -Force }
+    else { $null = New-Item -ItemType Directory -Path $pastaSaida -Force }
+
+    $paginas = @()
+    foreach ($pagina in $json.paginas) {
+      $campos = 'nome:"' + $pagina.nome + '",arquivo:"' + $pagina.arquivo + '",url:"' + $pagina.url + '"'
+      foreach ($aparelho in @(@('celular', 500, 200), @('computador', 1200, 350))) {
+        # a foto da pasta mais nova que a tenha
+        $cru = $null
+        for ($c = $capturas.Count - 1; $c -ge 0 -and -not $cru; $c--) {
+          $tentativa = Join-Path $capturas[$c].FullName ($pagina.arquivo + '-' + $aparelho[0] + '.png')
+          if (Test-Path $tentativa) { $cru = $tentativa }
+        }
+        if (-not $cru) { continue }
+        $prefixo = Join-Path $pastaSaida ($pagina.arquivo + '-' + $aparelho[0])
+        $partes = Fatia-Pagina $cru $prefixo $aparelho[1]
+        $maior = ($partes | Measure-Object -Maximum).Maximum
+        $soma = ($partes | Measure-Object -Sum).Sum
+        $aviso = if ($maior -gt $aparelho[2]) { "  << PARTE ACIMA DE $($aparelho[2]) KB - baixe -QualidadeCelular" } else { "" }
+        Write-Host ("  previa {0,-22} {1,-24} {2,2} parte(s), {3,5} KB no todo, maior {4} KB{5}" -f $id, ($pagina.arquivo + '-' + $aparelho[0]), $partes.Count, $soma, $maior, $aviso)
+        $campos += ',' + $aparelho[0] + ':' + $partes.Count
+      }
+      # pagina sem foto em aparelho nenhum nao vira botao
+      if ($campos -match ',(celular|computador):\d+') { $paginas += '{' + $campos + '}' }
+      else { Write-Host ("  previa {0,-22} {1}: sem foto, ficou de fora" -f $id, $pagina.arquivo) }
+    }
+    if ($paginas.Count -eq 0) { return }
     if (-not $feitos.ContainsKey($id)) { $feitos[$id] = @{} }
-    $feitos[$id].celular = "assets/img/portfolio/$id-celular.jpg"
-    $feitos[$id].celularPartes = $partes.Count
-    $celulares++
+    $feitos[$id].previa = 'previa:{data:"' + ($maisNova.Name -replace '-limpa$', '') + '",paginas:[' + ($paginas -join ',') + ']}'
+    $previas++
   }
 }
 
 Write-Host ""
-Write-Host "$capas capa(s), $minis mini(s), $logos logo(s) e $celulares celular(es) gerados."
+Write-Host "$capas capa(s), $minis mini(s), $logos logo(s) e $previas previa(s) gerados."
 if ($capas -gt 0) { Write-Host ("Peso somado das capas: {0} KB (media {1} KB). Orcamento: 200 KB por capa." -f $pesoCapas, [int]($pesoCapas/$capas)) }
 
 # ------------------------------------------------- escreve no dados.js ----
@@ -269,7 +310,7 @@ if ($Aplicar -and (Test-Path $dadosJs)) {
   $txt = [System.IO.File]::ReadAllText($dadosJs, [System.Text.Encoding]::UTF8)
   $mudou = 0
   foreach ($id in $feitos.Keys) {
-    foreach ($campo in @('capa','logo','celular')) {
+    foreach ($campo in @('capa','logo')) {
       if (-not $feitos[$id].ContainsKey($campo)) { continue }
       $valor = $feitos[$id][$campo]
       # Troca campo:"" pelo caminho, apenas dentro do bloco daquele id.
@@ -282,16 +323,16 @@ if ($Aplicar -and (Test-Path $dadosJs)) {
       $txt = [regex]::Replace($txt, $padrao, $novo)
       if ($txt -ne $antes) { $mudou++ }
     }
-    # celularPartes muda a cada captura nova: troca o numero se ja existe,
-    # ou entra logo antes do resumo:, dentro do bloco daquele id
-    if ($feitos[$id].ContainsKey('celularPartes')) {
-      $n = $feitos[$id].celularPartes
+    # o previa muda a cada captura nova: troca a linha se ja existe, ou entra
+    # logo antes do resumo:, dentro do bloco daquele id
+    if ($feitos[$id].ContainsKey('previa')) {
+      $linha = $feitos[$id].previa
       $bloco = '(\{\s*id:"' + [regex]::Escape($id) + '"(?:(?!id:")[\s\S])*?)'
       $antes = $txt
-      if ([regex]::IsMatch($txt, $bloco + 'celularPartes:\d+')) {
-        $txt = [regex]::Replace($txt, $bloco + 'celularPartes:\d+', '${1}celularPartes:' + $n)
+      if ([regex]::IsMatch($txt, $bloco + 'previa:\{[^\r\n]*\},')) {
+        $txt = [regex]::Replace($txt, $bloco + 'previa:\{[^\r\n]*\},', '${1}' + $linha + ',')
       } else {
-        $txt = [regex]::Replace($txt, $bloco + 'resumo:', '${1}celularPartes:' + $n + ",`r`n    resumo:")
+        $txt = [regex]::Replace($txt, $bloco + 'resumo:', '${1}' + $linha + ",`r`n    resumo:")
       }
       if ($txt -ne $antes) { $mudou++ }
     }

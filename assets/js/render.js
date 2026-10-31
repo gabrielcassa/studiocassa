@@ -227,10 +227,21 @@ window.SCRender = (function () {
     return (typeof PROJETOS !== 'undefined') ? PROJETOS : [];
   }
 
+  function temPrevia(p) {
+    return !!(p.previa && p.previa.paginas && p.previa.paginas.length);
+  }
+
+  /* `semLink`: a loja saiu do ar ou mudou demais depois da entrega. Nenhum botão
+     leva até ela, e o que fica é a prévia. */
+  function temLink(p) {
+    return !!p.url && !p.semLink;
+  }
+
   function projetoVisivel(p) {
     if (p.bloqueio) return false;
     if (p.status !== 'concluido') return false;
-    if (!p.url) return false;
+    /* loja que saiu do ar continua no site se a prévia foi salva */
+    if (!p.url && !temPrevia(p)) return false;
     /* "outras" e "citacao" não têm foto: precisam só do endereço */
     if (p.exibicao === 'citacao' || p.exibicao === 'outras') return true;
     return !!(p.capa && p.logo);
@@ -411,9 +422,11 @@ window.SCRender = (function () {
     if (!caixas.length) return;
 
     var lista = projetosPor('outras');
-    /* o primeiro com emDestaque (e a home capturada) vira o cartão de
+    /* o primeiro com emDestaque (e a home salva no celular) vira o cartão de
        destaque onde houver vaga para ele — hoje, só na home */
-    var destaque = lista.filter(function (p) { return p.emDestaque && p.celular; })[0] || null;
+    var destaque = lista.filter(function (p) {
+      return p.emDestaque && temPrevia(p) && p.previa.paginas[0].celular;
+    })[0] || null;
 
     Array.prototype.forEach.call(caixas, function (caixa) {
       /* Remove só o próprio [data-outras]: na home ele é um bloco da seção
@@ -430,13 +443,18 @@ window.SCRender = (function () {
 
       caixa.querySelector('.outras__lista').innerHTML = itens.map(function (p) {
         var det = [pastilha(p), p.tipo, p.segmento, p.resumo].filter(Boolean).map(esc).join(' · ');
+        var miolo = '<span class="outra__nome">' + esc(p.nome) + '</span>' +
+                    (det ? '<span class="outra__det">' + det + '</span>' : '') +
+                    seta('outra__seta', 22);
+        /* com prévia, a linha abre o projeto aqui dentro; sem ela, leva à loja */
         return '<li class="outra">' +
-                 '<a href="' + esc(p.url) + '" target="_blank" rel="noopener"' +
-                 ' aria-label="' + esc(p.nome) + ' — ver no ar (abre em nova aba)">' +
-                   '<span class="outra__nome">' + esc(p.nome) + '</span>' +
-                   (det ? '<span class="outra__det">' + det + '</span>' : '') +
-                   seta('outra__seta', 22) +
-                 '</a>' +
+                 (temPrevia(p)
+                   ? '<button class="outra__abrir" type="button" data-projeto="' + esc(p.id) + '"' +
+                     ' aria-label="Ver o projeto ' + esc(p.nome) + '">' + miolo + '</button>'
+                   : temLink(p)
+                     ? '<a href="' + esc(p.url) + '" target="_blank" rel="noopener"' +
+                       ' aria-label="' + esc(p.nome) + ' — ver no ar (abre em nova aba)">' + miolo + '</a>'
+                     : '<span class="outra__abrir">' + miolo + '</span>') +
                '</li>';
       }).join('');
 
@@ -444,60 +462,156 @@ window.SCRender = (function () {
     });
   }
 
-  /* os dois botões do fim do caso — iguais no modal e no projeto.html */
+  /* os botões do fim do caso — iguais no modal e no projeto.html */
   function acoesProjeto(p) {
     return '<div class="modal__acoes">' +
-             '<a class="btn btn--tinta" href="' + esc(p.url) + '" target="_blank" rel="noopener">' +
-               'Ver loja no ar' + seta('seta', 15) + '</a>' +
+             (temLink(p)
+               ? '<a class="btn btn--tinta" href="' + esc(p.url) + '" target="_blank" rel="noopener">' +
+                 'Ver loja no ar' + seta('seta', 15) + '</a>'
+               : '') +
              '<a class="link-sub" data-zap="Olá, Gabriel! Vi o projeto ' + esc(p.nome) +
              ' no site e quero algo parecido." href="https://wa.me/' + SC.WHATSAPP +
              '">Quero algo parecido</a>' +
            '</div>';
   }
 
-  /* as partes da home, uma <img> por parte (ver htmlCelular). `preguica`: a
-     primeira também espera a tela chegar perto (o celular do cartão de
-     destaque mora longe do topo da página; o do modal, não) */
-  function partesCelular(p, alt, preguica) {
-    var partes = p.celularPartes || 0;
+  /* ----------------------------------------------------------------------
+     A PRÉVIA — a loja congelada, para ser vista aqui dentro mesmo que ela
+     mude ou saia do ar. Vem do `previa` do dados.js: páginas (Início, Produto…)
+     e, em cada uma, quantas partes o celular e o computador têm.
+
+     Cada página é uma imagem inteira, fatiada em partes de 2400 de altura:
+     assets/img/previa/<id>/<arquivo>-<aparelho>-<k>.jpg. Só a primeira parte
+     vem em src; as outras, em data-src, e o site.js põe cada uma quando a tela
+     chega perto dela.
+
+     Aqui só se monta. Quem troca a página e o aparelho é o site.js.
+     ---------------------------------------------------------------------- */
+  var LARGURA_PARTE = { celular: 500, computador: 1200 };
+  var ICONE_APARELHO = {
+    celular: '<svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" focusable="false">' +
+             '<rect x="4.25" y="1.25" width="7.5" height="13.5" rx="1.75" fill="none" stroke="currentColor" stroke-width="1.5"/>' +
+             '<path d="M7.25 12.25h1.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>',
+    computador: '<svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" focusable="false">' +
+                '<rect x="1.25" y="2.25" width="13.5" height="9" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.5"/>' +
+                '<path d="M5.5 14.25h5M8 11.5v2.75" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>'
+  };
+
+  /* `preguica`: a primeira também espera a tela chegar perto (o celular do
+     cartão de destaque mora longe do topo da página; o do modal, não) */
+  function partesPrevia(p, pagina, aparelho, alt, preguica) {
+    var total = pagina[aparelho] || 0;
+    var base = 'assets/img/previa/' + p.id + '/' + pagina.arquivo + '-' + aparelho + '-';
+    var medidas = ' width="' + LARGURA_PARTE[aparelho] + '" height="2400"';
     var lazy = preguica ? ' loading="lazy"' : '';
-    if (!partes) {
-      return '<img src="' + esc(caminho(p.celular)) + '" alt="' + alt + '" width="500"' + lazy + ' decoding="async">';
-    }
     var imgs = '';
-    for (var k = 1; k <= partes; k++) {
-      var src = esc(caminho(String(p.celular).replace(/\.jpg$/i, '-' + k + '.jpg')));
+    for (var k = 1; k <= total; k++) {
+      var src = esc(caminho(base + k + '.jpg'));
       imgs += k === 1
-        ? '<img src="' + src + '" alt="' + alt + '" width="500" height="2400"' + lazy + ' decoding="async">'
-        : '<img data-src="' + src + '" alt="" width="500" height="2400" decoding="async">';
+        ? '<img src="' + src + '" alt="' + alt + '"' + medidas + lazy + ' decoding="async">'
+        : '<img data-src="' + src + '" alt=""' + medidas + ' decoding="async">';
     }
     return imgs;
   }
 
-  /* O celular do modal: a home INTEIRA da loja, do topo ao rodapé, dentro de
-     um aparelho desenhado só com CSS. A captura vem fatiada em partes de
-     500x2400 (`celular` + `celularPartes` no dados.js: <id>-celular-1.jpg,
-     -2.jpg...): só a primeira parte vem em src; as outras, em data-src, e o
-     site.js põe cada uma quando a tela chega perto dela. Sem celularPartes,
-     `celular` é uma imagem só. A tela é uma região que rola sozinha — roda
-     do mouse, dedo ou setas do teclado (tabindex). A barrinha é a de rolagem
-     do iPhone, desenhada: aparece enquanto se rola. */
-  function htmlCelular(p) {
+  /* "colado.art.br", para a barra de endereço desenhada */
+  function dominio(url) {
+    return String(url || '').replace(/^https?:\/\/(www\.)?/i, '').replace(/\/.*$/, '');
+  }
+
+  /* o quadro de um aparelho, com a página dentro: o celular desenhado ou a
+     janela do navegador. A tela é uma região que rola sozinha — roda do
+     mouse, dedo ou setas do teclado (tabindex). A barrinha é a de rolagem do
+     iPhone, desenhada: aparece enquanto se rola. */
+  function htmlPalco(p, indice, aparelho) {
+    var pagina = p.previa.paginas[indice];
     var nome = esc(p.nome);
-    var imgs = partesCelular(p, 'Página inicial de ' + nome + ' no celular, do topo ao rodapé', false);
-    return '<figure class="aparelho">' +
-             '<div class="aparelho__corpo">' +
-               '<div class="aparelho__tela">' +
-                 '<div class="aparelho__rolagem" tabindex="0" role="region"' +
-                 ' aria-label="Celular com a loja ' + nome + '">' + imgs + '</div>' +
-                 '<span class="aparelho__barra" aria-hidden="true"></span>' +
+    var titulo = esc(pagina.nome);
+    var imgs = partesPrevia(p, pagina, aparelho,
+      titulo + ' de ' + nome + ' no ' + aparelho + ', do topo ao rodapé', false);
+    var barra = '<span class="aparelho__barra" aria-hidden="true"></span>';
+
+    if (aparelho === 'computador') {
+      return '<div class="janela">' +
+               '<div class="janela__topo" aria-hidden="true">' +
+                 '<span class="janela__botoes"><i></i><i></i><i></i></span>' +
+                 '<span class="janela__endereco">' + esc(dominio(p.url)) + '</span>' +
                '</div>' +
+               '<div class="janela__tela">' +
+                 '<div class="janela__rolagem" data-previa-tela tabindex="0" role="region"' +
+                 ' aria-label="Computador com a loja ' + nome + ': ' + titulo + '">' + imgs + '</div>' +
+                 barra +
+               '</div>' +
+             '</div>';
+    }
+    return '<div class="aparelho__corpo">' +
+             '<div class="aparelho__tela">' +
+               '<div class="aparelho__rolagem" data-previa-tela tabindex="0" role="region"' +
+               ' aria-label="Celular com a loja ' + nome + ': ' + titulo + '">' + imgs + '</div>' +
+               barra +
              '</div>' +
-             '<figcaption class="aparelho__dica rotulo">' +
-               '<svg width="12" height="12" viewBox="0 0 16 16" aria-hidden="true" focusable="false">' +
-                 '<path fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"' +
-                 ' stroke-linejoin="round" d="M8 2v12M4.5 5.5L8 2l3.5 3.5M4.5 10.5L8 14l3.5-3.5"/></svg>' +
-               'Role a tela do celular' +
+           '</div>';
+  }
+
+  /* "outubro de 2026" */
+  function mesAno(iso) {
+    var d = new Date(String(iso) + 'T12:00:00');
+    if (isNaN(d)) return '';
+    return d.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
+  }
+
+  /* A frase embaixo da prévia. Nas lojas no ar, diz que a prévia é uma foto
+     datada: depois da entrega a loja é do cliente, e o que está no ar pode ser
+     outra coisa. Sem o link, diz por que não há para onde ir (`aviso`). */
+  function legendaPrevia(p) {
+    if (!temLink(p)) {
+      return 'Prévia da loja como foi entregue.' + (p.aviso ? ' ' + esc(p.aviso) : '');
+    }
+    var quando = mesAno(p.previa.data);
+    return (quando ? 'Prévia salva em ' + quando + '. ' : '') + 'A loja no ar pode ter mudado desde então.';
+  }
+
+  /* a prévia inteira: botões das páginas, botões do aparelho (cada grupo só
+     aparece se houver o que escolher), o quadro e a legenda */
+  function htmlPrevia(p) {
+    var paginas = p.previa.paginas;
+    var aparelho = paginas[0].celular ? 'celular' : 'computador';
+    var algumComputador = paginas.some(function (g) { return g.computador; });
+    var algumCelular = paginas.some(function (g) { return g.celular; });
+
+    var botoesPagina = paginas.length < 2 ? '' :
+      '<div class="previa__grupo" role="group" aria-label="Páginas da loja">' +
+        paginas.map(function (g, i) {
+          return '<button class="filtro" type="button" data-previa-pagina="' + i + '"' +
+                 ' aria-pressed="' + (i === 0) + '">' + esc(g.nome) + '</button>';
+        }).join('') +
+      '</div>';
+
+    /* só o ícone, com o nome para o leitor de tela: assim os dois botões cabem
+       na mesma linha das páginas, e sobra altura para a loja */
+    var botoesAparelho = !(algumCelular && algumComputador) ? '' :
+      '<div class="previa__grupo previa__aparelhos" role="group" aria-label="Aparelho">' +
+        ['celular', 'computador'].map(function (a) {
+          var rotulo = a === 'celular' ? 'Ver no celular' : 'Ver no computador';
+          return '<button class="filtro" type="button" data-previa-aparelho="' + a + '"' +
+                 ' aria-pressed="' + (a === aparelho) + '"' + (paginas[0][a] ? '' : ' disabled') +
+                 ' aria-label="' + rotulo + '" title="' + rotulo + '"' +
+                 ' data-i18n="previa.' + a + '" data-i18n-attr="aria-label">' + ICONE_APARELHO[a] + '</button>';
+        }).join('') +
+      '</div>';
+
+    return '<figure class="previa" data-previa="' + esc(p.id) + '" data-previa-aparelho-atual="' + aparelho + '">' +
+             (botoesPagina || botoesAparelho
+               ? '<div class="previa__controles">' + botoesPagina + botoesAparelho + '</div>' : '') +
+             '<div class="previa__palco" data-previa-palco>' + htmlPalco(p, 0, aparelho) + '</div>' +
+             '<figcaption class="previa__legenda rotulo">' +
+               '<span class="aparelho__dica">' +
+                 '<svg width="12" height="12" viewBox="0 0 16 16" aria-hidden="true" focusable="false">' +
+                   '<path fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"' +
+                   ' stroke-linejoin="round" d="M8 2v12M4.5 5.5L8 2l3.5 3.5M4.5 10.5L8 14l3.5-3.5"/></svg>' +
+                 '<span data-i18n="previa.dica">Role a tela</span>' +
+               '</span>' +
+               '<span class="previa__data">' + legendaPrevia(p) + '</span>' +
              '</figcaption>' +
            '</figure>';
   }
@@ -514,7 +628,7 @@ window.SCRender = (function () {
              '<div class="destaque__aparelho" data-projeto="' + esc(p.id) + '" aria-hidden="true">' +
                '<div class="aparelho__corpo">' +
                  '<div class="aparelho__tela">' +
-                   '<div class="aparelho__rolagem">' + partesCelular(p, '', true) + '</div>' +
+                   '<div class="aparelho__rolagem">' + partesPrevia(p, p.previa.paginas[0], 'celular', '', true) + '</div>' +
                  '</div>' +
                '</div>' +
              '</div>' +
@@ -529,10 +643,12 @@ window.SCRender = (function () {
                    '<span data-i18n="outras.verProjeto">Ver o projeto</span>' +
                    '<span class="so-leitor"> ' + esc(p.nome) + '</span>' +
                  '</button>' +
-                 '<a class="link-sub" href="' + esc(p.url) + '" target="_blank" rel="noopener">' +
-                   '<span data-i18n="outras.noAr">Ver loja no ar</span>' +
-                   '<span class="so-leitor"> ' + esc(p.nome) + ' (abre em nova aba)</span>' +
-                 '</a>' +
+                 (temLink(p)
+                   ? '<a class="link-sub" href="' + esc(p.url) + '" target="_blank" rel="noopener">' +
+                     '<span data-i18n="outras.noAr">Ver loja no ar</span>' +
+                     '<span class="so-leitor"> ' + esc(p.nome) + ' (abre em nova aba)</span>' +
+                     '</a>'
+                   : '') +
                '</div>' +
              '</div>' +
            '</article>';
@@ -541,8 +657,8 @@ window.SCRender = (function () {
   /* ----------------------------------------------------------------------
      htmlModal(p) — devolve o miolo do modal de um projeto, como texto.
      Só monta; quem abre, fecha, prende o foco e devolve o foco ao card de
-     origem é o site.js. Com `celular`, o aparelho entra logo abaixo da
-     linha de dados, antes dos textos e dos botões.
+     origem é o site.js. Com `previa`, ela entra logo abaixo da linha de
+     dados, antes dos textos e dos botões.
      ---------------------------------------------------------------------- */
   function htmlModal(p) {
       var pas = pastilha(p);
@@ -557,7 +673,7 @@ window.SCRender = (function () {
       if (p.ano) meta.push(esc(p.ano));
       if (meta.length) h += '<p class="modal__meta">' + meta.join(' · ') + '</p>';
 
-      if (p.celular) h += htmlCelular(p);
+      if (temPrevia(p)) h += htmlPrevia(p);
 
       if (p.resumo)  h += '<p class="lead">' + esc(p.resumo) + '</p>';
 
@@ -603,10 +719,11 @@ window.SCRender = (function () {
 
     caixa.querySelector('.citacoes__lista').innerHTML = lista.map(function (p) {
       var detalhe = [p.tipo, p.plataforma].filter(Boolean).join(' · ');
-      return '<li><a href="' + esc(p.url) + '" target="_blank" rel="noopener">' +
-               '<span class="citacao__nome">' + esc(p.nome) + '</span>' +
-               (detalhe ? '<span class="citacao__det">' + esc(detalhe) + '</span>' : '') +
-             '</a></li>';
+      var miolo = '<span class="citacao__nome">' + esc(p.nome) + '</span>' +
+                  (detalhe ? '<span class="citacao__det">' + esc(detalhe) + '</span>' : '');
+      return temLink(p)
+        ? '<li><a href="' + esc(p.url) + '" target="_blank" rel="noopener">' + miolo + '</a></li>'
+        : '<li>' + miolo + '</li>';
     }).join('');
 
     caixa.hidden = false;
@@ -781,6 +898,8 @@ window.SCRender = (function () {
             '<img class="projeto__hero" src="' + esc(caminho(p.capa)) + '" alt="Loja ' +
               esc(p.nome) + '" width="800" height="1200" fetchpriority="high" decoding="async">';
 
+    if (temPrevia(p)) h += htmlPrevia(p);
+
     if (p.desafio) h += '<h2>O desafio</h2><p>' + esc(p.desafio) + '</p>';
 
     if (p.entrega && p.entrega.length) {
@@ -893,6 +1012,7 @@ window.SCRender = (function () {
   return {
     montarTudo:    montarTudo,
     htmlModal:     htmlModal,
+    htmlPalco:     htmlPalco,
     projetoPorId:  function (id) {
       return todosProjetos().filter(function (p) { return p.id === id; })[0];
     },

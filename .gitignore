@@ -4,6 +4,12 @@
 _prints/
 _logos/
 
+# As capturas cruas das lojas (captura-previa.js): PNG de ate 30 MB e o arquivo
+# .mhtml de cada pagina. Nao vao para o git nem para o site: faca copia, porque
+# de loja que saiu do ar elas sao o unico original. O site usa as partes tratadas,
+# em assets/img/previa/.
+_previas/
+
 # Sistema
 .DS_Store
 Thumbs.db

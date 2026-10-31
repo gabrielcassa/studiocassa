@@ -266,8 +266,8 @@ const PROJETOS = [
 
   /* =====================================================================
      SHOPIFY E OUTRAS PLATAFORMAS — lista própria, abaixo do "Ver todos os
-     projetos". Plataforma conferida no endereço em 04/10/2026. Glaucia
-     Goulart roda em Tray, não em Shopify: por isso a seção não se chama só
+     projetos". Plataforma conferida no endereço em 04/10/2026. Dolce Affetto
+     roda em Tray, não em Shopify: por isso a seção não se chama só
      "Shopify". FAOL entrou aqui por ser loja Shopify, como a VITAL.
      Em 25/10/2026 entraram, na frente, os sites completos que ele fez fora
      da Nuvemshop, na ordem em que ele mandou; plataforma conferida no
@@ -289,14 +289,6 @@ const PROJETOS = [
     previa:{data:"2026-10-31",paginas:[{nome:"Início",arquivo:"inicio",url:"/",celular:5,computador:3}]},
     resumo:"", desafio:"", entrega:[], resultado:"", imagens:[], depoimento:{autor:"",texto:""} },
 
-  /* Voltou em 25/10/2026 como site completo (antes estava como landing
-     page). O endereço abre como "Toledo Reservatórios Metálicos". */
-  { id:"toledo-reservatorios", nome:"Toledo Reservatórios", tipo:"Site completo", status:"concluido", exibicao:"outras",
-    plataforma:"WordPress", tema:"", segmento:"Reservatórios metálicos", ano:"",
-    url:"https://xn--toledoreservatrios-31b.com.br/", capa:"", logo:"",
-    previa:{data:"2026-10-31",paginas:[{nome:"Início",arquivo:"inicio",url:"/",celular:6,computador:3}]},
-    resumo:"", desafio:"", entrega:[], resultado:"", imagens:[], depoimento:{autor:"",texto:""} },
-
   /* Voltou em 25/10/2026 como site completo (antes estava como otimização). */
   { id:"atuale-odontologia", nome:"Atuale Odontologia Integrada", tipo:"Site completo", status:"concluido", exibicao:"outras",
     plataforma:"WordPress", tema:"", segmento:"Odontologia", ano:"",
@@ -316,12 +308,6 @@ const PROJETOS = [
     previa:{data:"2026-10-31",paginas:[{nome:"Início",arquivo:"inicio",url:"/",celular:7,computador:4}]},
     resumo:"", desafio:"", entrega:[], resultado:"", imagens:[], depoimento:{autor:"",texto:""} },
 
-  /* Sem prévia, por decisão de 31/10/2026: a linha leva direto à loja. */
-  { id:"glaucia-goulart", nome:"Glaucia Goulart Bolsas", tipo:"Otimização", status:"concluido", exibicao:"outras",
-    plataforma:"Tray", tema:"", segmento:"Bolsas no atacado", ano:"",
-    url:"https://www.glauciagoulartbolsas.com.br/", capa:"", logo:"",
-    resumo:"Implementação de layout.", desafio:"", entrega:[], resultado:"", imagens:[], depoimento:{autor:"",texto:""} },
-
   /* A prévia no computador passa do teto de 350 KB por parte: sai com
      -QualidadeCelular 65 (338 KB). */
   { id:"faol-apicultura", nome:"FAOL Apicultura", tipo:"Otimização", status:"concluido", exibicao:"outras",
@@ -338,9 +324,11 @@ const PROJETOS = [
          Design, Life NT, Luna Confecções, Pátio Matosinhos, Two Beats, New
          Capelli, MBS Purificadores, Fraktal Softwares, No Glamour e Real
          Conforto. Os registros completos estão no histórico do git (commit
-         a6e23c2). Toledo Reservatórios, Atuale e Dolce Affetto, que também
-         tinham saído, voltaram em 25/10/2026 como sites completos, lá em
-         cima. */
+         a6e23c2). Atuale e Dolce Affetto, que também tinham saído, voltaram
+         em 25/10/2026 como sites completos, lá em cima.
+     Toledo Reservatórios (WordPress, tinha voltado com elas) e Glaucia Goulart
+     Bolsas (Tray) saíram em 31/10/2026, por decisão dele: não agregam. Os
+     registros e as partes da prévia da Toledo estão no commit a07486f. */
 
 ];
 

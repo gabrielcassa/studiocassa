@@ -356,8 +356,8 @@ nas 7 páginas.
   720 para 1040px.
 - **Cartão de destaque** da lista "A Nuvemshop é a casa, não a única."
   (`destaqueCelular()` no `site.js`): a home da loja desce sozinha dentro do
-  celular, devagar (36 px/s, a constante `VEL`), para 2,5 s no rodapé, volta
-  ao topo e recomeça — uma volta da VITAL leva ~2,5 min. Para com o mouse
+  celular, devagar (54 px/s, a constante `VEL`), para 2,5 s no rodapé, volta
+  ao topo e recomeça — uma volta da VITAL leva ~2 min. Para com o mouse
   andando em cima do celular (a página passando por baixo de um mouse
   parado não conta), com o foco do teclado no cartão, com o modal aberto e
   com o "Pausar movimento". A roda do mouse e o dedo em cima dele rolam a
@@ -424,7 +424,7 @@ O que decide a velocidade do site são as **imagens**, não o código.
 
 | item | hoje | teto |
 |---|---|---|
-| CSS + JS (soma dos gzip) | 66,74 KB | 45 KB, informativo |
+| CSS + JS (soma dos gzip) | 66,66 KB | 45 KB, informativo |
 | cada capa | 85 a 187 KB | **200 KB** |
 | primeira dobra | ~243 KB | 600 KB |
 | cada parte da prévia no celular | até 162 KB, só ao chegar nela | **200 KB** |

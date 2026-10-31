@@ -1342,7 +1342,7 @@
 
   /* ----------------------------------------------------------------------
      destaqueCelular() — no cartão de destaque da lista "outras", a home da
-     loja desce sozinha dentro do celular, devagar (36px/s), para 2,5s no
+     loja desce sozinha dentro do celular, devagar (54px/s), para 2,5s no
      rodapé, volta ao topo em 1,4s e recomeça. Só anda com o cartão na
      tela e nada aberto por cima; para com o mouse andando em cima do
      celular, com o foco do teclado dentro, com "Pausar movimento" e com
@@ -1354,7 +1354,7 @@
     var tela = cartao && cartao.querySelector('.aparelho__rolagem');
     if (!tela || parado()) return;
 
-    var VEL = 36, FIM = 2500, VOLTA = 1400, TOPO = 1500;
+    var VEL = 54, FIM = 2500, VOLTA = 1400, TOPO = 1500;
     var botao = document.querySelector('[data-movimento]');
     var pausadoAntes = false;
     try { pausadoAntes = localStorage.getItem('cassa-movimento') === 'pausado'; } catch (e) { /* modo anônimo */ }

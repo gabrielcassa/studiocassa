@@ -35,7 +35,8 @@
      semLink:true → (opcional) a loja saiu do ar, ou mudou tanto que não
             representa mais o trabalho: some todo botão que leva até ela, e fica
             a prévia. Tira do site um "Ver loja no ar" morto ou enganoso.
-     aviso → (opcional, com semLink) a frase que explica, embaixo da prévia.
+     aviso → (opcional, com semLink) a frase que explica, logo acima da prévia:
+            é o que se lê primeiro ao abrir o modal.
      logo → assets/img/logos/<id>.png             (fundo transparente — idem)
             O site mostra todo logo como SILHUETA de uma cor: logo colorido
             com fundo próprio (adesivo, selo) vira borrão — precisa de uma
@@ -50,8 +51,8 @@
    ONDE CADA PROJETO APARECE  (campo `exibicao`)
      "destaque" → galeria da home ("Loja de verdade, no ar agora."), órbita
                   do hero + grade do portfolio.html.
-                  Só os melhores, e só Nuvemshop. É a vitrine. Loja com semLink
-                  não entra aqui: o título da seção diz "no ar agora".
+                  Só os melhores, e só Nuvemshop. É a vitrine. Loja que encerrou
+                  continua aqui: o card fica, e o aviso no modal explica.
      "grade"    → só na grade de portfolio.html, com card completo.
      "outras"   → lista "A Nuvemshop é a casa, não a única." na home e
                   "Shopify e outras plataformas" no portfolio.html. Sem foto:
@@ -150,11 +151,11 @@ const PROJETOS = [
      A marca encerra as vendas em poucos dias, depois de uma queima de estoque.
      Pedido de 30/10/2026: o projeto não pode sair do site. Por isso a
      prévia, a versão limpa da captura de 31/10 (sem a campanha de despedida);
-     a real está em _previas/colado/2026-10-31/. Saiu da galeria da home, cujo
-     título diz "no ar agora", e segue na grade do portfólio. Para voltar à
-     galeria, o título precisa mudar. */
-  { id:"colado", nome:"Colado", tipo:"E-commerce completo", status:"concluido", exibicao:"grade", semLink:true,
-    aviso:"A marca pausou as vendas em 2026.",
+     a real está em _previas/colado/2026-10-31/. Pedido de 31/10/2026: o card
+     continua na galeria da home, mesmo com o título "no ar agora", e quem abre
+     lê o aviso, sem link para a loja. */
+  { id:"colado", nome:"Colado", tipo:"E-commerce completo", status:"concluido", exibicao:"destaque", semLink:true,
+    aviso:"A loja finalizou as operações. Esta prévia mostra como ela estava no ar.",
     plataforma:"Nuvemshop", tema:"Flex", segmento:"", ano:"",
     url:"https://www.colado.art.br/", capa:"assets/img/portfolio/colado-capa.jpg", capaGaleria:"assets/img/portfolio/colado-cartao.png", logo:"assets/img/logos/colado.png",
     previa:{data:"2026-10-31",paginas:[{nome:"Início",arquivo:"inicio",url:"/",celular:3,computador:3},{nome:"Lambe-lambe",arquivo:"lambe-lambe",url:"/produtos/kit-lambe-lambe-fragmentos-esmeralda-colagem-decorativo-estiloso-arte-brasileira/",celular:4,computador:2},{nome:"Quadro",arquivo:"quadro",url:"/produtos/quadro-a3-carranca/",celular:4,computador:2},{nome:"Sobre",arquivo:"sobre",url:"/sobre-a-colado/",celular:3,computador:1},{nome:"Como aplicar",arquivo:"como-aplicar",url:"/como-aplicar/",celular:2,computador:1}]},
@@ -235,8 +236,7 @@ const PROJETOS = [
 
   /* Saíram da vitrine (então carrossel) por decisão dele e foram para
      LOJAS_FEITAS, como registro: Ideal Forma em 05/10/2026 e Livraria
-     Shalom Adonai em 22/10/2026. A Colado saiu da galeria em 30/10/2026 e segue
-     na grade do portfólio, com a prévia. */
+     Shalom Adonai em 22/10/2026. */
 
   /* =====================================================================
      ⏳ GALERIA — AINDA NÃO PRONTAS. Ficam aqui com exibicao:"destaque" e

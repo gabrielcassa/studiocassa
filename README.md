@@ -159,7 +159,7 @@ O campo `exibicao` decide onde o projeto aparece:
 
 - `"destaque"` → galeria em profundidade da home ("Loja de verdade, no ar
   agora."), órbita do hero **e** grade do portfólio. Só os melhores, e só
-  Nuvemshop. Loja com `semLink` não entra: o título da seção diz "no ar agora".
+  Nuvemshop. Loja que encerrou continua aqui, com o aviso no modal.
 - `"grade"` → só na grade de `portfolio.html`.
 - `"outras"` → lista **"A Nuvemshop é a casa, não a única."**, embaixo do
   "Ver todos os projetos" da home, e **"Shopify e outras plataformas"**, no
@@ -260,9 +260,9 @@ Colado tem 20, então apague de lá as que não devem virar botão.
 ### Quando a loja sai do ar
 
 No `dados.js`, ponha `semLink:true` (todo botão que leva à loja some) e um `aviso`
-com a frase que aparece embaixo da prévia. Tire a loja de `"destaque"`, porque o
-título da galeria diz "no ar agora", e refaça a conta do selo. Foi o que se fez com a
-Colado em 30/10/2026.
+com a frase que aparece logo acima da prévia, e refaça a conta do selo. O card fica
+onde estava, mesmo na galeria cujo título diz "no ar agora": quem abre lê o aviso.
+Foi o que se fez com a Colado em 31/10/2026.
 
 ---
 
@@ -424,7 +424,7 @@ O que decide a velocidade do site são as **imagens**, não o código.
 
 | item | hoje | teto |
 |---|---|---|
-| CSS + JS (soma dos gzip) | 66,43 KB | 45 KB, informativo |
+| CSS + JS (soma dos gzip) | 66,74 KB | 45 KB, informativo |
 | cada capa | 85 a 187 KB | **200 KB** |
 | primeira dobra | ~243 KB | 600 KB |
 | cada parte da prévia no celular | até 162 KB, só ao chegar nela | **200 KB** |

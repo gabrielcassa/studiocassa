@@ -562,19 +562,20 @@ window.SCRender = (function () {
 
   /* A frase embaixo da prévia. Nas lojas no ar, diz que a prévia é uma foto
      datada: depois da entrega a loja é do cliente, e o que está no ar pode ser
-     outra coisa. Sem o link, diz por que não há para onde ir (`aviso`). */
+     outra coisa. Com `aviso`, não há frase aqui: ele já explica, em cima. */
   function legendaPrevia(p) {
-    if (!temLink(p)) {
-      return 'Prévia da loja como foi entregue.' + (p.aviso ? ' ' + esc(p.aviso) : '');
-    }
+    if (p.aviso) return '';
+    if (!temLink(p)) return 'Prévia da loja como foi entregue.';
     var quando = mesAno(p.previa.data);
     return (quando ? 'Prévia salva em ' + quando + '. ' : '') + 'A loja no ar pode ter mudado desde então.';
   }
 
-  /* a prévia inteira: botões das páginas, botões do aparelho (cada grupo só
-     aparece se houver o que escolher), o quadro e a legenda */
+  /* a prévia inteira: o aviso da loja que encerrou, botões das páginas, botões
+     do aparelho (cada grupo só aparece se houver o que escolher), o quadro e a
+     legenda */
   function htmlPrevia(p) {
     var paginas = p.previa.paginas;
+    var legenda = legendaPrevia(p);
     var aparelho = paginas[0].celular ? 'celular' : 'computador';
     var algumComputador = paginas.some(function (g) { return g.computador; });
     var algumCelular = paginas.some(function (g) { return g.celular; });
@@ -601,6 +602,7 @@ window.SCRender = (function () {
       '</div>';
 
     return '<figure class="previa" data-previa="' + esc(p.id) + '" data-previa-aparelho-atual="' + aparelho + '">' +
+             (p.aviso ? '<p class="previa__aviso">' + esc(p.aviso) + '</p>' : '') +
              (botoesPagina || botoesAparelho
                ? '<div class="previa__controles">' + botoesPagina + botoesAparelho + '</div>' : '') +
              '<div class="previa__palco" data-previa-palco>' + htmlPalco(p, 0, aparelho) + '</div>' +
@@ -611,7 +613,7 @@ window.SCRender = (function () {
                    ' stroke-linejoin="round" d="M8 2v12M4.5 5.5L8 2l3.5 3.5M4.5 10.5L8 14l3.5-3.5"/></svg>' +
                  '<span data-i18n="previa.dica">Role a tela</span>' +
                '</span>' +
-               '<span class="previa__data">' + legendaPrevia(p) + '</span>' +
+               (legenda ? '<span class="previa__data">' + legenda + '</span>' : '') +
              '</figcaption>' +
            '</figure>';
   }

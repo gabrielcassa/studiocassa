@@ -1479,6 +1479,17 @@
   min-width: 0;
   margin: var(--s-2) 0 0;
 }
+/* a loja que encerrou: a frase vem antes de tudo, e a janela do computador cede
+   a altura dela (o celular se ajusta sozinho, no site.js) */
+.previa__aviso{
+  padding: var(--s-3) var(--s-4);
+  border-radius: var(--r-sm);
+  background: var(--marca-tint);
+  font-size: var(--t-ui);
+  line-height: 1.45;
+  color: var(--tinta);
+}
+.previa__aviso ~ .previa__palco{ --folga-aviso: 58px; }
 .previa__controles{
   display: flex;
   flex-wrap: wrap;
@@ -1577,7 +1588,7 @@
 /* A altura sobra para a loja: título e botões ficam em cima (~300px), e os textos
    do projeto, abaixo da dobra. O modal rola pelas margens da janela. */
 .janela{
-  --tela-h: clamp(320px, 100svh - 300px, 800px);
+  --tela-h: clamp(320px, 100svh - 300px - var(--folga-aviso, 0px), 800px);
   width: 100%;
   min-width: 0;
   overflow: hidden;

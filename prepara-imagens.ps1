@@ -38,7 +38,8 @@
 #         assets/img/previa/<id>/<arquivo>-<aparelho>-1.jpg, -2.jpg...
 #         O celular tem 500 de largura e o computador, 1200. O site carrega cada
 #         parte so quando a tela chega perto dela (uma pagina inteira numa imagem
-#         so passaria de 1 MB). Com -Aplicar ele escreve o previa no dados.js.
+#         so passaria de 1 MB). Pagina muito alta chega em folhas (.folha2.png...),
+#         lidas em sequencia. Com -Aplicar ele escreve o previa no dados.js.
 #         Vale a captura MAIS NOVA de cada loja: ela diz quais paginas existem,
 #         e cada foto vem da pasta mais nova que a tenha. A -limpa de um dia passa
 #         na frente da real do mesmo dia. Para ficar numa captura mais antiga:
@@ -167,27 +168,44 @@ function Redimensiona-Logo($origem, $destino) {
 # o peso de cada uma. No celular, 500px de largura: a tela do aparelho tem ~250px,
 # nitida em tela retina; ~1870px de pagina por parte. No computador, 1200px: a
 # janela do modal tem ate ~950px; ~2880px de pagina por parte.
+# Pagina muito alta chega em folhas (<nome>.png, <nome>.folha2.png...), lidas em
+# sequencia, como se fossem uma imagem so: a parte da divisa pega um pedaco de cada.
 function Fatia-Pagina($origem, $prefixo, $largura) {
-  $img = [System.Drawing.Image]::FromFile($origem)
+  $folhas = @([System.Drawing.Image]::FromFile($origem))
   $partes = @()
   try {
-    $parteFonte = 2400 * $img.Width / $largura          # altura de cada parte na captura
-    $n = [Math]::Ceiling($img.Height / $parteFonte)
+    $semExt = $origem -replace '\.png$', ''
+    for ($f = 2; Test-Path "$semExt.folha$f.png"; $f++) { $folhas += [System.Drawing.Image]::FromFile("$semExt.folha$f.png") }
+    $largFonte = $folhas[0].Width
+    $alturaFonte = ($folhas | ForEach-Object { $_.Height } | Measure-Object -Sum).Sum
+    $parteFonte = 2400 * $largFonte / $largura          # altura de cada parte na captura
+    $escala = $largura / $largFonte
+    $n = [Math]::Ceiling($alturaFonte / $parteFonte)
     # sem isto o bicubico puxa a cor de fora da imagem e escurece a borda
     $atributos = New-Object System.Drawing.Imaging.ImageAttributes
     $atributos.SetWrapMode([System.Drawing.Drawing2D.WrapMode]::TileFlipXY)
     try {
       for ($k = 1; $k -le $n; $k++) {
         $topo = [int][Math]::Round(($k - 1) * $parteFonte)
-        $fim = [int][Math]::Min([Math]::Round($k * $parteFonte), $img.Height)
-        $altura = [int][Math]::Round(($fim - $topo) * $largura / $img.Width)
+        $fim = [int][Math]::Min([Math]::Round($k * $parteFonte), $alturaFonte)
+        $altura = [int][Math]::Round(($fim - $topo) * $escala)
         $bmp = New-Object System.Drawing.Bitmap($largura, $altura)
         $g = [System.Drawing.Graphics]::FromImage($bmp)
         try {
           $g.InterpolationMode = [System.Drawing.Drawing2D.InterpolationMode]::HighQualityBicubic
           $g.PixelOffsetMode   = [System.Drawing.Drawing2D.PixelOffsetMode]::HighQuality
-          $dest = New-Object System.Drawing.Rectangle(0, 0, $largura, $altura)
-          $g.DrawImage($img, $dest, 0, $topo, $img.Width, ($fim - $topo), [System.Drawing.GraphicsUnit]::Pixel, $atributos)
+          $inicioFolha = 0
+          foreach ($img in $folhas) {
+            $de = [Math]::Max($topo, $inicioFolha)
+            $ate = [Math]::Min($fim, $inicioFolha + $img.Height)
+            if ($ate -gt $de) {
+              $y1 = [int][Math]::Round(($de - $topo) * $escala)
+              $y2 = [int][Math]::Round(($ate - $topo) * $escala)
+              $dest = New-Object System.Drawing.Rectangle(0, $y1, $largura, ($y2 - $y1))
+              $g.DrawImage($img, $dest, 0, ($de - $inicioFolha), $largFonte, ($ate - $de), [System.Drawing.GraphicsUnit]::Pixel, $atributos)
+            }
+            $inicioFolha += $img.Height
+          }
         } finally { $g.Dispose() }
         $destino = "$prefixo-$k.jpg"
         $bmp.Save($destino, $codecJpg, $paramsPrevia)
@@ -195,7 +213,7 @@ function Fatia-Pagina($origem, $prefixo, $largura) {
         $partes += [int]((Get-Item $destino).Length / 1KB)
       }
     } finally { $atributos.Dispose() }
-  } finally { $img.Dispose() }
+  } finally { $folhas | ForEach-Object { $_.Dispose() } }
   return ,$partes
 }
 

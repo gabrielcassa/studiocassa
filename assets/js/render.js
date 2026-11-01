@@ -244,6 +244,8 @@ window.SCRender = (function () {
     if (!p.url && !temPrevia(p)) return false;
     /* "outras" e "citacao" não têm foto: precisam só do endereço */
     if (p.exibicao === 'citacao' || p.exibicao === 'outras') return true;
+    /* a página de produto é a própria prévia: sem ela, não há o que mostrar */
+    if (p.exibicao === 'produto') return temPrevia(p);
     return !!(p.capa && p.logo);
   }
 
@@ -462,12 +464,58 @@ window.SCRender = (function () {
     });
   }
 
-  /* os botões do fim do caso — iguais no modal e no projeto.html */
+  /* ----------------------------------------------------------------------
+     paginasProduto() — "Um produto. Uma página só dele.": um celular por loja,
+     numa fileira que sai pela direita da tela, com a primeira página de produto
+     rolando sozinha (o site.js anda com ela). O clique abre o modal, onde estão
+     as outras páginas da loja. Sem nenhuma loja, a seção sai.
+     ---------------------------------------------------------------------- */
+  function paginasProduto() {
+    var caixas = document.querySelectorAll('[data-ppp]');
+    if (!caixas.length) return;
+
+    var lojas = projetosPor('produto').filter(function (p) { return p.previa.paginas[0].celular; });
+
+    Array.prototype.forEach.call(caixas, function (caixa) {
+      if (!lojas.length) { caixa.remove(); return; }
+      caixa.querySelector('.ppp__fileira').innerHTML = lojas.map(function (p, i) {
+        var n = p.previa.paginas.length;
+        /* um por linha: na largura do celular, os dois numa linha quebravam com o
+           "·" pendurado (ver .destaque__meta) */
+        var meta = [p.segmento, n + (n > 1 ? ' páginas' : ' página')].filter(Boolean)
+          .map(function (m) { return '<li>' + esc(m) + '</li>'; }).join('');
+        return '<li class="ppp__item rv" data-ppp-item data-atraso="' + Math.min(i, 5) * 70 + '">' +
+                 '<button class="ppp__abrir" type="button" data-projeto="' + esc(p.id) + '"' +
+                 ' aria-label="Ver as páginas de produto de ' + esc(p.nome) + '">' +
+                   '<span class="aparelho__corpo"><span class="aparelho__tela"><span class="aparelho__rolagem">' +
+                     partesPrevia(p, p.previa.paginas[0], 'celular', '', true) +
+                   '</span></span></span>' +
+                 '</button>' +
+                 '<div class="ppp__legenda">' +
+                   '<h3 class="ppp__nome">' + esc(p.nome) + '</h3>' +
+                   '<ul class="ppp__meta">' + meta + '</ul>' +
+                   seta('ppp__seta', 22) +
+                 '</div>' +
+               '</li>';
+      }).join('');
+      caixa.hidden = false;
+    });
+  }
+
+  /* o endereço de uma página da prévia, inteiro */
+  function enderecoPagina(p, pagina) {
+    return new URL(pagina.url, p.url).href;
+  }
+
+  /* os botões do fim do caso — iguais no modal e no projeto.html. Na página de
+     produto, o botão leva à página que está na tela (o site.js o acompanha). */
   function acoesProjeto(p) {
+    var produto = p.exibicao === 'produto' && temPrevia(p);
     return '<div class="modal__acoes">' +
              (temLink(p)
-               ? '<a class="btn btn--tinta" href="' + esc(p.url) + '" target="_blank" rel="noopener">' +
-                 'Ver loja no ar' + seta('seta', 15) + '</a>'
+               ? '<a class="btn btn--tinta" href="' + esc(produto ? enderecoPagina(p, p.previa.paginas[0]) : p.url) + '"' +
+                 (produto ? ' data-previa-link' : '') + ' target="_blank" rel="noopener">' +
+                 (produto ? 'Ver esta página no ar' : 'Ver loja no ar') + seta('seta', 15) + '</a>'
                : '') +
              '<a class="link-sub" data-zap="Olá, Gabriel! Vi o projeto ' + esc(p.nome) +
              ' no site e quero algo parecido." href="https://wa.me/' + SC.WHATSAPP +
@@ -570,6 +618,28 @@ window.SCRender = (function () {
     return (quando ? 'Prévia salva em ' + quando + '. ' : '') + 'A loja no ar pode ter mudado desde então.';
   }
 
+  /* Muitas páginas, ou de nome longo: os botões tomariam a altura do celular. Aí
+     entra um seletor, com anterior e próxima do lado (a Colado, com 5 de nome
+     curto, fica nos botões). */
+  function escolhaDePagina(paginas) {
+    var chevron = function (d) {
+      return '<svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path fill="none"' +
+             ' stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" d="' + d + '"/></svg>';
+    };
+    return '<div class="previa__grupo previa__escolha" role="group" aria-label="Páginas da loja">' +
+             '<button class="filtro" type="button" data-previa-anda="-1" aria-label="Página anterior"' +
+             ' data-i18n="previa.anterior" data-i18n-attr="aria-label">' + chevron('M10 3L5 8l5 5') + '</button>' +
+             '<span class="previa__seletor">' +
+               '<select class="filtro" data-previa-escolha aria-label="Escolher a página"' +
+               ' data-i18n="previa.escolher" data-i18n-attr="aria-label">' +
+                 paginas.map(function (g, i) { return '<option value="' + i + '">' + esc(g.nome) + '</option>'; }).join('') +
+               '</select>' +
+             '</span>' +
+             '<button class="filtro" type="button" data-previa-anda="1" aria-label="Próxima página"' +
+             ' data-i18n="previa.proxima" data-i18n-attr="aria-label">' + chevron('M6 3l5 5-5 5') + '</button>' +
+           '</div>';
+  }
+
   /* a prévia inteira: o aviso da loja que encerrou, botões das páginas, botões
      do aparelho (cada grupo só aparece se houver o que escolher), o quadro e a
      legenda */
@@ -579,8 +649,10 @@ window.SCRender = (function () {
     var aparelho = paginas[0].celular ? 'celular' : 'computador';
     var algumComputador = paginas.some(function (g) { return g.computador; });
     var algumCelular = paginas.some(function (g) { return g.celular; });
+    var nomes = paginas.map(function (g) { return g.nome; }).join('');
 
     var botoesPagina = paginas.length < 2 ? '' :
+      nomes.length > 60 ? escolhaDePagina(paginas) :
       '<div class="previa__grupo" role="group" aria-label="Páginas da loja">' +
         paginas.map(function (g, i) {
           return '<button class="filtro" type="button" data-previa-pagina="' + i + '"' +
@@ -847,8 +919,8 @@ window.SCRender = (function () {
 
     var naoAchou = document.querySelector('[data-projeto-vazio]');
 
-    /* "citacao" e "outras" não têm página de caso: não têm foto nem história */
-    if (!p || !projetoVisivel(p) || p.exibicao === 'citacao' || p.exibicao === 'outras') {
+    /* "citacao", "outras" e "produto" não têm página de caso: não têm foto nem história */
+    if (!p || !projetoVisivel(p) || p.exibicao === 'citacao' || p.exibicao === 'outras' || p.exibicao === 'produto') {
       alvo.remove();
       if (naoAchou) naoAchou.hidden = false;
       document.title = 'Projeto não encontrado — Studio Cassa';
@@ -1005,6 +1077,7 @@ window.SCRender = (function () {
     evidencia();
     citacoes();
     outras();
+    paginasProduto();
     depoimentos();
     portfolioGrade();
     paginaProjeto();
@@ -1015,6 +1088,7 @@ window.SCRender = (function () {
     montarTudo:    montarTudo,
     htmlModal:     htmlModal,
     htmlPalco:     htmlPalco,
+    enderecoPagina: enderecoPagina,
     projetoPorId:  function (id) {
       return todosProjetos().filter(function (p) { return p.id === id; })[0];
     },

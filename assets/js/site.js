@@ -1122,11 +1122,12 @@
     medir();
   }
 
-  /* observarPartes(tela) — as partes de uma página da prévia (data-src) entram
-     quando a tela chega a ~1000px delas: quem rola lê a página inteira, e quem
-     só olha o topo não baixa o resto. Vale para a prévia e para o celular do
-     cartão de destaque. Devolve o observador, para quem precisar desligá-lo. */
-  function observarPartes(tela) {
+  /* observarPartes(tela, margem) — as partes de uma página da prévia (data-src)
+     entram quando a tela chega a `margem` px delas (~1000, sem dizer): quem rola lê
+     a página inteira, e quem só olha o topo não baixa o resto. Vale para a prévia
+     e para os celulares que rolam sozinhos, que passam uma margem menor. Devolve o
+     observador, para quem precisar desligá-lo. */
+  function observarPartes(tela, margem) {
     if (!tela) return null;
     var faltam = tela.querySelectorAll('img[data-src]');
     function poe(img) { img.src = img.getAttribute('data-src'); img.removeAttribute('data-src'); }
@@ -1137,7 +1138,7 @@
         poe(e.target);
         obs.unobserve(e.target);
       });
-    }, { root: tela, rootMargin: '0px 0px 1000px 0px' });
+    }, { root: tela, rootMargin: '0px 0px ' + (margem || 1000) + 'px 0px' });
     Array.prototype.forEach.call(faltam, function (img) { obs.observe(img); });
     return obs;
   }
@@ -1177,6 +1178,8 @@
     var aparelho = caixa.getAttribute('data-previa-aparelho-atual');
     var observador = null;
     var tela = null;
+    var escolha = caixa.querySelector('[data-previa-escolha]');
+    var link = caixa.parentNode.querySelector('[data-previa-link]');
 
     function ligarTela() {
       tela = palco.querySelector('[data-previa-tela]');
@@ -1197,16 +1200,20 @@
         b.setAttribute('aria-pressed', String(a === aparelho));
         b.disabled = !paginas[indice][a];
       });
+      if (escolha) escolha.value = indice;
+      if (link) link.href = window.SCRender.enderecoPagina(p, paginas[indice]);
       ligarTela();
     }
 
     caixa.addEventListener('click', function (e) {
-      var botao = e.target.closest('[data-previa-pagina], [data-previa-aparelho]');
+      var botao = e.target.closest('[data-previa-pagina], [data-previa-aparelho], [data-previa-anda]');
       if (!botao) return;
       if (botao.hasAttribute('data-previa-pagina')) indice = +botao.getAttribute('data-previa-pagina');
+      else if (botao.hasAttribute('data-previa-anda')) indice = (indice + paginas.length + +botao.getAttribute('data-previa-anda')) % paginas.length;
       else aparelho = botao.getAttribute('data-previa-aparelho');
       trocar();
     });
+    if (escolha) escolha.addEventListener('change', function () { indice = +escolha.value; trocar(); });
 
     ligarTela();
     return {
@@ -1341,18 +1348,17 @@
   }
 
   /* ----------------------------------------------------------------------
-     destaqueCelular() — no cartão de destaque da lista "outras", a home da
-     loja desce sozinha dentro do celular, devagar (54px/s), para 2,5s no
-     rodapé, volta ao topo em 1,4s e recomeça. Só anda com o cartão na
-     tela e nada aberto por cima; para com o mouse andando em cima do
-     celular, com o foco do teclado dentro, com "Pausar movimento" e com
-     reduced-motion (aí fica o topo da loja, parado). As partes da home
-     entram conforme ela desce.
+     rolarSozinho(cartao, aparelho, tela, opcoes) — a loja desce sozinha dentro
+     do celular, devagar (54px/s), para 2,5s no rodapé, volta ao topo em 1,4s e
+     recomeça. Só anda com o cartão na tela e nada aberto por cima; para com o
+     mouse andando em cima do celular, com o foco do teclado dentro, com "Pausar
+     movimento" e com reduced-motion (aí fica o topo da loja, parado). As partes
+     da página entram conforme ela desce. Opções: `atraso`, ms a mais na primeira
+     espera, e `margem`, a de observarPartes.
      ---------------------------------------------------------------------- */
-  function destaqueCelular() {
-    var cartao = document.querySelector('[data-destaque]');
-    var tela = cartao && cartao.querySelector('.aparelho__rolagem');
+  function rolarSozinho(cartao, aparelho, tela, opcoes) {
     if (!tela || parado()) return;
+    opcoes = opcoes || {};
 
     var VEL = 54, FIM = 2500, VOLTA = 1400, TOPO = 1500;
     var botao = document.querySelector('[data-movimento]');
@@ -1363,7 +1369,7 @@
     }
 
     var visivel = false, mouseDentro = false, focoDentro = false, rodando = false;
-    var antes = null, pos = 0, fase = 'topo', espera = TOPO, de = 0, t0 = 0, partes = false;
+    var antes = null, pos = 0, fase = 'topo', espera = TOPO + (opcoes.atraso || 0), de = 0, t0 = 0, partes = false;
 
     function pode() {
       return visivel && !mouseDentro && !focoDentro && !pausado() &&
@@ -1403,14 +1409,13 @@
        não desce até aqui não baixa nada além da primeira */
     quandoVisivel(cartao, function (sim) {
       visivel = sim;
-      if (sim && !partes) { partes = true; observarPartes(tela); }
+      if (sim && !partes) { partes = true; observarPartes(tela, opcoes.margem); }
       ligar();
     });
     /* só o mouse que anda em cima do celular para a tela. A página rolando
        por baixo de um mouse parado não conta: o Chrome dá mouseenter nesse
        caso, e o celular ficaria parado sem ninguém pedir. Dedo, também não
        (o toque abre o projeto). */
-    var aparelho = cartao.querySelector('.destaque__aparelho');
     var px = -1, py = -1;
     document.addEventListener('pointermove', function (e) {
       if (e.pointerType !== 'mouse') return;
@@ -1427,6 +1432,48 @@
     /* "Pausar movimento", modal ou menu: ao fechar ou retomar, volta a andar */
     document.addEventListener('click', function () { setTimeout(ligar, 0); });
     document.addEventListener('keydown', function (e) { if (e.key === 'Escape') setTimeout(ligar, 0); });
+  }
+
+  /* o cartão de destaque da lista "outras" */
+  function destaqueCelular() {
+    var cartao = document.querySelector('[data-destaque]');
+    if (!cartao) return;
+    rolarSozinho(cartao, cartao.querySelector('.destaque__aparelho'), cartao.querySelector('.aparelho__rolagem'));
+  }
+
+  /* ----------------------------------------------------------------------
+     fileiraProduto() — os celulares da seção de páginas de produto. Cada um
+     começa um pouco depois do anterior, para não descerem em bloco, e só baixa
+     a parte seguinte quando ela está perto: são vários na tela ao mesmo tempo.
+     As setas andam quase uma tela da fileira e apagam nas pontas; no dedo, é a
+     rolagem normal, para o lado.
+     ---------------------------------------------------------------------- */
+  function fileiraProduto() {
+    Array.prototype.forEach.call(document.querySelectorAll('[data-ppp]'), function (caixa) {
+      Array.prototype.forEach.call(caixa.querySelectorAll('[data-ppp-item]'), function (item, i) {
+        rolarSozinho(item, item.querySelector('.ppp__abrir'), item.querySelector('.aparelho__rolagem'),
+                     { atraso: i * 450, margem: 400 });
+      });
+
+      var fileira = caixa.querySelector('.ppp__fileira');
+      var voltar = caixa.querySelector('[data-ppp-anda="-1"]');
+      var seguir = caixa.querySelector('[data-ppp-anda="1"]');
+      if (!fileira || !voltar || !seguir) return;
+
+      function marcar() {
+        voltar.disabled = fileira.scrollLeft <= 4;
+        seguir.disabled = fileira.scrollLeft + fileira.clientWidth >= fileira.scrollWidth - 4;
+      }
+      fileira.addEventListener('scroll', marcar, { passive: true });
+      window.addEventListener('resize', marcar);
+      marcar();
+
+      [voltar, seguir].forEach(function (b) {
+        b.addEventListener('click', function () {
+          fileira.scrollBy({ left: +b.getAttribute('data-ppp-anda') * fileira.clientWidth * .8, behavior: suave() });
+        });
+      });
+    });
   }
 
   /* ----------------------------------------------------------------------
@@ -1694,6 +1741,7 @@
   nuvem();
   rabiscoCursor();
   destaqueCelular();
+  fileiraProduto();
   revelar();
   contadores();
 })();

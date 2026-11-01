@@ -314,6 +314,39 @@
   </section>
 
   <!-- ====================================================================
+       PÁGINAS DE PRODUTO — um celular por loja, numa fileira que sai pela
+       direita, com a página rolando sozinha. Sai de PROJETOS com
+       exibicao:"produto"; sem nenhum, a seção some.
+       ==================================================================== -->
+  <section class="secao ppp" id="paginas-de-produto" aria-labelledby="ppp-titulo" data-ppp hidden>
+    <div class="container ppp__cabeca">
+      <h2 class="titulo-xl rv" id="ppp-titulo" data-i18n="ppp.h2" data-i18n-html>
+        Um produto. <em>Uma página só dele.</em>
+      </h2>
+      <p class="ppp__apoio rv" data-atraso="120" data-i18n="ppp.apoio">
+        O produto que puxa as vendas da loja ganha uma página exclusiva, feita para
+        fechar a compra. Já são mais de 50. Abra uma e role até o fim.
+      </p>
+    </div>
+    <ul class="ppp__fileira" aria-label="Páginas de produto, uma loja por celular"
+        data-i18n="ppp.grupo" data-i18n-attr="aria-label"></ul>
+    <div class="container ppp__pe">
+      <div class="ppp__setas">
+        <button class="filtro" type="button" data-ppp-anda="-1" aria-label="Lojas anteriores"
+                data-i18n="ppp.anterior" data-i18n-attr="aria-label">
+          <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" d="M10 3L5 8l5 5"/></svg>
+        </button>
+        <button class="filtro" type="button" data-ppp-anda="1" aria-label="Próximas lojas"
+                data-i18n="ppp.proxima" data-i18n-attr="aria-label">
+          <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" d="M6 3l5 5-5 5"/></svg>
+        </button>
+      </div>
+      <a class="btn btn--tinta" data-zap="Olá, Gabriel! Vi as páginas de produto no site e quero uma para o produto mais vendido da minha loja."
+         href="https://wa.me/5532999144851" data-i18n="ppp.cta">Quero uma página assim</a>
+    </div>
+  </section>
+
+  <!-- ====================================================================
        SERVIÇOS — título grande, as abas de SERVICOS como palavras grandes
        (uma por grupo: Loja virtual, Otimização, Site) e, do lado, o que
        cada uma inclui. Fecha com o "quem faz": uma pessoa só.

@@ -174,6 +174,16 @@ O campo `exibicao` decide onde o projeto aparece:
   na lista. Hoje é a VITAL.
 - `"citacao"` → lista compacta "Também passaram por aqui". Hoje não tem
   nenhuma.
+- `"produto"` → seção **"Um produto. Uma página só dele."**, depois de "Marcas que
+  já confiaram" na home e no fim do `portfolio.html`: um celular por loja, com a
+  primeira página rolando sozinha; o clique abre o modal com as outras. Precisa só
+  do `previa`, não tem card nem `projeto.html`, e não mexe na conta do selo. O id
+  leva o prefixo `ppp-`, porque a loja pode estar também na galeria ou em
+  `LOJAS_FEITAS`. A ordem do `dados.js` é a ordem da fileira, e a ordem do `previa`
+  é a das páginas. Para trocar a página que aparece no celular, ponha-a em primeiro.
+  Para acrescentar uma, rode a captura só dela e confira a ordem no `previa.json`.
+  Para tirar uma, apague-a do `previa.json` e rode `prepara-imagens.ps1 -So <id>
+  -Aplicar`: cortar só no `dados.js` faz a página voltar na próxima rodada.
 
 **`LOJAS_FEITAS`**, logo depois de `PROJETOS`, não é uma exibição: é o
 **registro** das lojas Nuvemshop que você fez e decidiu não mostrar. Nenhum
@@ -217,7 +227,8 @@ node captura-previa.js <id> "Início=/" "Produto=/produtos/um-produto/" "Sobre=/
 ```
 
 Rodar sem páginas recaptura as que a loja já tem. O nome antes do `=` é o que
-aparece no botão da prévia. No Git Bash, ponha `MSYS_NO_PATHCONV=1` na frente do
+aparece no botão da prévia. Com muitas páginas ou nomes longos (mais de 60 letras
+somadas), os botões viram um seletor, com anterior e próxima do lado. No Git Bash, ponha `MSYS_NO_PATHCONV=1` na frente do
 `node` (o script recusa o caminho errado, se você esquecer). Se o Windows recusar o
 segundo comando ("a execução de scripts foi desabilitada"), rode
 `powershell -ExecutionPolicy Bypass -File .\prepara-imagens.ps1 -So <id> -Aplicar`.
@@ -225,7 +236,10 @@ segundo comando ("a execução de scripts foi desabilitada"), rode
 O cru fica em `_previas/<id>/<data>/`, fora do git e do site: a página inteira em
 PNG e um `.mhtml`, com um `previa.json` dizendo quais páginas foram capturadas. A
 referência é o PNG: o `.mhtml` abre sem internet, mas sem as fontes da loja e com
-diferenças de estilo.
+diferenças de estilo. `--sem-arquivo` pula o `.mhtml`. Página muito alta sai em
+folhas (`.folha2.png`, `.folha3.png`…), porque uma imagem não passa de 16 mil px; o
+`prepara-imagens` as lê em sequência. As capturas de antes de 31/10/2026 perdiam
+nitidez nesse caso, e só melhoram se a loja for recapturada.
 **Faça cópia dessa pasta.** De loja que fechou, ela é o único original. Cada dia tem
 a sua pasta e uma nunca apaga a outra (no mesmo dia, a nova escreve por cima), então
 dá para voltar a uma captura mais antiga:
@@ -424,7 +438,7 @@ O que decide a velocidade do site são as **imagens**, não o código.
 
 | item | hoje | teto |
 |---|---|---|
-| CSS + JS (soma dos gzip) | 66,66 KB | 45 KB, informativo |
+| CSS + JS (soma dos gzip) | 72,20 KB | 45 KB, informativo |
 | cada capa | 85 a 187 KB | **200 KB** |
 | primeira dobra | ~243 KB | 600 KB |
 | cada parte da prévia no celular | até 162 KB, só ao chegar nela | **200 KB** |

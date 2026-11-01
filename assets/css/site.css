@@ -523,6 +523,104 @@
 .confianca__logos img.logo--cor{ filter: none; }
 
 /* ==========================================================================
+   PÁGINAS DE PRODUTO — o título à esquerda, a frase à direita e, embaixo, um
+   celular por loja numa fileira que sai pela borda da tela. O texto só desce
+   para baixo do título quando os dois não cabem lado a lado (flex-wrap, sem
+   breakpoint: depende da largura do título).
+   ========================================================================== */
+.ppp__cabeca{
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--s-5) var(--s-8);
+}
+.ppp__apoio{
+  flex: 0 1 25rem;
+  font-size: var(--t-lead);
+  line-height: 1.5;
+}
+/* começa na margem do container e termina na borda da tela. O padding é em %:
+   vale a largura da seção, sem a barra de rolagem, como no .container. O respiro
+   de cima é o do celular subindo no hover; o de baixo, o da sombra dele. */
+.ppp__fileira{
+  --margem: max(var(--gutter), (100% - var(--container)) / 2);
+  display: flex;
+  gap: clamp(20px, 2.6vw, 40px);
+  margin-top: clamp(32px, 4vw, 56px);
+  padding: var(--s-3) var(--margem) var(--s-5);
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+  scroll-padding-inline: var(--margem);
+  scrollbar-width: none;
+}
+.ppp__fileira::-webkit-scrollbar{ display: none; }
+.ppp__item{
+  --ppp-h: clamp(430px, 39vw, 560px);
+  position: relative;
+  flex: none;
+  width: calc(var(--ppp-h) * .4621 + 16px);
+  scroll-snap-align: start;
+}
+.ppp__abrir{ display: block; width: 100%; }
+/* o clique vale para o cartão inteiro, legenda inclusive */
+.ppp__abrir::after{ content: ""; position: absolute; inset: 0; }
+.ppp__abrir .aparelho__corpo,
+.ppp__abrir .aparelho__tela,
+.ppp__abrir .aparelho__rolagem{ display: block; }
+.ppp__abrir .aparelho__corpo{
+  --tela-h: var(--ppp-h);
+  animation: none;
+  transition: transform .5s var(--sai-forte);
+}
+.ppp__item:hover .aparelho__corpo{ transform: translateY(-4px); }
+/* rola sozinha: a tela não aceita roda nem dedo, que rolam a página (ver .destaque) */
+.ppp__abrir .aparelho__rolagem{ overflow: hidden; overscroll-behavior: auto; }
+.ppp__legenda{
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 4px var(--s-3);
+  padding-top: var(--s-4);
+}
+.ppp__nome{
+  font-size: var(--t-lead);
+  letter-spacing: -.04em;
+  line-height: 1.15;
+  transition: color var(--transicao);
+}
+.ppp__item:hover .ppp__nome{ color: var(--marca); }
+.ppp__meta{
+  display: grid;
+  gap: 2px;
+  grid-column: 1;
+  font-family: var(--fonte-rotulo);
+  font-size: var(--t-rotulo);
+  line-height: 1.4;
+  color: var(--mid);
+}
+.ppp__seta{
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  transition: transform var(--transicao);
+}
+.ppp__item:hover .ppp__seta{ transform: translate(3px, -3px); }
+/* o botão fica ao lado das setas: à direita, passaria embaixo do WhatsApp flutuante */
+.ppp__pe{
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-4);
+  margin-top: var(--s-5);
+}
+.ppp__setas{ display: flex; gap: var(--s-2); }
+.ppp__setas .filtro{ justify-content: center; width: 48px; min-height: 48px; padding: 0; }
+.ppp__setas .filtro:disabled{ opacity: .4; cursor: not-allowed; }
+/* no dedo, a fileira corre sozinha: as setas só atrapalhariam */
+@media (hover: none){
+  .ppp__setas{ display: none; }
+}
+
+/* ==========================================================================
    SERVIÇOS — título grande e centralizado; as abas viram palavras grandes
    em escada à direita, e o painel da aba aberta fica à esquerda.
    ========================================================================== */
@@ -1502,6 +1600,32 @@
 .previa .filtro:disabled{ opacity: .4; cursor: not-allowed; }
 /* o botão do aparelho é só o ícone: 40px de largura, para o dedo */
 .previa__aparelhos .filtro{ justify-content: center; width: 40px; padding: 0; }
+/* muitas páginas: o seletor, com anterior e próxima do lado (render.js) */
+.previa__escolha{ flex: 1 1 240px; flex-wrap: nowrap; min-width: 0; max-width: 440px; }
+.previa__escolha > .filtro{ flex: none; justify-content: center; width: 36px; padding: 0; }
+.previa__seletor{ position: relative; display: flex; flex: 1 1 auto; min-width: 0; }
+.previa__seletor select{
+  width: 100%;
+  min-width: 0;
+  padding-right: 32px;
+  border: 0;
+  text-overflow: ellipsis;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+}
+.previa__seletor::after{
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: 14px;
+  width: 7px;
+  height: 7px;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  pointer-events: none;
+  transform: translateY(-70%) rotate(45deg);
+}
 .previa__palco{ display: grid; justify-items: center; min-width: 0; }
 .previa__legenda{
   display: grid;

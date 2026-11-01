@@ -33,7 +33,9 @@
 
    O QUE SAI, para cada página e aparelho
      <pagina>-<aparelho>.png    a página inteira, 2x (celular 780 de largura,
-                                computador 2880); menos em página muito alta
+                                computador 2880); em página alta, 1,5x, e a
+                                partir de 16 mil px ela continua em .folha2.png,
+                                .folha3.png…
      <pagina>-<aparelho>.mhtml  cópia de consulta da página: texto, links e
                                 imagens, que abre no Edge/Chrome com a loja fora
                                 do ar. Não é fiel: vem sem as fontes e sem parte
@@ -258,14 +260,18 @@ function esperaImagens(page) {
    não serve aqui: sem janela, ele só pinta parte do que está longe da tela. A Colado
    saía com botões desbotados e a Vilaz com a grade cheia de buracos, e os estilos
    calculados diziam que estava tudo certo.
-   A densidade é 2, menos em página muito alta: a imagem final não pode passar de
-   ~16 mil px de altura. As densidades da lista dão um número inteiro de pixels por
-   tela, para a emenda não aparecer. */
+   A densidade é 2; em página alta, 1,5, que ainda dá mais do que os 500px de largura
+   da parte. As duas dão um número inteiro de pixels por tela, para a emenda não
+   aparecer. Uma imagem não passa de 16 mil px de altura (o limite do canvas): página
+   maior sai em folhas, <pagina>-<aparelho>.png, .folha2.png, .folha3.png…, e o
+   prepara-imagens as lê em sequência. Até 31/10/2026 a densidade caía em vez disso,
+   e uma página de 23 mil px saía com 195px de largura, ilegível. */
+const LIMITE_FOLHA = 16000;
 async function fotoInteira(page, cdp, destino) {
   const { larg, alt, total } = await page.evaluate(() => ({
     larg: window.innerWidth, alt: window.innerHeight, total: document.documentElement.scrollHeight
   }));
-  const densidade = [2, 1.5, 1, 0.75, 0.5].find(d => total * d <= 16000) || 0.5;
+  const densidade = total * 2 <= LIMITE_FOLHA ? 2 : 1.5;
 
   /* O que ainda está andando termina agora: foto entrando em fade saía pela metade,
      com uma faixa na emenda (a história do Engenho, no Empório). E o que não tem fim,
@@ -365,25 +371,38 @@ async function fotoInteira(page, cdp, destino) {
   }
   await page.evaluate(() => window.scrollTo(0, 0));
 
-  /* a emenda é feita num canvas, numa página em branco à parte */
+  /* a emenda é feita num canvas, numa página em branco à parte: um por folha, com
+     as telas que caem nela (a tela que fica na divisa entra nas duas) */
   const ultima = telas[telas.length - 1];
+  const alturaTotal = Math.round((ultima.y + alt) * densidade);
+  const alturaTela = Math.round(alt * densidade);
+  const folhas = Math.ceil(alturaTotal / LIMITE_FOLHA);
+  const nomeFolha = f => (f === 0 ? destino : destino.replace(/\.png$/, '.folha' + (f + 1) + '.png'));
   const mesa = await page.context().browser().newPage();
   try {
-    await mesa.evaluate(([w, h]) => {
-      const c = document.createElement('canvas');
-      c.width = w; c.height = h;
-      window.__mesa = c;
-    }, [Math.round(larg * densidade), Math.round((ultima.y + alt) * densidade)]);
-    for (const t of telas) {
-      await mesa.evaluate(async ([data, yPx]) => {
-        const i = new Image();
-        i.src = 'data:image/png;base64,' + data;
-        await i.decode();
-        window.__mesa.getContext('2d').drawImage(i, 0, yPx);
-      }, [t.data, Math.round(t.y * densidade)]);
+    for (let f = 0; f < folhas; f++) {
+      const topo = f * LIMITE_FOLHA;
+      const altura = Math.min(LIMITE_FOLHA, alturaTotal - topo);
+      await mesa.evaluate(([w, h]) => {
+        const c = document.createElement('canvas');
+        c.width = w; c.height = h;
+        window.__mesa = c;
+      }, [Math.round(larg * densidade), altura]);
+      for (const t of telas) {
+        const yPx = Math.round(t.y * densidade) - topo;
+        if (yPx >= altura || yPx + alturaTela <= 0) continue;
+        await mesa.evaluate(async ([data, y]) => {
+          const i = new Image();
+          i.src = 'data:image/png;base64,' + data;
+          await i.decode();
+          window.__mesa.getContext('2d').drawImage(i, 0, y);
+        }, [t.data, yPx]);
+      }
+      const pronta = await mesa.evaluate(() => window.__mesa.toDataURL('image/png').split(',')[1]);
+      fs.writeFileSync(nomeFolha(f), Buffer.from(pronta, 'base64'));
     }
-    const pronta = await mesa.evaluate(() => window.__mesa.toDataURL('image/png').split(',')[1]);
-    fs.writeFileSync(destino, Buffer.from(pronta, 'base64'));
+    /* recaptura do mesmo dia, de uma página que encolheu: a folha que sobrou sai */
+    for (let f = folhas; fs.existsSync(nomeFolha(f)); f++) fs.unlinkSync(nomeFolha(f));
   } finally {
     await mesa.close();
   }

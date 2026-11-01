@@ -63,6 +63,12 @@
                   do título, com a home dele rolando num celular. Vale o
                   primeiro marcado. No portfolio.html ele segue na lista.
      "citacao"  → lista compacta "Também passaram por aqui". Hoje vazia.
+     "produto"  → seção "Um produto. Uma página só dele.", na home e no
+                  portfolio.html: um celular por loja, com a primeira página
+                  rolando sozinha; o clique abre o modal com as outras. Precisa
+                  só do `previa`: não tem card nem página de caso, e não mexe na
+                  conta do selo. O id leva o prefixo ppp-, porque a mesma loja
+                  pode estar também na galeria ou em LOJAS_FEITAS.
 
    LOJAS_FEITAS, depois de PROJETOS, é outra coisa: registro de loja
    Nuvemshop já feita que NÃO aparece no site.
@@ -314,6 +320,78 @@ const PROJETOS = [
     plataforma:"Shopify", tema:"Glozin", segmento:"Apicultura", ano:"",
     url:"https://faolapicultura.com.br/", capa:"", logo:"",
     previa:{data:"2026-10-31",paginas:[{nome:"Início",arquivo:"inicio",url:"/",celular:5,computador:3}]},
+    resumo:"", desafio:"", entrega:[], resultado:"", imagens:[], depoimento:{autor:"",texto:""} },
+
+  /* =====================================================================
+     PÁGINAS DE PRODUTO — pedido em 31/10/2026: uma seção só para as
+     páginas personalizadas, feitas para converter o produto herói. Um celular
+     por loja, nesta ordem; dentro de cada uma, as páginas na ordem do `previa`.
+     Links e plataformas conferidos no ar em 31/10/2026.
+     Três lojas entram com a linha inteira, não com o catálogo: no Empório,
+     todas as cachaças (kits com taça e copo inclusive; copos, taças, doce e
+     queijos não); na Fazenda Giori, todos os cafés e chás (xícaras e roupas
+     não); na NeuroCapsule, tudo menos os 2 livros e os 2 kits de sachê.
+     Na Zanelli, o Kit Mantiqueira da lista recebida dá 404: não entrou.
+     ===================================================================== */
+  { id:"ppp-cachaca", nome:"Empório Século XVIII", tipo:"Páginas de produto", status:"concluido", exibicao:"produto",
+    plataforma:"Nuvemshop", tema:"Ipanema", segmento:"Cachaça", ano:"",
+    url:"https://cachacaseculoxviii.com.br/", capa:"", logo:"",
+    previa:{data:"2026-10-31",paginas:[{nome:"Rótulo Azul 700ml",arquivo:"rotulo-azul-700ml",url:"/produtos/seculo-xviii-rotulo-azul/",celular:8,computador:4},{nome:"Rótulo Vermelho 700ml",arquivo:"rotulo-vermelho-700ml",url:"/produtos/seculo-xviii-rotulo-vermelho/",celular:9,computador:5},{nome:"Rótulo Azul 200ml",arquivo:"rotulo-azul-200ml",url:"/produtos/seculo-xviii-rotulo-azul-200ml-8fkq7/",celular:8,computador:4},{nome:"Rótulo Vermelho 200ml",arquivo:"rotulo-vermelho-200ml",url:"/produtos/seculo-xviii-rotulo-vermelho-200ml-zmos2/",celular:9,computador:5},{nome:"Rótulo Azul 50ml",arquivo:"rotulo-azul-50ml",url:"/produtos/seculo-xviii-rotulo-azul-50ml-1smm4/",celular:8,computador:4},{nome:"Rótulo Vermelho 50ml",arquivo:"rotulo-vermelho-50ml",url:"/produtos/seculo-xviii-rotulo-vermelha-50ml-1iczz/",celular:9,computador:5},{nome:"Rótulo Azul 200ml com taça",arquivo:"rotulo-azul-200ml-com-taca",url:"/produtos/seculo-xviii-rotulo-azul-1-taca-4esi7/",celular:8,computador:4},{nome:"Kit Azul 700ml e 2 taças",arquivo:"kit-azul-700ml-e-2-tacas",url:"/produtos/kit-seculo-xviii-rotulo-vermelho-700ml-2-tacas-1p9ct/",celular:8,computador:4},{nome:"Kit Azul 700ml e 4 copos",arquivo:"kit-azul-700ml-e-4-copos",url:"/produtos/kit-seculo-xviii-rotulo-azul-700ml-4-copos-1qomy/",celular:8,computador:4},{nome:"Kit Vermelho 700ml e 2 taças",arquivo:"kit-vermelho-700ml-e-2-tacas",url:"/produtos/kit-seculo-xviii-rotulo-vermelho-700ml-2-tacas-14b6b/",celular:9,computador:4},{nome:"Kit Vermelho 700ml e 4 copos",arquivo:"kit-vermelho-700ml-e-4-copos",url:"/produtos/kit-seculo-xviii-rotulo-vermelho-700ml-4-copos-1onve/",celular:9,computador:4},{nome:"Kit Vermelho 200ml e 2 copos",arquivo:"kit-vermelho-200ml-e-2-copos",url:"/produtos/kit-seculo-xviii-rotulo-vermelho-200ml-2-copos-aad7w/",celular:9,computador:5},{nome:"Kit Vermelho 50ml e copo",arquivo:"kit-vermelho-50ml-e-copo",url:"/produtos/kit-seculo-xviii-rotulo-vermelho-50ml-1-copo-uto2q/",celular:9,computador:5},{nome:"Santo Grau Coronel Xavier Chaves",arquivo:"santo-grau-coronel-xavier-chaves",url:"/produtos/santo-grau-coronel-xavier-chaves/",celular:3,computador:2}]},
+    resumo:"", desafio:"", entrega:[], resultado:"", imagens:[], depoimento:{autor:"",texto:""} },
+
+  { id:"ppp-brizoe", nome:"Brizoe Store", tipo:"Páginas de produto", status:"concluido", exibicao:"produto",
+    plataforma:"Nuvemshop", tema:"Ipanema", segmento:"Moda feminina", ano:"",
+    url:"https://brizoe.com.br/", capa:"", logo:"",
+    previa:{data:"2026-10-31",paginas:[{nome:"Blazer Blair",arquivo:"blazer-blair",url:"/produtos/blazer-feminino-alfaiataria-transpassado-blair/",celular:6,computador:4},{nome:"Camisa Laura",arquivo:"camisa-laura",url:"/produtos/camisa-feminina-100-algodao-laura/",celular:6,computador:3},{nome:"Blusa Serena",arquivo:"blusa-serena",url:"/produtos/blusa-canelada-feminina-serena/",celular:6,computador:3},{nome:"Conjunto Zoe",arquivo:"conjunto-zoe",url:"/produtos/conjunto-feminino-zoe-viscose-pedras/",celular:6,computador:3}]},
+    resumo:"", desafio:"", entrega:[], resultado:"", imagens:[], depoimento:{autor:"",texto:""} },
+
+  { id:"ppp-neurocapsule", nome:"NeuroCapsule", tipo:"Páginas de produto", status:"concluido", exibicao:"produto",
+    plataforma:"Nuvemshop", tema:"Ipanema", segmento:"Suplementos", ano:"",
+    url:"https://loja.neurocapsule.com.br/", capa:"", logo:"",
+    previa:{data:"2026-10-31",paginas:[{nome:"Kit Cérebro Blindado",arquivo:"kit-cerebro-blindado",url:"/produtos/kit-cerebro-blindado/",celular:12,computador:7},{nome:"Kit Memória",arquivo:"kit-memoria",url:"/produtos/kit-memoria/",celular:12,computador:7},{nome:"Kit Memória + Clareza Mental",arquivo:"kit-memoria-clareza-mental",url:"/produtos/kit-memoria-clareza-mental/",celular:11,computador:7},{nome:"Kit Enxaqueca",arquivo:"kit-enxaqueca",url:"/produtos/kit-enxaqueca/",celular:10,computador:6},{nome:"Kit Enxaqueca + Queda Capilar",arquivo:"kit-enxaqueca-queda-capilar",url:"/produtos/kit-enxaqueca-queda-capilar/",celular:11,computador:7},{nome:"Kit Enxaqueca + Falta de Memória",arquivo:"kit-enxaqueca-falta-de-memoria",url:"/produtos/kit-enxaqueca-memoria/",celular:13,computador:7},{nome:"Kit Queda Capilar + Fadiga + Enxaqueca",arquivo:"kit-queda-capilar-fadiga-enxaqueca",url:"/produtos/kit-queda-capilar-fadiga-enxaqueca/",celular:13,computador:7},{nome:"Kit Reset Feminino",arquivo:"kit-reset-feminino",url:"/produtos/reset_feminino_oferta/",celular:13,computador:7},{nome:"Fog Mind",arquivo:"fog-mind",url:"/produtos/fog-mind/",celular:9,computador:6},{nome:"TreoMind",arquivo:"treomind",url:"/produtos/treomind/",celular:9,computador:5},{nome:"Creat Memory",arquivo:"creat-memory",url:"/produtos/creat-memory/",celular:9,computador:5},{nome:"Femme Q10 Power",arquivo:"femme-q10-power",url:"/produtos/femme-q10-power/",celular:9,computador:6},{nome:"Enxaquecon 10ml",arquivo:"enxaquecon-10ml",url:"/produtos/enxaquecon/",celular:9,computador:6},{nome:"Enxaquecon 5ml",arquivo:"enxaquecon-5ml",url:"/produtos/enxaquecon-5ml/",celular:9,computador:6},{nome:"Juice Full Protein 900g",arquivo:"juice-full-protein-900g",url:"/produtos/juice-full-protein-900g/",celular:10,computador:6},{nome:"Explosion Pré-Workout 180g",arquivo:"explosion-pre-workout-180g",url:"/produtos/explosion-pre-workout/",celular:9,computador:6}]},
+    resumo:"", desafio:"", entrega:[], resultado:"", imagens:[], depoimento:{autor:"",texto:""} },
+
+  { id:"ppp-real-conforto", nome:"Real Conforto", tipo:"Páginas de produto", status:"concluido", exibicao:"produto",
+    plataforma:"Nuvemshop", tema:"Amazonas", segmento:"Enxoval de bebê", ano:"",
+    url:"https://www.realconforto.com.br/", capa:"", logo:"",
+    previa:{data:"2026-10-31",paginas:[{nome:"Kit Cogumelo e Borboletas",arquivo:"kit-2-toalhas-estampa-1",url:"/produtos/kit-2-toalhas-de-banho-bebe-soft-tres-camadas-tecido-fralda-capuz-grande-105x85cm-100-algodao-11ff7/",celular:8,computador:5},{nome:"Kit Animais e Ursinho",arquivo:"kit-2-toalhas-estampa-2",url:"/produtos/kit-2-toalhas-de-banho-bebe-soft-tres-camadas-tecido-fralda-capuz-grande-105x85cm-100-algodao-ybrqp/",celular:8,computador:5},{nome:"Kit Esporte e Dino",arquivo:"kit-2-toalhas-estampa-3",url:"/produtos/kit-2-toalhas-de-banho-bebe-soft-tres-camadas-tecido-fralda-capuz-grande-105x85cm-100-algodao-17s5p/",celular:8,computador:5},{nome:"Soft Dengo Girafinha",arquivo:"soft-dengo-girafinha",url:"/produtos/toalha-de-banho-soft-dengo-85x85cm-para-bebe-com-capuz-girafinha-neutra-unissex-100-algodao-minasrey/",celular:9,computador:5},{nome:"Papi Baby Cogumelo",arquivo:"papi-baby-cogumelo",url:"/produtos/toalhao-de-banho-soft-premium-papi-baby-com-capuz-estampado-105m-x-85cm-100-algodao-encanto-cogumelo/",celular:8,computador:5},{nome:"Papi Baby Esporte Xadrez",arquivo:"papi-baby-esporte-xadrez",url:"/produtos/toalhao-de-banho-soft-premium-papi-baby-com-capuz-estampado-105m-x-85cm-100-algodao-esporte-xadrez/",celular:8,computador:5}]},
+    resumo:"", desafio:"", entrega:[], resultado:"", imagens:[], depoimento:{autor:"",texto:""} },
+
+  { id:"ppp-fazenda-giori", nome:"Fazenda Giori", tipo:"Páginas de produto", status:"concluido", exibicao:"produto",
+    plataforma:"Nuvemshop", tema:"Flex", segmento:"Café especial", ano:"",
+    url:"https://giori.farm/", capa:"", logo:"",
+    previa:{data:"2026-10-31",paginas:[{nome:"Café Grãos 500g",arquivo:"cafe-graos-500g",url:"/produtos/cafe-biogiori-graos-500g/",celular:7,computador:4},{nome:"Café Grãos 250g",arquivo:"cafe-graos-250g",url:"/produtos/cafe-biogiori-graos-250g/",celular:7,computador:4},{nome:"Café Grãos 500g, lata",arquivo:"cafe-graos-500g-lata",url:"/produtos/cafe-biogiori-graos-500g-lata/",celular:7,computador:4},{nome:"Torrado e Moído 500g",arquivo:"torrado-e-moido-500g",url:"/produtos/cafe-robusta-especial-organico-e-biodinamico-torrado-e-moido-500g1/",celular:7,computador:4},{nome:"Torrado e Moído 250g",arquivo:"torrado-e-moido-250g",url:"/produtos/cafe-biogiori-torrado-e-moido-250g/",celular:7,computador:4},{nome:"BioCoffee Box 250g",arquivo:"biocoffee-box-250g",url:"/produtos/cafe-biogiori-torrado-e-moido-250g-biocoffee-box/",celular:7,computador:4},{nome:"Drip Coffee, kit 12 unidades",arquivo:"drip-coffee-kit-12-unidades",url:"/produtos/drip-coffee-kit-12unidades/",celular:8,computador:4},{nome:"Chá da Flor do Café 10g",arquivo:"cha-da-flor-do-cafe-10g",url:"/produtos/cha-da-flor-do-cafe-biogiori-10g/",celular:7,computador:4},{nome:"Keishr, chá de casca de café",arquivo:"keishr-cha-de-casca-de-cafe",url:"/produtos/keishr-biogiori-cha-de-casca-de-cafe-30g/",celular:7,computador:4}]},
+    resumo:"", desafio:"", entrega:[], resultado:"", imagens:[], depoimento:{autor:"",texto:""} },
+
+  { id:"ppp-numa", nome:"Numa Chocolates", tipo:"Página de produto", status:"concluido", exibicao:"produto",
+    plataforma:"Shopify", tema:"", segmento:"Chocolates", ano:"",
+    url:"https://www.numachocolates.com.br/", capa:"", logo:"",
+    previa:{data:"2026-10-31",paginas:[{nome:"Kit degustação",arquivo:"kit-degustacao",url:"/products/kit-degustacao-numa",celular:5,computador:3}]},
+    resumo:"", desafio:"", entrega:[], resultado:"", imagens:[], depoimento:{autor:"",texto:""} },
+
+  /* Plataforma não identificada no código da página: fica sem. */
+  { id:"ppp-f2-frutas", nome:"F2 Frutas", tipo:"Páginas de produto", status:"concluido", exibicao:"produto",
+    plataforma:"", tema:"", segmento:"Frutas congeladas", ano:"",
+    url:"https://www.f2frutas.com.br/", capa:"", logo:"",
+    previa:{data:"2026-10-31",paginas:[{nome:"Morango",arquivo:"morango",url:"/morango-dose",celular:9,computador:4},{nome:"Frutas Vermelhas",arquivo:"frutas-vermelhas",url:"/frutas-vermelhas-dose",celular:9,computador:4}]},
+    resumo:"", desafio:"", entrega:[], resultado:"", imagens:[], depoimento:{autor:"",texto:""} },
+
+  { id:"ppp-verde-de-origem", nome:"Verde de Origem", tipo:"Páginas de produto", status:"concluido", exibicao:"produto",
+    plataforma:"Tray", tema:"", segmento:"Produtos naturais", ano:"",
+    url:"https://www.verdedeorigem.com.br/", capa:"", logo:"",
+    previa:{data:"2026-10-31",paginas:[{nome:"Cápsulas + Pomada Artesanal",arquivo:"capsulas-pomada-artesanal",url:"/kit-capsulas-e-pomadas/barbatimao-kit-300-capsulas-1-pomada-artesanal-60g-tratamento-hpv-acne-cicatrizante",celular:7,computador:4},{nome:"Kit Completo de Barbatimão",arquivo:"kit-completo-de-barbatimao",url:"/kit-capsulas-sabonetes-pomada/barbatimao-kit-1-pomada-artesanal-2-sabonetes-naturais-100-capsulas-tratamento-hpv-acne-cicatrizante",celular:7,computador:4},{nome:"Kit 3 Pomadas + 2 Sabonetes + 300 Cápsulas",arquivo:"kit-3-pomadas-2-sabonetes-300-capsulas",url:"/kit-capsulas-sabonetes-pomada/barbatimao-kit-3-pomadas-artesanais-2-sabonetes-naturais-300-capsulas-tratamento-hpv-acne-cicatrizante",celular:7,computador:4},{nome:"Kit 3 Pomadas + 3 Sabonetes",arquivo:"kit-3-pomadas-3-sabonetes",url:"/kit-sabonetes-e-pomadas-artesanais/barbatimao-kit-3-pomadas-artesanais-3-sabonetes-naturais-tratamento-hpv-acne-cicatrizante",celular:7,computador:4},{nome:"Kit 2 Pomadas + 2 Sabonetes",arquivo:"kit-2-pomadas-2-sabonetes",url:"/kit-sabonetes-e-pomadas-artesanais/barbatimao-kit-2-pomadas-artesanais-2-sabonetes-naturais-tratamento-hpv-acne-cicatrizante",celular:7,computador:4}]},
+    resumo:"", desafio:"", entrega:[], resultado:"", imagens:[], depoimento:{autor:"",texto:""} },
+
+  { id:"ppp-zanelli", nome:"Zanelli Coffee", tipo:"Página de produto", status:"concluido", exibicao:"produto",
+    plataforma:"Nuvemshop", tema:"", segmento:"Café especial", ano:"",
+    url:"https://loja.zanellicoffee.com/", capa:"", logo:"",
+    previa:{data:"2026-10-31",paginas:[{nome:"Reserva do Produtor",arquivo:"reserva-do-produtor",url:"/produtos/cafe-reserva-do-produtor-zanelli-coffee-nanolote-garrafa-150g-1bxur/",celular:4,computador:3}]},
+    resumo:"", desafio:"", entrega:[], resultado:"", imagens:[], depoimento:{autor:"",texto:""} },
+
+  { id:"ppp-luna", nome:"Luna", tipo:"Páginas de produto", status:"concluido", exibicao:"produto",
+    plataforma:"Tray", tema:"", segmento:"Moda íntima", ano:"",
+    url:"https://www.luna.com.br/", capa:"", logo:"",
+    previa:{data:"2026-10-31",paginas:[{nome:"Kit de Calcinhas Tradicional",arquivo:"kit-de-calcinhas-tradicional",url:"/menina/bebe-infantil-juvenil/kit-c-calcinhas-tradicional",celular:8,computador:4},{nome:"Kit Xô Dermatite",arquivo:"kit-xo-dermatite",url:"/mais-vendidos/kit-xo-dermatite-calcinhas-antialergicos-infantil--100-algodao",celular:10,computador:5}]},
     resumo:"", desafio:"", entrega:[], resultado:"", imagens:[], depoimento:{autor:"",texto:""} }
 
   /* Fora do site por decisão dele em 04/10/2026 — o foco é só loja Nuvemshop
@@ -327,7 +405,7 @@ const PROJETOS = [
          a6e23c2). Atuale e Dolce Affetto, que também tinham saído, voltaram
          em 25/10/2026 como sites completos, lá em cima.
      Toledo Reservatórios (WordPress, tinha voltado com elas) e Glaucia Goulart
-     Bolsas (Tray) saíram em 31/10/2026, por decisão dele: não agregam. Os
+     Bolsas (Tray) saíram em 31/10/2026, a pedido: não agregam. Os
      registros e as partes da prévia da Toledo estão no commit a07486f. */
 
 ];

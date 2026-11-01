@@ -83,6 +83,17 @@ var DICIONARIO = {
     'previa.celular':     'Ver no celular',
     'previa.computador':  'Ver no computador',
     'previa.dica':        'Role a tela',
+    'previa.anterior':    'Página anterior',
+    'previa.proxima':     'Próxima página',
+    'previa.escolher':    'Escolher a página',
+
+    /* --- páginas de produto ------------------------------------------- */
+    'ppp.h2':             'Um produto. <em>Uma página só dele.</em>',
+    'ppp.apoio':          'O produto que puxa as vendas da loja ganha uma página exclusiva, feita para fechar a compra. Já são mais de 50. Abra uma e role até o fim.',
+    'ppp.grupo':          'Páginas de produto, uma loja por celular',
+    'ppp.anterior':       'Lojas anteriores',
+    'ppp.proxima':        'Próximas lojas',
+    'ppp.cta':            'Quero uma página assim',
 
     /* --- depoimentos -------------------------------------------------- */
     'depo.h2':            'Quem já passou por isso <em>conta melhor.</em>',

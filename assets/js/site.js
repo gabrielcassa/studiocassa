@@ -890,7 +890,7 @@
     /* [r, g, b, peso da opacidade] — o amarelo é claro e precisa de mais
        opacidade para aparecer no papel */
     var estilo = getComputedStyle(document.documentElement);
-    var cores = [['--risco-azul', 1], ['--risco-laranja', 1], ['--risco-amarelo', 1.6]].map(function (c) {
+    var cores = [['--risco-azul', 1], ['--risco-amarelo', 1.6]].map(function (c) {
       var h = estilo.getPropertyValue(c[0]).trim().replace('#', '');
       var n = parseInt(h.length === 3 ? h.replace(/./g, '$&$&') : h, 16);
       if (isNaN(n)) n = 0x2F6BFF;

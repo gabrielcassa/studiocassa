@@ -30,14 +30,12 @@
 <link rel="icon" href="assets/favicon/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="assets/favicon/favicon-32.png" sizes="32x32" type="image/png">
 <link rel="apple-touch-icon" href="assets/favicon/apple-touch-icon.png">
-<meta name="theme-color" content="#FCFCFC">
+<meta name="theme-color" content="#CF2C15">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<!-- Fontes PROVISÓRIAS, da referência anubi.io. Títulos, texto e rótulo: -->
+<!-- Fontes de títulos, texto e rótulo. As do logo já vêm em desenho, nos SVGs de assets/marca/. -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Epilogue:wght@500&amp;family=Bricolage+Grotesque:wght@400;500&amp;family=IBM+Plex+Mono:wght@400&amp;display=swap"><!-- taste-skill-ignore: rótulo em mono da referência -->
-<!-- Logotipo: a Archivo larga, recortada só nas letras de STUDIO CASSA -->
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@125,900&amp;text=STUDIO%20CA&amp;display=swap">
 
 <link rel="stylesheet" href="assets/css/base.css">
 <link rel="stylesheet" href="assets/css/site.css">
@@ -83,11 +81,10 @@
   <div class="nav__interno">
 
     <a class="marca" href="index.html" aria-label="Studio Cassa — página inicial">
-      <span class="marca__simbolo" aria-hidden="true" translate="no">SC</span>
-      <span class="marca__texto">
-        <span class="marca__nome" translate="no">Studio Cassa</span>
-        <span class="marca__tag" data-i18n="nav.tagline">lojas Nuvemshop sob medida</span>
-      </span>
+      <picture>
+        <source media="(min-width: 760px)" srcset="assets/marca/studio-cassa-horizontal.svg" width="691" height="136">
+        <img src="assets/marca/studio-cassa-gaveta.svg" alt="" width="460" height="136">
+      </picture>
     </a>
 
     <nav class="nav__links" aria-label="Principal">
@@ -101,7 +98,7 @@
 
     <a class="nav__cta" data-zap="Olá, Gabriel! Vim pelo site e quero falar sobre um projeto."
        href="https://wa.me/5532999144851">
-      <span data-i18n="nav.cta">Falar no WhatsApp</span>
+      <span data-i18n="nav.ctaPilula" data-i18n-html><span class="nav__cta-pre">Falar no </span>WhatsApp</span>
       <span class="nav__cta-seta" aria-hidden="true">
         <svg width="14" height="14" viewBox="0 0 16 16" focusable="false"><path fill="none" stroke="currentColor"
              stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" d="M5 11L11 5M6 5h5v5"/></svg>
@@ -275,7 +272,7 @@
       </ul>
     </div>
 
-    <p class="rodape__marca" aria-hidden="true" translate="no">Studio Cassa</p>
+    <img class="rodape__marca" src="assets/marca/studio-cassa-gaveta.svg" alt="" width="460" height="136" loading="lazy" decoding="async">
 
     <div class="rodape__base">
       <p>&copy; <span data-ano>2026</span> Studio Cassa · Gabriel Cassa</p>

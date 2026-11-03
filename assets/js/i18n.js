@@ -30,12 +30,13 @@ var DICIONARIO = {
 
   pt: {
     /* --- nav ---------------------------------------------------------- */
-    'nav.tagline':        'lojas Nuvemshop sob medida',
     'nav.servicos':       'Serviços',
     'nav.processo':       'Como funciona',
     'nav.portfolio':      'Portfólio',
     'nav.contato':        'Contato',
     'nav.cta':            'Falar no WhatsApp',
+    /* a pílula da barra: no celular, o "Falar no" fica só para o leitor de tela */
+    'nav.ctaPilula':      '<span class="nav__cta-pre">Falar no </span>WhatsApp',
     /* rótulo neutro: com aria-expanded="true" o leitor anunciaria
        "Abrir o menu, expandido", que é contraditório */
     'nav.menuRotulo':     'Menu',

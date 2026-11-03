@@ -3,24 +3,26 @@
    Reset, tokens, tipografia e utilitários. Nada de seção aqui: seção e
    componente moram em site.css.
 
-   IDENTIDADE PROVISÓRIA (outubro de 2026). Fontes e cores seguem a
-   referência anubi.io enquanto as definitivas não chegam (o papel foi
-   levado ao neutro puro: #FCFCFA lia como creme no inspetor). Para trocar:
-   só o bloco de tokens abaixo — nenhum outro arquivo escreve cor ou fonte
-   na mão. Os NOMES dos tokens continuam os da paleta "Estúdio"; mudaram os
-   valores.
+   IDENTIDADE (novembro de 2026). O logo é a gaveta do Studio Cassa, em
+   assets/marca/: as letras já vêm em desenho, sem fonte. O vermelho dele
+   (#CF2C15) fica no logo, no favicon e no theme-color, e não vira texto nem
+   fundo de seção. O resto do site segue a paleta "Estúdio": papel claro, a
+   tinta da marca, o azul de link e foco, e os rabiscos azul e amarelo.
+   Para trocar uma cor ou uma fonte do site: só o bloco de tokens abaixo —
+   nenhum outro arquivo escreve cor ou fonte na mão.
 
    CONTRASTES CONFERIDOS (WCAG 2.1, calculados — não estimados):
-     tinta      / papel        18,11:1      marca      / papel        5,83:1
-     tinta      / papel-2      16,72:1      marca      / papel-3      4,92:1
-     tinta      / papel-3      15,27:1      branco     / marca        5,98:1
-     tinta      / marca-tint   16,08:1      branco     / marca-esc    8,05:1
+     tinta      / papel        18,04:1      marca      / papel        5,83:1
+     tinta      / papel-2      16,66:1      marca      / papel-3      4,92:1
+     tinta      / papel-3      15,21:1      branco     / marca        5,98:1
+     tinta      / marca-tint   16,01:1      branco     / marca-esc    8,05:1
      mid        / papel         6,36:1      marca      / marca-tint   5,18:1
      mid        / papel-2       5,87:1      erro       / papel        6,41:1
      mid        / papel-3       5,36:1
      escuro-tx  / escuro       16,16:1      escuro-tx  / escuro-2    14,36:1
      escuro-mid / escuro        7,50:1      escuro-mid / escuro-2     6,66:1
      escuro-ac  / escuro        8,50:1
+     vermelho do logo / papel   5,09:1      vermelho do logo / branco 5,22:1
 
    O QUE NÃO PODE VIRAR TEXTO:
      --light sobre --papel = 2,03:1 → só filete, ícone e rabisco.
@@ -33,7 +35,7 @@
   --papel:       #FCFCFC;   /* fundo padrão                                  */
   --papel-2:     #F3F3F1;   /* um passo de tom: superfície de card           */
   --papel-3:     #E9E9E6;   /* dois passos: hover, faixa                     */
-  --tinta:       #131313;   /* texto corrido e botão sólido                  */
+  --tinta:       #161310;   /* a tinta da marca: texto e botão sólido        */
   --mid:         #5E5E58;   /* texto secundário                              */
   --light:       #B4B4AD;   /* SÓ linha e ícone decorativo — NUNCA texto     */
   --borda:       #DCDCD6;
@@ -51,18 +53,17 @@
   --escuro-ac:   #8DB2FF;
   --escuro-bd:   #34342F;
 
-  /* rabiscos desenhados à mão — decoração, nunca texto */
+  /* rabiscos desenhados à mão — decoração, nunca texto. O laranja saiu com
+     a marca nova: perto do vermelho do logo, os dois brigavam. */
   --risco-azul:    #2F6BFF;
   --risco-amarelo: #FFD21F;
-  --risco-laranja: #FF6A1F;
 
   /* --- tipografia ---------------------------------------------------------
-     Quatro papéis, e só a marca-larga é exclusiva: ela é o logotipo e vem
-     do Google Fonts recortada só nas letras de "STUDIO CASSA" (&text=). */
+     Três papéis. O logo não usa fonte do site: as letras dele (Alfa Slab
+     One e IBM Plex Mono 500) já vêm em desenho, nos SVGs de assets/marca/. */
   --fonte-titulo: "Epilogue", "Bricolage Grotesque", system-ui, -apple-system, "Segoe UI", sans-serif;
   --fonte-texto:  "Bricolage Grotesque", system-ui, -apple-system, "Segoe UI", sans-serif;
   --fonte-rotulo: "IBM Plex Mono", ui-monospace, "Cascadia Mono", Menlo, Consolas, monospace;   /* taste-skill-ignore: rótulo em mono da referência */
-  --fonte-marca:  "Archivo", "Arial Black", "Helvetica Neue", Arial, sans-serif;
 
   /* cinco tamanhos fazem o trabalho visível; o resto deriva destes */
   /* mínimo de 2,05rem: "Escolha pelo problema," cabe numa linha a 390px —

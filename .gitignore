@@ -25,6 +25,10 @@ desktop.ini
 *.sketch
 *.fig
 
-# Documento de trabalho: fica no disco, nao no site publicado.
+# Documentos de trabalho (os prompts): ficam no disco, nao no site publicado.
 # Contem notas internas (ex.: que ainda nao ha parceria Nuvemshop).
-PROMPT-VSCODE.md
+PROMPT-*.md
+
+# Pasta de trabalho da identidade visual: pranchas, testes e o pacote para o
+# Claude Design. O que o site usa sai em assets/marca/ e assets/favicon/.
+_marca/

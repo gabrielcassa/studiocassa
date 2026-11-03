@@ -31,7 +31,7 @@
 <link rel="icon" href="assets/favicon/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="assets/favicon/favicon-32.png" sizes="32x32" type="image/png">
 <link rel="apple-touch-icon" href="assets/favicon/apple-touch-icon.png">
-<meta name="theme-color" content="#FCFCFC">
+<meta name="theme-color" content="#CF2C15">
 
 <!-- Antes de qualquer pintura: marca que há JS (as entradas .rv só escondem
      o conteúdo com JS) e decide se a abertura roda. Ela roda uma vez por
@@ -56,10 +56,8 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<!-- Fontes PROVISÓRIAS, da referência anubi.io. Títulos, texto e rótulo: -->
+<!-- Fontes de títulos, texto e rótulo. As do logo já vêm em desenho, nos SVGs de assets/marca/. -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Epilogue:wght@500&amp;family=Bricolage+Grotesque:wght@400;500&amp;family=IBM+Plex+Mono:wght@400&amp;display=swap"><!-- taste-skill-ignore: rótulo em mono da referência -->
-<!-- Logotipo: a Archivo larga, recortada só nas letras de STUDIO CASSA -->
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@125,900&amp;text=STUDIO%20CA&amp;display=swap">
 
 <link rel="stylesheet" href="assets/css/base.css">
 <link rel="stylesheet" href="assets/css/site.css">
@@ -120,18 +118,18 @@
 </div>
 
 <!-- ======================================================================
-     NAV — barra flutuante: símbolo + nome, quatro links e o WhatsApp.
+     NAV — barra flutuante: o logo, quatro links e o WhatsApp.
      Some ao rolar para baixo e volta ao rolar para cima (site.js).
      ====================================================================== -->
 <header class="nav">
   <div class="nav__interno">
 
+    <!-- o logo: a gaveta no celular, a horizontal a partir de 760px -->
     <a class="marca" href="index.html" aria-label="Studio Cassa — página inicial">
-      <span class="marca__simbolo" aria-hidden="true" translate="no">SC</span>
-      <span class="marca__texto">
-        <span class="marca__nome" translate="no">Studio Cassa</span>
-        <span class="marca__tag" data-i18n="nav.tagline">lojas Nuvemshop sob medida</span>
-      </span>
+      <picture>
+        <source media="(min-width: 760px)" srcset="assets/marca/studio-cassa-horizontal.svg" width="691" height="136">
+        <img src="assets/marca/studio-cassa-gaveta.svg" alt="" width="460" height="136">
+      </picture>
     </a>
 
     <nav class="nav__links" aria-label="Principal">
@@ -146,7 +144,7 @@
 
     <a class="nav__cta" data-zap="Olá, Gabriel! Vim pelo site e quero falar sobre um projeto."
        href="https://wa.me/5532999144851">
-      <span data-i18n="nav.cta">Falar no WhatsApp</span>
+      <span data-i18n="nav.ctaPilula" data-i18n-html><span class="nav__cta-pre">Falar no </span>WhatsApp</span>
       <span class="nav__cta-seta" aria-hidden="true">
         <svg width="14" height="14" viewBox="0 0 16 16" focusable="false"><path fill="none" stroke="currentColor"
              stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" d="M5 11L11 5M6 5h5v5"/></svg>
@@ -198,20 +196,24 @@
 
     <div class="hero__centro">
       <h1 class="hero__titulo" id="hero-titulo">
-        <span class="hero__marca" translate="no">Studio Cassa<!--
-          Rabiscos à mão sobre o nome: decoração, desenhada traço a traço
+        <span class="hero__marca" translate="no"><picture>
+            <source media="(min-width: 760px)" srcset="assets/marca/studio-cassa-horizontal.svg" width="691" height="136">
+            <img src="assets/marca/studio-cassa-compacta.svg" alt="Studio Cassa" width="460" height="189">
+          </picture><!--
+          Rabiscos à mão em volta do logo: decoração, desenhada traço a traço
           depois da abertura. Um SVG por rabisco, cada um com a proporção
-          dele, posicionado em % da caixa do nome — assim o laço fica no "S"
-          e o sublinhado entre o nome e a frase em qualquer largura.
-          pathLength="1" deixa o CSS animar o traço sem medir nada em JS.
-          --><svg class="rabisco rabisco--laco" viewBox="0 0 140 180" aria-hidden="true" focusable="false">
+          dele, posicionado em % da caixa do logo — assim o laço abraça o
+          "studio" e o sublinhado fica entre o logo e a frase em qualquer
+          largura. pathLength="1" deixa o CSS animar o traço sem medir nada
+          em JS.
+          --><svg class="rabisco rabisco--laco" viewBox="0 0 264 108" aria-hidden="true" focusable="false">
             <path class="risco risco--azul" pathLength="1" vector-effect="non-scaling-stroke"
-                  d="M96 14C40 4 6 60 12 112c6 50 60 68 94 34 30-30 26-104-20-124-30-13-60 4-66 34"/>
+                  d="M200 12C130 0 34 10 14 44C-4 76 70 104 150 100C222 96 262 72 252 44C242 16 178 6 120 10"/>
           </svg><svg class="rabisco rabisco--traco" viewBox="0 0 700 60" preserveAspectRatio="none" aria-hidden="true" focusable="false">
             <path class="risco risco--amarelo risco--grosso" pathLength="1" vector-effect="non-scaling-stroke" d="M6 30C200 14 430 8 694 12"/>
             <path class="risco risco--amarelo risco--grosso" pathLength="1" vector-effect="non-scaling-stroke" d="M30 50c120-10 240-12 330-10"/>
           </svg><svg class="rabisco rabisco--mola" viewBox="0 0 120 110" aria-hidden="true" focusable="false">
-            <path class="risco risco--laranja" pathLength="1" vector-effect="non-scaling-stroke"
+            <path class="risco risco--azul" pathLength="1" vector-effect="non-scaling-stroke"
                   d="M14 30c30-34 64-10 44 22-20 32 8 60 40 38 20-14 22-36 10-48"/>
           </svg><svg class="rabisco rabisco--estrela" viewBox="0 0 48 48" aria-hidden="true" focusable="false">
             <path class="risco risco--azul" pathLength="1" vector-effect="non-scaling-stroke" d="M24 4v40M7 14l34 20M41 14L7 34"/>
@@ -380,7 +382,7 @@
       <!-- quem faz: era a seção "Sobre"; o id fica para link antigo não morrer -->
       <div class="servicos__fecho rv" id="sobre">
         <svg class="riscos riscos--mola" viewBox="0 0 80 40" aria-hidden="true" focusable="false">
-          <path class="risco risco--laranja" pathLength="1" vector-effect="non-scaling-stroke"
+          <path class="risco risco--azul" pathLength="1" vector-effect="non-scaling-stroke"
                 d="M4 28c10 10 22 8 26-4 3-10-8-16-12-6-4 12 14 18 26 8 8-7 14-12 30-6"/>
         </svg>
         <h3 class="servicos__fecho-titulo" data-i18n="sobre.h2">Uma pessoa só. E isso é a vantagem.</h3>
@@ -675,7 +677,7 @@
 </main>
 
 <!-- ======================================================================
-     RODAPÉ — links em linha, os canais em pílula e o nome de ponta a ponta.
+     RODAPÉ — links em linha, os canais em pílula e a gaveta fechando a página.
      ====================================================================== -->
 <footer class="rodape">
   <div class="container">
@@ -717,7 +719,7 @@
       </ul>
     </div>
 
-    <p class="rodape__marca" aria-hidden="true" translate="no">Studio Cassa</p>
+    <img class="rodape__marca" src="assets/marca/studio-cassa-gaveta.svg" alt="" width="460" height="136" loading="lazy" decoding="async">
 
     <div class="rodape__base">
       <p>&copy; <span data-ano>2026</span> Studio Cassa · Gabriel Cassa</p>

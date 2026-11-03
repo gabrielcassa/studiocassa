@@ -4,10 +4,10 @@
    Mobile-first. Dois breakpoints só: 760px e 960px.
 
    A composição da home segue a referência anubi.io (outubro de 2026):
-   abertura com cortina, nome grande com as lojas em órbita, marcas,
+   abertura com cortina, o logo grande com as lojas em órbita, marcas,
    serviços em palavras grandes, portfólio em parede curva, link para o
-   arquivo, duas seções escuras seguidas, contato e rodapé com o nome de
-   ponta a ponta. Código e textos são do Studio Cassa — da referência veio
+   arquivo, duas seções escuras seguidas, contato e rodapé fechado pela
+   gaveta do logo. Código e textos são do Studio Cassa — da referência veio
    a estrutura, não uma linha.
    ========================================================================== */
 
@@ -81,45 +81,26 @@
   box-shadow: var(--sombra-flutua); /* taste-skill-ignore: só no que flutua (barra, órbita, flutuante, modal) */
 }
 
-/* --- marca: símbolo + nome ------------------------------------------------ */
+/* --- marca: o logo --------------------------------------------------------
+   Os desenhos de assets/marca/, com as letras em path (não dependem de
+   fonte). No celular vai só a gaveta, que cabe ao lado do WhatsApp até em
+   360px; a partir de 760px, a horizontal, com o "studio". Os mínimos da
+   marca são 18px para a gaveta e 28px para a horizontal. A margem de cima
+   centra a MOLDURA na barra, e o puxador fica pendurado abaixo dela. */
 .marca{
+  --logo-h: 30px;
   display: flex;
   align-items: center;
-  gap: 12px;
   flex: none;
+  min-height: 44px;
   margin-right: auto;
-  padding-right: 8px;
+  padding: 0 8px 0 10px;
 }
-.marca__simbolo{
-  display: grid;
-  place-items: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 8px;
-  background: var(--tinta);
-  color: #fff;
-  font-family: var(--fonte-marca);
-  font-stretch: 125%;
-  font-weight: 900;
-  font-size: .8125rem;
-  letter-spacing: .02em;
-  line-height: 1;
-}
-.marca__texto{ display: none; flex-direction: column; gap: 2px; }
-.marca__nome{
-  font-family: var(--fonte-texto);
-  font-size: var(--t-ui);
-  font-weight: 500;
-  letter-spacing: -.02em;
-  line-height: 1.1;
-  color: var(--tinta);
-  white-space: nowrap;
-}
-.marca__tag{
-  font-size: var(--t-rotulo);
-  line-height: 1.2;
-  color: var(--mid);
-  white-space: nowrap;
+.marca img{
+  display: block;
+  width: auto;
+  height: var(--logo-h);
+  margin-top: calc(var(--logo-h) * 18 / 136);
 }
 
 /* --- links --------------------------------------------------------------- */
@@ -164,6 +145,15 @@
 }
 .nav__cta:hover{ background: var(--tinta); color: #fff; }
 .nav__cta:hover .nav__cta-seta{ background: var(--marca); color: #fff; transform: rotate(45deg); }
+/* No celular a pílula diz só "WhatsApp": o "Falar no" continua lá para o
+   leitor de tela, e a gaveta do logo ganha a largura de que precisa. */
+.nav__cta-pre{
+  position: absolute;
+  width: 1px; height: 1px;   /* taste-skill-ignore: só para leitor de tela */
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
 
 /* --- seletor de idioma ---------------------------------------------------
    Só é impresso quando IDIOMAS_ATIVOS tem mais de um idioma. Hoje, nunca. */
@@ -280,7 +270,6 @@
 .risco--grosso{ stroke-width: 9px; }
 .risco--azul{ stroke: var(--risco-azul); }
 .risco--amarelo{ stroke: var(--risco-amarelo); }
-.risco--laranja{ stroke: var(--risco-laranja); }
 
 .js .risco{ stroke-dashoffset: 1; }
 .sem-js-vivo .risco{ stroke-dashoffset: 0; }
@@ -359,28 +348,16 @@
   padding-block: 24px;
 }
 
-/* o tamanho do nome mora no próprio <h1>: o título da página mede o que a
-   tela mostra, e a frase de baixo usa rem, sem herdar este tamanho */
-.hero__titulo{
-  font-size: clamp(3.1rem, 17vw, 5.6rem);
-  letter-spacing: 0;
-  line-height: 1;
-}
-
+/* O nome é o logo, em desenho: a compacta no celular e a horizontal a
+   partir de 760px (quem escolhe é o <picture>). O alt "Studio Cassa" do
+   <img> entra no texto do <h1>, junto com a frase. */
 .hero__marca{
   position: relative;
   display: block;
-  width: min-content;
+  width: min(86vw, 360px);
   margin-inline: auto;
-  font-family: var(--fonte-marca);
-  font-stretch: 125%;
-  font-weight: 900;
-  font-size: 1em;
-  line-height: .86;
-  letter-spacing: -.015em;
-  text-transform: uppercase;
-  color: var(--tinta);
 }
+.hero__marca img{ display: block; width: 100%; height: auto; }
 .hero__linha{
   display: block;
   /* no celular, duas linhas estreitas no meio: os cartões da órbita
@@ -398,15 +375,16 @@
   color: var(--tinta);
 }
 
-/* Os rabiscos do nome: cada um em % da caixa do nome, com a proporção
-   do próprio desenho. O sublinhado fica no vão entre o nome e a frase —
-   nunca por cima da frase, que é parte do H1. */
+/* Os rabiscos do logo: cada um em % da caixa dele, com a proporção do
+   próprio desenho. Nenhum passa por cima de letra da gaveta. O laço abraça
+   o "studio"; o sublinhado fica no vão entre o logo e a frase, longe do
+   puxador, e nunca por cima da frase, que é parte do H1. */
 .rabisco{ position: absolute; height: auto; pointer-events: none; overflow: visible; }
-/* celular: o nome em duas linhas (STUDIO / CASSA) */
-.rabisco--laco   { left: -9%;  top: -16%; width: 26%; }
-.rabisco--traco  { left: 1%;   top: 100%; width: 64%; height: clamp(16px, 2.6vw, 34px); margin-top: 2px; }
-.rabisco--mola   { right: -8%; top: -22%; width: 20%; }
-.rabisco--estrela{ left: 52%;  top: -30%; width: 7%; }
+/* celular: a compacta, com o "studio" em cima da gaveta */
+.rabisco--laco   { left: -5%;  top: -15%; width: 47%; }
+.rabisco--traco  { left: 1%;   top: 100%; width: 40%; height: clamp(16px, 2.6vw, 34px); margin-top: 2px; }
+.rabisco--mola   { right: -5%; top: 12%;  width: 17%; }
+.rabisco--estrela{ left: 76%;  top: 1%;   width: 6.5%; }
 
 .hero__canto{
   position: absolute;
@@ -1414,19 +1392,13 @@
 }
 .pilula:hover{ background: var(--tinta); color: var(--papel); }
 
-/* o nome de ponta a ponta: o tamanho acompanha a largura útil da página */
+/* a gaveta fecha a página: de ponta a ponta no celular e com no máximo
+   920px no computador — mais larga, ela passava de 400px de altura */
 .rodape__marca{
-  margin-top: clamp(40px, 6vw, 80px);
-  font-family: var(--fonte-marca);
-  font-stretch: 125%;
-  font-weight: 900;
-  font-size: min(9.25vw, 140px);
-  line-height: .82;
-  letter-spacing: -.02em;
-  text-transform: uppercase;
-  text-align: center;
-  white-space: nowrap;
-  color: var(--tinta);
+  display: block;
+  width: min(100%, 920px);
+  height: auto;
+  margin: clamp(40px, 6vw, 80px) auto 0;
 }
 
 .rodape__base{
@@ -2010,14 +1982,12 @@
   color: var(--marca);
   margin-bottom: var(--s-2);
 }
-.erro-num{
-  font-family: var(--fonte-marca);
-  font-stretch: 125%;
-  font-weight: 900;
-  font-size: clamp(5rem, 18vw, 11rem);
-  line-height: .85;
-  letter-spacing: -.02em;
-  color: var(--papel-3);
+/* a gaveta do 404: o desenho do logo, com os dígitos na Plex Mono */
+.erro-gaveta{
+  display: block;
+  width: clamp(200px, 22vw, 300px);
+  height: auto;
+  margin-bottom: var(--s-3);
 }
 .obr__acoes{
   display: flex;
@@ -2155,15 +2125,16 @@
    BREAKPOINT 760px
    ========================================================================== */
 @media (min-width: 760px){
-  .marca__texto{ display: flex; }
+  .marca{ --logo-h: 36px; }
+  .nav__cta-pre{ position: static; width: auto; height: auto; overflow: visible; clip-path: none; }
 
-  .hero__titulo{ font-size: clamp(3rem, 6.8vw, 7.4rem); }
-  .hero__marca{ width: auto; white-space: nowrap; }
+  .hero__marca{ width: clamp(480px, 56vw, 860px); }
   .hero__linha{ max-width: none; }
-  /* o nome numa linha só: os rabiscos voltam às medidas da linha larga */
-  .rabisco--laco   { left: -4%;  top: -42%; width: 12.5%; }
-  .rabisco--mola   { right: -5%; top: -46%; width: 11%; }
-  .rabisco--estrela{ left: 55%;  top: -50%; width: 3.6%; }
+  /* a horizontal: o "studio" à esquerda e a gaveta à direita */
+  .rabisco--laco   { left: -4.6%; top: 6%;   width: 37.6%; }
+  .rabisco--traco  { width: 60%; }
+  .rabisco--mola   { right: -7%;  top: -26%; width: 11%; }
+  .rabisco--estrela{ left: 57%;   top: -27%; width: 4%; }
 
   .evidencia__topo{ flex-wrap: nowrap; }
   .evidencia__dica span{ display: inline; }

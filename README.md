@@ -45,7 +45,8 @@ direto no navegador — funciona por `file://`, sem servidor.
 | Uma loja saiu do ar | `dados.js`: `semLink:true` e `aviso`; ver "A prévia" |
 | Trocar o selo do hero/rodapé | `assets/js/dados.js`, objeto `SELO` |
 | Trocar um texto do site | o próprio HTML **e** `assets/js/i18n.js` |
-| Trocar fontes ou cores | ver "Identidade visual (provisória)" |
+| Trocar fontes ou cores | ver "Identidade visual" |
+| Pôr a assinatura no rodapé de uma loja | ver "Assinatura nas lojas" |
 | Trocar o WhatsApp ou o Instagram | `assets/js/site.js`, constantes no topo |
 | Publicar o blog | ver "Ligar o blog" |
 
@@ -80,6 +81,8 @@ assets/
   img/previa/<id>/    <pagina>-<aparelho>-N.jpg  a loja congelada, em partes
   img/logos/          logos    <id>.png        fundo transparente
   img/og/             imagem de compartilhamento
+  marca/              o logo e a assinatura das lojas, em SVG (e a
+                      assinatura também em PNG); ver "Identidade visual"
   favicon/
 ```
 
@@ -307,34 +310,129 @@ versão antiga. A chave está no próprio elemento, em `data-i18n`.
 
 ---
 
-## Identidade visual (provisória)
+## Identidade visual
 
-Fontes e cores seguem a referência [anubi.io](https://anubi.io/) até as
-definitivas chegarem. Tudo sai de tokens no topo do `assets/css/base.css`; o
-resto do CSS só lê os tokens.
+**O logo é uma gaveta:** "CASSA" em cinco compartimentos de uma gaveta
+vermelha, com o puxador embaixo do meio, e "studio" em mono ao lado (ou em
+cima, na versão compacta). *Cassa*, em italiano, é o caixa da loja, e também
+caixa, caixote. Os arquivos estão em `assets/marca/`, com as letras já em
+desenho: nenhum depende de fonte carregada.
 
-**Cores.** `--papel*` (fundos claros), `--tinta`, `--mid` e `--light` (textos),
-`--marca*` (o azul), `--escuro*` (as seções escuras) e `--risco-*` (os rabiscos
-do hero). O comentário no topo do `base.css` tem a tabela de contraste de cada
-par em uso: trocou uma cor, refaça a conta do par — texto corrido pede 4,5:1.
+| arquivo | onde o site usa |
+|---|---|
+| `studio-cassa-horizontal.svg` | nav e hero, a partir de 760px |
+| `studio-cassa-compacta.svg` | hero, no celular |
+| `studio-cassa-gaveta.svg` | nav no celular e rodapé das 7 páginas |
+| `gaveta-404.svg` | o número do `404.html`, com os dígitos na Plex Mono |
+| `assinatura-branca.svg`, `assinatura-preta.svg` e os PNGs @2x e @3x | o rodapé das lojas (ver "Assinatura nas lojas") |
 
-**Fontes.** São quatro papéis:
+O favicon (`assets/favicon/`) é o compartimento do C com o puxador, num
+desenho próprio, mais grosso, para se ler em 16px. A imagem de
+compartilhamento (`assets/img/og/og-image.png`, 1200×630) leva a compacta
+sobre o papel e não traz o domínio, que ainda não está registrado.
 
-| token | hoje | onde |
+**Regras do logo:**
+
+- área de proteção: a altura de uma letra da gaveta, livre em volta de tudo;
+- tamanho mínimo, em altura: horizontal 28px, compacta 48px, gaveta 18px e
+  símbolo 32px (abaixo disso, só o favicon);
+- não esticar, não tirar o puxador e não trocar as cores de lugar: moldura e
+  puxador em vermelho, letras em tinta (ou tudo numa cor só, branca ou tinta).
+
+O manual completo, com a construção, a paleta e os contrastes, é o
+`_marca/fase2/marca.html`.
+
+**Cores.** As da marca são tinta `#161310`, papel `#F5F1E8`, vermelho
+`#CF2C15` e branco. O papel é o fundo das peças (imagem de compartilhamento,
+foto de perfil); o site continua no papel claro de antes. No site, o vermelho
+fica só no logo, no favicon e no `<meta name="theme-color">` (a cor da barra
+do navegador no celular, nas 7 páginas): não vira texto nem fundo de seção.
+
+O resto sai de tokens no topo do `assets/css/base.css`; o CSS só lê os tokens.
+`--papel*` (fundos claros), `--tinta` (a mesma da marca), `--mid` e `--light`
+(textos), `--marca*` (o azul: link, item ativo e foco), `--escuro*` (as seções
+escuras) e `--risco-*` (os rabiscos, em azul e amarelo; o laranja saiu, porque
+brigava com o vermelho do logo). O comentário no topo do `base.css` tem a
+tabela de contraste de cada par em uso: trocou uma cor, refaça a conta do par
+— texto corrido pede 4,5:1.
+
+**Fontes.** São três papéis no site:
+
+| token | fonte | onde |
 |---|---|---|
 | `--fonte-titulo` | Epilogue 500 | títulos |
 | `--fonte-texto` | Bricolage Grotesque 400 e 500 | texto, botões |
 | `--fonte-rotulo` | IBM Plex Mono 400 | rótulos pequenos, contadores |
-| `--fonte-marca` | Archivo larga (125%) 900 | só o nome: hero, rodapé, "SC" e o 404 |
 
-Trocar uma fonte = mudar o token **e** o `<link>` do Google Fonts no `<head>`
-das 7 páginas, com os mesmos pesos. A Archivo vem recortada só nas letras de
-"STUDIO CASSA" (`&text=STUDIO%20CA` no link; no `404.html`, também `40`), o que
-a deixa com pouco mais de 1 KB: se o nome ou a fonte do nome mudar, mude o
-`text=` junto.
+As letras do logo (Alfa Slab One no "CASSA" e IBM Plex Mono 500 no "studio")
+vêm em desenho dentro dos SVGs. A Alfa Slab One só existe ali: não é fonte de
+título nem de texto. Trocar uma fonte do site = mudar o token **e** o `<link>`
+do Google Fonts no `<head>` das 7 páginas, com os mesmos pesos.
 
-A cor da barra do navegador no celular é o `<meta name="theme-color">`, também
-nas 7 páginas.
+**Refazer os arquivos da marca** (mudou uma cor ou uma medida do desenho):
+rode `node _marca/fase2/gerador/exporta.js` da raiz, com
+`NPMROOT="$(npm root -g)"` (os PNGs saem pelo Edge). Ele reescreve
+`assets/marca/`, o favicon e a imagem de compartilhamento. O gerador, as fontes
+(licença OFL) e o manual moram em `_marca/`, que fica fora do git: guarde uma
+cópia dessa pasta.
+
+---
+
+## Assinatura nas lojas
+
+"Loja feita pelo studio" seguido da gaveta, no rodapé das lojas que eu
+entrego. **Em quais lojas ela entra é decisão minha, loja por loja.** Fica
+perto do "criado com Nuvemshop" e na escala dele: a gaveta com 22px de altura
+e o texto em 12px, na fonte da própria loja (o trecho usa `font-family:
+inherit`). Chama atenção pelo desenho, não pelo tamanho.
+
+- **Cor:** branca (`#FFFFFF`) em rodapé escuro, preta (`#161310`) em rodapé
+  claro. Em rodapé de cor média, a que der mais contraste; o manual tem a
+  conta das nove lojas testadas, todas acima de 4,5:1.
+- **Frase:** "Loja feita pelo studio" é a padrão. Também servem "Site feito
+  pelo studio", "Desenvolvido pelo studio" e "Feito pelo studio": troque o
+  texto do `<span>`.
+- **Link:** abre em nova aba (`target="_blank" rel="noopener"`), para não
+  tirar o comprador da loja, e leva `?ref=LOJA`. Troque `LOJA` pelo nome da
+  loja sem acento nem espaço, o mesmo `id` do `dados.js` (ex.:
+  `cachaca-seculo-xviii`), para medir quando houver analytics.
+- **O endereço é `studiocassa.com.br`, que ainda não está registrado:** até
+  ele entrar no ar, o link não abre nada. Cole a assinatura depois do
+  registro; se colar antes com o endereço do GitHub Pages, vai ter de trocar
+  de novo em cada loja.
+
+**Nuvemshop:** Editar layout → Rodapé → Selos → **HTML personalizado**. Cole o
+trecho inteiro. O campo aceita até 50.000 caracteres, com HTML e estilo, e
+recusa `<script>`; o trecho tem 3 KB e nenhum script. Ele não passa pelo CSS
+personalizado do tema, que descartaria o `fill` do desenho. **Trocar de layout
+apaga o campo**, e a Nuvemshop não guarda histórico: mudou o layout, cole de
+novo.
+
+**Shopify e Tray:** ainda sem passo a passo. O trecho é HTML com todo o estilo
+inline e sem `<script>`, então serve em qualquer campo de rodapé que aceite
+HTML. Se o campo só aceitar imagem, use `assets/marca/assinatura-branca@2x.png`
+(ou a preta) com 22px de altura e o link por fora; se só aceitar texto, a
+versão só texto.
+
+O SVG vai embutido no trecho, e não como imagem servida por este site, de
+propósito: assim a assinatura não depende do endereço do site, que vai mudar,
+nem de ele estar no ar.
+
+O trecho, na versão branca (para a preta, troque `#FFFFFF` por `#161310`):
+
+```html
+<!-- Studio Cassa · assinatura no rodapé (branca, para rodapé escuro).
+Nuvemshop: Editar layout > Rodapé > Selos > HTML personalizado. Cole o bloco inteiro.
+Troque LOJA pelo nome da loja (ex.: cachaca-seculo-xviii). Para outra cor, troque #FFFFFF.
+Para outra frase (Site feito pelo studio, Desenvolvido pelo studio, Feito pelo studio), troque o texto do <span>. -->
+<a href="https://studiocassa.com.br/?ref=LOJA" target="_blank" rel="noopener" aria-label="Loja feita pelo Studio Cassa (abre em nova aba)" style="display:inline-flex;align-items:center;gap:6px;color:#FFFFFF;font-family:inherit;font-size:12px;font-weight:400;font-style:normal;line-height:1;letter-spacing:0;text-transform:none;text-decoration:none;white-space:nowrap;vertical-align:middle"><span>Loja feita pelo studio</span><svg viewBox="0 0 460 136" width="74.4" height="22" aria-hidden="true" focusable="false" style="display:block;flex:none;width:74.4px;height:22px;max-width:none;position:relative;top:2px;overflow:visible"><path style="fill:currentColor" d="M0 0H460V118H0ZM9 9V109H93V9ZM98.5 9V109H182.5V9ZM188 9V109H272V9ZM277.5 9V109H361.5V9ZM367 9V109H451V9ZM258 112.6V118A28 18 0 0 1 202 118V112.6ZM29.9 57.5Q29.9 31.6 55.1 31.6Q61.2 31.6 66.5 33.1Q71.7 34.6 74.3 36.4L74.3 52.4L58.9 52.4L58.9 47.8Q58.9 45.4 57.8 44.2Q56.7 43 54.5 43Q52.3 43 51.2 44.2Q50.1 45.4 50.1 47.8L50.1 67.2Q50.1 69.6 51.2 70.8Q52.3 72 54.5 72Q56.7 72 57.8 70.8Q58.9 69.6 58.9 67.2L58.9 62L74.3 62L74.3 78.6Q71.6 80.4 66.5 81.9Q61.3 83.4 55.3 83.4Q43.1 83.4 36.5 77.2Q29.9 71.1 29.9 57.5ZM163.1 72L165.6 72L165.6 82.5L140.4 82.5L140.4 72L144.3 72L143.3 66.8L134.5 66.8L133.5 72L137.4 72L137.4 82.5L115.4 82.5L115.4 72L117.9 72L128.8 32.5L152.2 32.5ZM135.9 60L141.8 60L139.2 47.2L138.6 47.2ZM209.4 79.9L209.4 67.2L223.6 67.2Q223.6 69.2 224.5 70.1Q225.4 71 227.8 71Q229.7 71 230.6 70.4Q231.5 69.8 231.5 68.6Q231.5 67.5 230.6 66.8Q229.8 66 227.8 65.3L222.2 63.3Q215.1 60.6 212 57Q208.9 53.3 208.9 47.1Q208.9 39.5 213.8 35.6Q218.8 31.6 230.4 31.6Q236 31.6 241 32.7Q245.9 33.8 248.9 35.7L248.9 47.2L236 47.2Q236 44 232.1 44Q230.1 44 229.3 44.5Q228.5 45 228.5 46.2Q228.5 47.3 229.5 47.9Q230.4 48.6 232.5 49.3L238.1 51.2Q244.9 53.5 248 57.2Q251.1 60.9 251.1 66.9Q251.1 75 245.6 79.2Q240.2 83.4 229.6 83.4Q223.4 83.4 217.9 82.3Q212.4 81.3 209.4 79.9ZM298.9 79.9L298.9 67.2L313.1 67.2Q313.1 69.2 314 70.1Q314.9 71 317.3 71Q319.2 71 320.1 70.4Q321 69.8 321 68.6Q321 67.5 320.1 66.8Q319.3 66 317.3 65.3L311.7 63.3Q304.6 60.6 301.5 57Q298.4 53.3 298.4 47.1Q298.4 39.5 303.3 35.6Q308.3 31.6 319.9 31.6Q325.5 31.6 330.5 32.7Q335.4 33.8 338.4 35.7L338.4 47.2L325.5 47.2Q325.5 44 321.6 44Q319.6 44 318.8 44.5Q318 45 318 46.2Q318 47.3 319 47.9Q319.9 48.6 322 49.3L327.6 51.2Q334.4 53.5 337.5 57.2Q340.6 60.9 340.6 66.9Q340.6 75 335.1 79.2Q329.7 83.4 319.1 83.4Q312.9 83.4 307.4 82.3Q301.9 81.3 298.9 79.9ZM431.6 72L434.1 72L434.1 82.5L408.9 82.5L408.9 72L412.8 72L411.8 66.8L403 66.8L402 72L405.9 72L405.9 82.5L383.9 82.5L383.9 72L386.4 72L397.3 32.5L420.7 32.5ZM404.4 60L410.3 60L407.7 47.2L407.1 47.2Z"/></svg></a>
+```
+
+A versão só texto, para campo que não aceita SVG nem imagem:
+
+```html
+Loja feita pelo <a href="https://studiocassa.com.br/?ref=LOJA" target="_blank" rel="noopener">Studio Cassa</a>
+```
 
 ---
 
@@ -352,7 +450,7 @@ nas 7 páginas.
 - **Nuvem "nuvemshop":** os pontos formam a palavra em ~2 s e param; depois só
   se mexem com o cursor ou o dedo.
 - **Rabisco do cursor** (`rabiscoCursor()` no `site.js`): um traço fino que
-  segue o mouse e some em ~1 s, nas cores dos rabiscos do site (azul, laranja,
+  segue o mouse e some em ~1 s, nas cores dos rabiscos do site (azul e
   amarelo), trocando de cor a cada ~7 s. Mora num canvas **atrás** de todo o
   conteúdo e só nasce no papel livre: não passa por texto, link, botão,
   imagem, desenho nem cartão (fica a ~10 px de qualquer um). Rolar não risca.
@@ -438,14 +536,17 @@ O que decide a velocidade do site são as **imagens**, não o código.
 
 | item | hoje | teto |
 |---|---|---|
-| CSS + JS (soma dos gzip) | 72,20 KB | 45 KB, informativo |
+| CSS + JS (soma dos gzip) | 72,47 KB | 45 KB, informativo |
 | cada capa | 85 a 187 KB | **200 KB** |
 | primeira dobra | ~243 KB | 600 KB |
 | cada parte da prévia no celular | até 162 KB, só ao chegar nela | **200 KB** |
 | cada parte da prévia no computador | até 338 KB, só ao chegar nela | **350 KB** |
 
 O CSS + JS passou do teto informativo com a órbita, a galeria em profundidade,
-o anel e a nuvem (antes do redesign eram 39,23 KB). A primeira dobra subiu de
+o anel e a nuvem (antes do redesign eram 39,23 KB). A marca nova quase não
+mexeu nele: o logo entra como `<img>` de SVG, de 1 a 2 KB em gzip cada, e a
+nav e o hero dividem o mesmo arquivo; a Archivo, que vinha do Google Fonts,
+saiu. A primeira dobra subiu de
 185 KB porque o hero agora carrega os logos das lojas, um cartão por loja.
 Quando a órbita tinha fotos, eram as minis (as capas inteiras estourariam os
 600 KB); hoje ela é só de logos, ~10 KB cada.

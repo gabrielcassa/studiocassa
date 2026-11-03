@@ -3,7 +3,7 @@
 
    O QUE MORA AQUI: só a MONTAGEM de HTML a partir dos arrays do dados.js —
    selo, faixa de logos, serviços, processo, órbita do hero, portfólio em
-   parede curva, outras plataformas, citações, depoimentos, posts, grade do
+   carrossel, outras plataformas, citações, depoimentos, posts, grade do
    portfólio e página de caso. Mais o htmlModal(p), que devolve o miolo do
    modal como texto.
 
@@ -368,15 +368,18 @@ window.SCRender = (function () {
   }
 
   /* ----------------------------------------------------------------------
-     evidencia() — o portfólio da home: um cartão por loja "destaque"
-     visível. Quem põe os cartões na parede curva e os faz passar com a
-     rolagem é o site.js; aqui só se monta.
-     A capa vai em data-src, não em src: o site.js só a carrega quando a
-     peça chega perto da frente. A galeria mora logo abaixo do hero, e com
-     src + loading="lazy" o navegador baixaria as 11 capas (~1,6 MB) já na
-     abertura da página.
-     Com `capaGaleria` (o cartão desenhado da marca), é ele que entra, e a
-     peça ganha .peca--cartao: o cartão tem canto arredondado próprio.
+     evidencia() — o portfólio da home: um caso por loja "destaque"
+     visível, num carrossel que o site.js faz andar; aqui só se monta.
+     A capa de cada caso é a própria loja: a primeira parte da prévia da
+     home, no notebook e no celular desenhados. Assim nenhuma loja precisa
+     de capa feita à mão (sem prévia de computador, o notebook mostra a
+     `capa`; sem a de celular, o celular não aparece).
+     As imagens vão em data-src, não em src: o site.js só as carrega quando
+     o caso chega perto. A galeria mora logo abaixo do hero, e com src +
+     loading="lazy" o navegador baixaria as primeiras já na abertura.
+     O texto: o segmento em cima, o nome e uma frase. A frase é o `resumo`
+     do dados.js; sem ele, sai do que está conferido (tipo, plataforma e
+     tema) — não se inventa história de caso.
      Sem loja nenhuma, a seção sai, e todo link que apontava para
      #portfolio passa a apontar para portfolio.html — senão o "Portfólio"
      do menu e o "Ver os projetos" do hero virariam âncora morta.
@@ -395,24 +398,51 @@ window.SCRender = (function () {
     }
 
     secao.querySelector('.evidencia__trilho').innerHTML = lojas.map(function (p, i) {
-      var meta = [p.tipo, pastilha(p), p.segmento].filter(Boolean).map(esc).join(' · ');
-      return '<article class="peca' + (p.capaGaleria ? ' peca--cartao' : '') + '" data-peca="' + i + '">' +
-               '<button class="peca__abrir" type="button" data-projeto="' + esc(p.id) + '"' +
-               ' aria-label="Ver o projeto ' + esc(p.nome) + '">' +
-                 '<img class="peca__capa" data-src="' + esc(caminho(p.capaGaleria || p.capa)) + '"' +
-                 ' alt="" width="800" height="1200" decoding="async">' +
-               '</button>' +
-               '<div class="peca__legenda">' +
-                 '<h3 class="peca__nome">' + esc(p.nome) + '</h3>' +
-                 (meta ? '<p class="peca__meta">' + meta + '</p>' : '') +
-                 seta('peca__seta', 28) +
+      var g = temPrevia(p) ? p.previa.paginas[0] : null;
+      var parte = function (aparelho) {
+        return g && g[aparelho] ? 'assets/img/previa/' + p.id + '/' + g.arquivo + '-' + aparelho + '-1.jpg' : '';
+      };
+      var computador = parte('computador') || p.capa;
+      var celular = parte('celular');
+      var frase = p.resumo ||
+        [p.tipo && p.plataforma ? p.tipo + ' na ' + p.plataforma : p.tipo || p.plataforma,
+         p.tema ? 'tema ' + p.tema : ''].filter(Boolean).join(', ') + '.';
+      return '<li class="peca" data-peca="' + i + '">' +
+               /* a vitrine é só para o mouse e o dedo: no teclado, o botão do
+                  texto faz o mesmo, e o leitor de tela não ouve duas vezes */
+               '<div class="peca__vitrine" data-projeto="' + esc(p.id) + '" aria-hidden="true">' +
+                 '<span class="peca__note">' +
+                   '<span class="peca__tela"><img data-src="' + esc(caminho(computador)) + '" alt=""' +
+                   ' width="1200" height="2400" decoding="async"></span>' +
+                   '<span class="peca__base"></span>' +
+                 '</span>' +
+                 (celular
+                   ? '<span class="peca__cel"><span class="peca__cel-tela"><img data-src="' + esc(caminho(celular)) + '"' +
+                     ' alt="" width="500" height="2400" decoding="async"></span></span>'
+                   : '') +
                '</div>' +
-             '</article>';
+               '<div class="peca__texto">' +
+                 '<p class="peca__rotulo rotulo">' + esc(p.segmento || p.tipo) + '</p>' +
+                 '<h3 class="peca__nome">' + esc(p.nome) + '</h3>' +
+                 (frase.length > 1 ? '<p class="peca__frase">' + esc(frase) + '</p>' : '') +
+                 '<button class="btn btn--tinta peca__abrir" type="button" data-projeto="' + esc(p.id) + '">' +
+                   '<span data-i18n="outras.verProjeto">Ver o projeto</span>' +
+                   '<span class="so-leitor"> ' + esc(p.nome) + '</span>' +
+                   '<svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" focusable="false">' +
+                     '<path fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"' +
+                     ' stroke-linejoin="round" d="M3 8h10M9 4l4 4-4 4"/></svg>' +
+                 '</button>' +
+               '</div>' +
+             '</li>';
     }).join('');
 
-    var total = secao.querySelector('[data-evidencia-total]');
-    if (total) total.textContent = (lojas.length < 10 ? '0' : '') + lojas.length;
-    secao.style.setProperty('--n', lojas.length);
+    /* um ponto por caso, com o nome da loja para o leitor de tela */
+    var pontos = secao.querySelector('[data-evidencia-pontos]');
+    if (pontos) pontos.innerHTML = lojas.map(function (p, i) {
+      return '<button class="evidencia__ponto" type="button" data-evidencia-ponto="' + i + '"' +
+             ' aria-label="' + esc(p.nome) + '"' + (i === 0 ? ' aria-current="true"' : '') + '></button>';
+    }).join('');
+
     secao.hidden = false;
   }
 

@@ -4,10 +4,10 @@
    O MESMO arquivo roda em todas as páginas: por isso todo bloco começa com um
    guard que sai fora se o elemento não existir naquela página.
 
-   MOVIMENTO: tudo que anima (órbita, parede de projetos, anel, nuvem) mexe
-   só em transform e opacity, para quando sai da tela, e fica parado com
-   prefers-reduced-motion. Nenhum bloco segura a rolagem: a parede de
-   projetos lê a rolagem normal do navegador, não a substitui.
+   MOVIMENTO: tudo que anima (órbita, anel, nuvem) mexe só em transform e
+   opacity, para quando sai da tela, e fica parado com prefers-reduced-motion.
+   Nenhum bloco segura a rolagem: a galeria de projetos é uma fileira com a
+   rolagem normal do navegador, para o lado, e nada nela anda sozinho.
    ========================================================================== */
 (function () {
   'use strict';
@@ -217,8 +217,8 @@
   }
 
   /* ----------------------------------------------------------------------
-     A parede de projetos preenche isto; a órbita do hero usa para levar o
-     clique num cartão até a loja dele. Sem parede (sem projeto, ou outra
+     A galeria de projetos preenche isto; a órbita do hero usa para levar o
+     clique num cartão até a loja dele. Sem galeria (sem projeto, ou outra
      página), fica null e o clique só desce até #portfolio.
      ---------------------------------------------------------------------- */
   var irParaPeca = null;
@@ -398,152 +398,105 @@
   }
 
   /* ----------------------------------------------------------------------
-     evidenciaRolagem() — a parede curva do portfólio.
-     A seção é alta (100svh + 80svh por projeto) e o palco fica preso na
-     tela (sticky, no CSS). Aqui só se lê quanto da seção já passou e se
-     põe cada cartão num cilindro em volta de quem olha: a uma distância d
-     do cartão da frente, ele gira d·24° e afunda. Os cartões seguem a
-     rolagem com um pouco de inércia (o "mostrado" persegue o "alvo").
+     evidenciaCarrossel() — o portfólio da home: os casos lado a lado, numa
+     fileira que rola para o lado (scroll-snap, no CSS). Nada anda sozinho:
+     dedo, roda, setas e pontos. Aqui se acende o ponto do caso da vez, se
+     apagam as setas nas pontas e se carregam as imagens perto da vez.
 
-     Teclado: o cartão que recebe foco vem para a frente. Mouse: clicar num
-     cartão do lado traz ele para a frente; só o da frente abre o caso.
-     Com reduced-motion (ou um projeto só) a seção vira grade parada.
+     As imagens chegam em data-src (ver evidencia() no render.js). Nada
+     baixa enquanto a galeria está só encostada no pé do hero: "perto" liga
+     quando ela entra 40px na tela, e aí entram o caso da vez e os vizinhos.
+     O clique abre o modal pelo data-projeto, como em todo o site.
      ---------------------------------------------------------------------- */
-  function evidenciaRolagem() {
+  function evidenciaCarrossel() {
     var secao = document.querySelector('[data-evidencia]');
     if (!secao || secao.hidden) return;
 
     var trilho = secao.querySelector('.evidencia__trilho');
-    var pecas = Array.prototype.slice.call(secao.querySelectorAll('.peca'));
-    var n = pecas.length;
+    var casos = Array.prototype.slice.call(secao.querySelectorAll('.peca'));
+    var pontos = Array.prototype.slice.call(secao.querySelectorAll('[data-evidencia-ponto]'));
+    var voltar = secao.querySelector('[data-evidencia-anda="-1"]');
+    var seguir = secao.querySelector('[data-evidencia-anda="1"]');
+    var n = casos.length;
     if (!trilho || !n) return;
 
-    var alvo = 0, mostrado = 0, rodando = false;
+    var atual = 0, perto = false, pedido = false;
 
-    /* As capas chegam em data-src (ver evidencia() no render.js). Nada
-       baixa enquanto a galeria está só encostada no pé do hero: "perto"
-       liga quando ela entra 40px na tela — rolou, ou abriu já no meio. */
-    var perto = false, estatica = parado() || n < 2;
-    function poeCapa(img) {
-      if (estatica) img.loading = 'lazy';     /* na grade parada, o lazy do navegador basta */
-      img.src = img.getAttribute('data-src');
-      img.removeAttribute('data-src');
-    }
-    function carregarPerto(p) {
+    /* o caso da vez e os dois vizinhos: o seguinte já aparece na ponta */
+    function carregar(i) {
       if (!perto) return;
-      pecas.forEach(function (el, i) {
-        if (!estatica && Math.abs(i - p) > 2.5) return;   /* a da frente e duas de cada lado */
-        var img = el.querySelector('img[data-src]');
-        if (img) poeCapa(img);
-      });
+      for (var k = Math.max(0, i - 1); k <= Math.min(n - 1, i + 1); k++) {
+        Array.prototype.forEach.call(casos[k].querySelectorAll('img[data-src]'), function (img) {
+          img.src = img.getAttribute('data-src');
+          img.removeAttribute('data-src');
+        });
+      }
     }
     if ('IntersectionObserver' in window) {
-      new IntersectionObserver(function (entradas) {
+      var olho = new IntersectionObserver(function (entradas) {
         entradas.forEach(function (e) {
-          if (!e.isIntersecting || perto) return;
+          if (!e.isIntersecting) return;
           perto = true;
-          carregarPerto(mostrado);
+          carregar(atual);
+          olho.disconnect();
         });
-      }, { rootMargin: '0px 0px -40px 0px' }).observe(secao);
+      }, { rootMargin: '0px 0px -40px 0px' });
+      olho.observe(secao);
     } else {
       perto = true;
     }
 
-    if (estatica) {
-      secao.classList.add('evidencia--estatica');
-      carregarPerto(0);
-      irParaPeca = function (i) {
-        pecas[i].scrollIntoView({ behavior: suave(), block: 'center' });
-      };
-      return;
-    }
-
-    var atual = secao.querySelector('[data-evidencia-atual]');
-    var barra = secao.querySelector('[data-evidencia-barra]');
-    var PASSO = .42;                       /* rad entre um cartão e o próximo (~24°) */
-    var curso = 1, raio = 900;
-
-    function medir() {
-      curso = Math.max(secao.offsetHeight - window.innerHeight, 1);
-      raio = Math.max(trilho.clientWidth * 1.25, 760);
-    }
-
-    function progresso() {
-      var p = -secao.getBoundingClientRect().top / curso;
-      return Math.min(Math.max(p, 0), 1) * (n - 1);
-    }
-
-    function dois(x) { return (x < 10 ? '0' : '') + x; }
-
-    function desenhar(p) {
-      pecas.forEach(function (el, i) {
-        var d = i - p;
-        var ang = d * PASSO;
-        var dist = Math.abs(d);
-        var x = Math.sin(ang) * raio;
-        var z = (Math.cos(ang) - 1) * raio;
-        var op = Math.max(0, Math.min(1, 2.4 - dist));
-        el.style.transform = 'translate3d(' + x.toFixed(1) + 'px,0,' + z.toFixed(1) +
-                             'px) rotateY(' + (-ang * 57.2958).toFixed(2) + 'deg)';
-        el.style.opacity = op.toFixed(3);
-        el.style.zIndex = String(100 - Math.round(dist * 10));
-        el.style.setProperty('--leg', Math.max(0, 1 - dist * 2.2).toFixed(3));
+    /* o caso da vez é o que está mais perto da margem em que a fileira
+       começa; no fim da fileira, o último (ele não chega até a margem) */
+    function margem() { return parseFloat(getComputedStyle(trilho).paddingLeft) || 0; }
+    function noFim() { return trilho.scrollLeft + trilho.clientWidth >= trilho.scrollWidth - 4; }
+    function daVez() {
+      if (noFim()) return n - 1;
+      var x = trilho.scrollLeft + margem(), melhor = 0, menor = Infinity;
+      casos.forEach(function (c, i) {
+        var d = Math.abs(c.offsetLeft - x);
+        if (d < menor) { menor = d; melhor = i; }
       });
-      carregarPerto(p);
-      var cur = Math.min(n - 1, Math.max(0, Math.round(p)));
-      if (atual) atual.textContent = dois(cur + 1);
-      if (barra) barra.style.setProperty('--p', (p / (n - 1)).toFixed(4));
+      return melhor;
     }
 
-    function quadro() {
-      mostrado += (alvo - mostrado) * .14;
-      if (Math.abs(alvo - mostrado) < .0008) mostrado = alvo;
-      desenhar(mostrado);
-      if (mostrado !== alvo) requestAnimationFrame(quadro);
-      else rodando = false;
+    function marcar() {
+      pedido = false;
+      atual = daVez();
+      pontos.forEach(function (p, i) {
+        if (i === atual) p.setAttribute('aria-current', 'true');
+        else p.removeAttribute('aria-current');
+      });
+      if (voltar) voltar.disabled = trilho.scrollLeft <= 4;
+      if (seguir) seguir.disabled = noFim();
+      carregar(atual);
     }
+    trilho.addEventListener('scroll', function () {
+      if (pedido) return;
+      pedido = true;
+      requestAnimationFrame(marcar);
+    }, { passive: true });
+    window.addEventListener('resize', marcar);
 
-    function aoRolar() {
-      alvo = progresso();
-      if (rodando) return;
-      rodando = true;
-      requestAnimationFrame(quadro);
+    function ir(i, ja) {
+      i = Math.max(0, Math.min(n - 1, i));
+      trilho.scrollTo({ left: casos[i].offsetLeft - margem(), behavior: ja ? 'auto' : suave() });
     }
-
-    medir();
-    alvo = mostrado = progresso();
-    desenhar(mostrado);
-
-    window.addEventListener('scroll', aoRolar, { passive: true });
-    window.addEventListener('resize', function () { medir(); aoRolar(); });
-    window.addEventListener('load', function () { medir(); aoRolar(); });
-
-    irParaPeca = function (i, ja) {
-      medir();
-      var topo = window.scrollY + secao.getBoundingClientRect().top;
-      window.scrollTo({ top: topo + (i / (n - 1)) * curso, behavior: ja ? 'auto' : suave() });
-    };
-
-    /* foco pelo teclado: a peça focada passa a ser a da frente */
-    trilho.addEventListener('focusin', function (e) {
-      var peca = e.target.closest('.peca');
-      if (!peca) return;
-      var i = pecas.indexOf(peca);
-      if (Math.round(alvo) !== i) irParaPeca(i, true);
+    pontos.forEach(function (p, i) {
+      p.addEventListener('click', function () { ir(i); });
+    });
+    [voltar, seguir].forEach(function (b) {
+      if (b) b.addEventListener('click', function () { ir(atual + parseInt(b.getAttribute('data-evidencia-anda'), 10)); });
     });
 
-    /* clique numa peça do lado: vem para a frente em vez de abrir o caso.
-       Captura, para chegar antes do listener do modal no document. */
-    trilho.addEventListener('click', function (e) {
-      var peca = e.target.closest('.peca');
-      if (!peca) return;
-      var i = pecas.indexOf(peca);
-      if (Math.abs(i - mostrado) > .35) {
-        e.preventDefault();
-        e.stopPropagation();
-        irParaPeca(i);
-      }
-    }, true);
+    marcar();
+
+    /* o cartão da órbita leva até a loja dele: a página desce até a galeria
+       e a fileira anda até o caso */
+    irParaPeca = function (i) {
+      secao.scrollIntoView({ behavior: suave(), block: 'start' });
+      ir(i, true);
+    };
   }
 
   /* ----------------------------------------------------------------------
@@ -936,7 +889,7 @@
        bloco com fundo próprio (lido uma vez por elemento) */
     var CONTEUDO = 'a,button,img,svg,canvas,video,picture,iframe,input,textarea,select,label,' +
                    'h1,h2,h3,h4,h5,h6,p,li,dt,dd,blockquote,figcaption,span,em,strong,small,time,' +
-                   '.orbita__item,.peca';
+                   '.orbita__item,.peca__vitrine';
     var fundo = typeof WeakMap === 'function' ? new WeakMap() : null;
     function temFundo(el) {
       if (!fundo) return false;
@@ -1328,7 +1281,7 @@
       if (origem) { origem.focus({ preventScroll: true }); origem = null; }
     }
 
-    /* delegação: vale para a parede da home e para a grade do portfolio.html */
+    /* delegação: vale para a galeria da home e para a grade do portfolio.html */
     document.addEventListener('click', function (e) {
       var botao = e.target.closest('[data-projeto]');
       if (botao) { abrir(botao.getAttribute('data-projeto'), botao); return; }
@@ -1734,8 +1687,8 @@
   if (typeof iniciarI18n === 'function') iniciarI18n();
 
   /* 4. movimento e observadores por último: só agora existem os nós
-        gerados acima. A parede vem antes da órbita, que usa irParaPeca. */
-  evidenciaRolagem();
+        gerados acima. A galeria vem antes da órbita, que usa irParaPeca. */
+  evidenciaCarrossel();
   orbitaMovimento();
   anel();
   nuvem();

@@ -76,7 +76,8 @@ assets/
   js/i18n.js          dicionário pt completo + en vazio
   img/portfolio/      capas    <id>-capa.jpg   800x1200, retrato
                       minis    <id>-mini.jpg   360x540, hoje sem uso (ver abaixo)
-                      cartões  <id>-cartao.png 600x900, os da galeria da home
+                      cartões  <id>-cartao.png 600x900, hoje sem uso (a galeria
+                               da home mostra a prévia da loja)
                                (o cartão com foto vai em .jpg)
   img/previa/<id>/    <pagina>-<aparelho>-N.jpg  a loja congelada, em partes
   img/logos/          logos    <id>.png        fundo transparente
@@ -99,27 +100,29 @@ HTML; todo `addEventListener` está no `site.js`.
    com hífen.
 
    A foto é de marca — produto, loja, gente —, **não print da home** e sem
-   texto gravado: a peça da galeria da home é vertical e mostra a foto
-   inteira, em cor. Pode já vir pronta em 800×1200, como as capas de
-   25/10/2026: o script só recodifica.
+   texto gravado: o card do portfólio é vertical e mostra a foto inteira, em
+   cor. Pode já vir pronta em 800×1200, como as capas de 25/10/2026: o script
+   só recodifica.
 
    O `logo` é o **branco**, transparente: é ele que aparece nos cartões
    escuros (a órbita do hero, que é só de logos — fundo preto, logo
-   branco —, a galeria e a página do projeto). Logo colorido com fundo
-   próprio (adesivo, selo) vira borrão ali — precisa de uma versão de uma cor.
+   branco —, e os cards do portfólio). Logo colorido com fundo próprio
+   (adesivo, selo) vira borrão ali — precisa de uma versão de uma cor.
 
    A faixa **"Marcas que já confiaram"** mostra cada marca na cor dela: com
    o campo `logoCor` no `dados.js` (arquivo em `assets/img/logos/cor/<id>.png`,
    100px de altura), entra o logo colorido; sem ele, o branco vira silhueta
    preta — certo para as marcas pretas e para quem só tem logo branco.
 
-   A galeria **"Loja de verdade"** mostra o cartão desenhado de cada marca
-   (campo `capaGaleria`, arquivo `assets/img/portfolio/<id>-cartao.png`,
-   600×900, cantos arredondados de 32px já no PNG). Sem cartão, ela usa a
-   `capa`. O portfólio e a página de cada projeto seguem com a foto.
-   Cartão com **foto** vai em JPG (`<id>-cartao.jpg`, até 200 KB), como o
-   da Crochê Vitória: em PNG, a foto passa de 900 KB. Ele pode vir de canto
-   reto, porque a galeria arredonda no CSS com o mesmo raio de 32px.
+   A galeria **"Loja de verdade"** não pede capa feita à mão: a capa de cada
+   loja é ela mesma, a primeira parte da prévia da home num notebook e num
+   celular desenhados (sem prévia de computador, o notebook mostra a `capa`).
+   Embaixo vão o `segmento`, o nome e uma frase, que é o `resumo` do
+   `dados.js`. Sem `resumo`, a frase sai do tipo, da plataforma e do tema
+   ("E-commerce completo na Nuvemshop, tema Ipanema."): vale escrever um
+   `resumo` curto para cada loja da galeria. Os cartões desenhados de antes
+   (campo `capaGaleria`, `assets/img/portfolio/<id>-cartao.png`) ficaram sem
+   uso desde 03/11/2026, guardados caso a galeria volte a eles.
 
    Na entrega, salve também a **prévia**, com a loja ainda como você a deixou:
    `node captura-previa.js <id>`. Ver "A prévia".
@@ -444,7 +447,9 @@ Loja feita pelo <a href="https://studiocassa.com.br/?ref=LOJA" target="_blank" r
   existe porque nada pode se mexer sozinho por mais de 5 s sem um jeito de
   parar (WCAG 2.2.2). A escolha fica no navegador da pessoa
   (`cassa-movimento` no `localStorage`).
-- **Galeria "Loja de verdade":** só anda com a rolagem.
+- **Galeria "Loja de verdade":** um carrossel que anda para o lado, um projeto
+  por vez, e nada passa sozinho: anda com o dedo, a roda (Shift + roda num
+  mouse comum), as setas ou os pontos. As setas somem nas telas de toque.
 - **Anel do "Como funciona":** gira só até a estação do passo que está sendo
   lido, e para.
 - **Nuvem "nuvemshop":** os pontos formam a palavra em ~2 s e param; depois só
@@ -478,8 +483,8 @@ Loja feita pelo <a href="https://studiocassa.com.br/?ref=LOJA" target="_blank" r
 
 Tudo para quando sai da tela. Com **"reduzir movimento"** ligado no sistema,
 nada se mexe: sem cortina, sem rabisco, sem a espiada do celular, cartão de
-destaque parado no topo da loja, órbita parada e a galeria vira uma grade
-comum.
+destaque parado no topo da loja, órbita parada, e a galeria troca de projeto
+sem deslizar.
 
 ---
 
@@ -536,7 +541,7 @@ O que decide a velocidade do site são as **imagens**, não o código.
 
 | item | hoje | teto |
 |---|---|---|
-| CSS + JS (soma dos gzip) | 72,52 KB | 45 KB, informativo |
+| CSS + JS (soma dos gzip) | 72,53 KB | 45 KB, informativo |
 | cada capa | 85 a 187 KB | **200 KB** |
 | primeira dobra | ~243 KB | 600 KB |
 | cada parte da prévia no celular | até 162 KB, só ao chegar nela | **200 KB** |
@@ -551,10 +556,11 @@ saiu. A primeira dobra subiu de
 Quando a órbita tinha fotos, eram as minis (as capas inteiras estourariam os
 600 KB); hoje ela é só de logos, ~10 KB cada.
 
-A galeria "Loja de verdade" vem logo depois do hero, então as capas grandes
-dela **não** podem ir com `src` (o navegador baixaria as 11, ~1,6 MB, na
-abertura): vão em `data-src`, e o `site.js` só carrega a peça da frente e as
-duas de cada lado, depois que a pessoa começa a rolar até a galeria.
+A galeria "Loja de verdade" vem logo depois do hero, e cada loja dela mostra
+a primeira parte da prévia da home, no computador e no celular (de 300 a
+450 KB por loja). Essas imagens **não** podem ir com `src` (o navegador
+baixaria as primeiras já na abertura): vão em `data-src`, e o `site.js` só
+carrega a loja da vez e as duas vizinhas, depois que a galeria entra na tela.
 
 Os logos da órbita ficam acima da dobra; os da faixa de marcas, depois da
 galeria. O script os gera com **100px de altura** — perto do dobro do maior

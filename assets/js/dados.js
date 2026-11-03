@@ -11,16 +11,15 @@
    COMO COMPLETAR
      capa → assets/img/portfolio/<id>-capa.jpg   RETRATO 800x1200 (2:3)
             Foto de marca — produto, loja, gente —, não print da home e sem
-            texto gravado: a peça da galeria é vertical e mostra a foto
+            texto gravado: o card do portfólio é vertical e mostra a foto
             inteira, em cor. O script faz junto a <id>-mini.jpg (hoje sem
             uso: a órbita do hero é só de logos).
             Gerar com:  .\prepara-imagens.ps1 -Aplicar
      capaGaleria → assets/img/portfolio/<id>-cartao.png   (opcional) o cartão
-            desenhado da marca, 600x900 (2:3), que só a galeria "Loja de
-            verdade" usa. Sem ele, a galeria mostra a `capa`. Portfólio e
-            página do projeto seguem com a foto da `capa`. Cartão com foto
-            vai em .jpg (o da Crochê Vitória): em PNG passa de 900 KB, e o
-            canto arredondado a galeria faz no CSS, com o mesmo raio.
+            desenhado da marca, 600x900 (2:3). HOJE SEM USO: desde 03/11/2026
+            a galeria "Loja de verdade" usa como capa a própria loja (a
+            prévia da home, no notebook e no celular). O campo e os arquivos
+            ficam, caso a galeria volte aos cartões.
      previa → (opcional, e o normal) a loja congelada, que rola no celular e na
             janela do computador, no modal e no projeto.html. Quem escreve é o
             prepara-imagens.ps1 -Aplicar, a partir das capturas do

@@ -68,7 +68,9 @@ var DICIONARIO = {
     'port.h2':            'Loja de verdade, <em>no ar agora.</em>',
     'port.pular':         'Pular os projetos',
     'port.grupo':         'Projetos em destaque',
-    'port.dica':          'Role para ver os projetos',
+    'port.pontos':        'Escolher o projeto',
+    'port.anterior':      'Projeto anterior',
+    'port.proximo':       'Próximo projeto',
     'port.todos':         'Ver todos os projetos',
     'port.tambem':        'Também passaram por aqui',
 

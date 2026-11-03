@@ -375,16 +375,12 @@
   color: var(--tinta);
 }
 
-/* Os rabiscos do logo: cada um em % da caixa dele, com a proporção do
-   próprio desenho. Nenhum passa por cima de letra da gaveta. O laço abraça
-   o "studio"; o sublinhado fica no vão entre o logo e a frase, longe do
-   puxador, e nunca por cima da frase, que é parte do H1. */
+/* O rabisco do logo: o sublinhado amarelo, em % da caixa do logo. Fica no
+   vão entre o logo e a frase, longe do puxador, e nunca por cima da frase,
+   que é parte do H1. */
 .rabisco{ position: absolute; height: auto; pointer-events: none; overflow: visible; }
-/* celular: a compacta, com o "studio" em cima da gaveta */
-.rabisco--laco   { left: -5%;  top: -15%; width: 47%; }
-.rabisco--traco  { left: 1%;   top: 100%; width: 40%; height: clamp(16px, 2.6vw, 34px); margin-top: 2px; }
-.rabisco--mola   { right: -5%; top: 12%;  width: 17%; }
-.rabisco--estrela{ left: 76%;  top: 1%;   width: 6.5%; }
+/* celular: embaixo do C e do A da compacta */
+.rabisco--traco  { left: 1%; top: 100%; width: 40%; height: clamp(16px, 2.6vw, 34px); margin-top: 2px; }
 
 .hero__canto{
   position: absolute;
@@ -455,8 +451,6 @@
 }
 .js .rabisco--traco .risco{ animation-delay: calc(var(--atraso-hero, .1s) + .75s); }
 .js .rabisco--traco .risco + .risco{ animation-delay: calc(var(--atraso-hero, .1s) + .9s); }
-.js .rabisco--mola .risco{ animation-delay: calc(var(--atraso-hero, .1s) + 1.05s); }
-.js .rabisco--estrela .risco{ animation-delay: calc(var(--atraso-hero, .1s) + 1.2s); }
 
 @keyframes subir{
   from{ opacity: 0; transform: translateY(32px); }
@@ -2130,11 +2124,8 @@
 
   .hero__marca{ width: clamp(480px, 56vw, 860px); }
   .hero__linha{ max-width: none; }
-  /* a horizontal: o "studio" à esquerda e a gaveta à direita */
-  .rabisco--laco   { left: -4.6%; top: 6%;   width: 37.6%; }
+  /* a horizontal: o sublinhado vai do "studio" até antes do puxador */
   .rabisco--traco  { width: 60%; }
-  .rabisco--mola   { right: -7%;  top: -26%; width: 11%; }
-  .rabisco--estrela{ left: 57%;   top: -27%; width: 4%; }
 
   .evidencia__topo{ flex-wrap: nowrap; }
   .evidencia__dica span{ display: inline; }
@@ -2143,6 +2134,28 @@
   .confianca__logos{ gap: 44px 64px; }
 
   .abas__painel.cards--2{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  /* Aba com número ímpar de serviços: o último (.servico--largo, marcado
+     pelo render.js) ocupa a fileira inteira, com o texto à esquerda e a
+     lista à direita, em vez de ficar sozinho com um buraco do lado. A linha
+     4 (1fr) é a que cresce, então o orçamento e o botão descem até o pé da
+     lista. Sem row-gap: a linha do destaque, quando ele não existe, não
+     pode deixar vão; o espaço vem das margens. */
+  .servico--largo{
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: auto auto auto 1fr auto auto;
+    column-gap: clamp(24px, 3vw, 48px);
+    row-gap: 0;
+    justify-items: start;
+    align-items: start;
+  }
+  .servico--largo > h3{ grid-column: 1; grid-row: 1; }
+  .servico--largo > .servico__destaque{ grid-column: 1; grid-row: 2; margin-top: var(--s-3); }
+  .servico--largo > .servico__dor{ grid-column: 1; grid-row: 3; margin-top: var(--s-4); }
+  .servico--largo > .lista-check{ grid-column: 2; grid-row: 1 / -1; }
+  .servico--largo > .servico__orcamento{ grid-column: 1; grid-row: 5; margin-top: var(--s-5); }
+  .servico--largo > .btn{ grid-column: 1; grid-row: 6; margin-top: var(--s-5); }
 
   .peca{ --peca-w: min(30vw, (100svh - 340px) / 1.5); }
 

@@ -149,7 +149,10 @@ window.SCRender = (function () {
          um sozinho ocupa a coluna */
       var colunas = Math.min(daAba.length, 2);
 
-      var cards = daAba.map(function (s) {
+      var cards = daAba.map(function (s, k) {
+        /* em duas colunas, um número ímpar de serviços deixaria o último
+           sozinho na fileira: ele vira o card largo (.servico--largo) */
+        var largo = colunas === 2 && daAba.length % 2 === 1 && k === daAba.length - 1;
         var itens = (s.itens || []).map(function (it) {
           return '<li>' + esc(it) + '</li>';
         }).join('');
@@ -163,7 +166,8 @@ window.SCRender = (function () {
         var dest = s.destaque
           ? '<p class="servico__destaque">' + esc(s.destaque) + '</p>' : '';
 
-        return '<article class="servico' + (s.destaque ? ' servico--destaque' : '') + '">' +
+        return '<article class="servico' + (s.destaque ? ' servico--destaque' : '') +
+                 (largo ? ' servico--largo' : '') + '">' +
                  '<h3>' + esc(s.nome) + '</h3>' +
                  dest +
                  '<p class="servico__dor">&ldquo;' + esc(s.dor) + '&rdquo;</p>' +

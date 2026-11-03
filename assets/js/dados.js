@@ -456,6 +456,15 @@ const SERVICOS = [
            "Conferência item a item antes de virar a chave"],
     cta:"Quero migrar minha loja" },
 
+  /* na primeira aba desde 03/11/2026, a pedido (antes ficava em Otimização) */
+  { aba:"Loja virtual", nome:"Página de produto de best seller",
+    dor:"Meu produto campeão tem a mesma página de todos os outros",
+    itens:["Página exclusiva para o produto que mais vende",
+           "Conteúdo que responde a objeção de compra",
+           "Prova social e comparativo",
+           "Feita para funcionar no celular primeiro"],
+    cta:"Quero uma página exclusiva" },
+
   { aba:"Otimização", nome:"Melhoria de CRO",
     dor:"Tenho visita mas não tenho venda",
     itens:["Revisão do caminho do cliente até o carrinho",
@@ -463,14 +472,6 @@ const SERVICOS = [
            "Correção do que quebra no celular",
            "Ganho de velocidade de carregamento"],
     cta:"Quero otimizar minha loja" },
-
-  { aba:"Otimização", nome:"Página de produto de best seller",
-    dor:"Meu produto campeão tem a mesma página de todos os outros",
-    itens:["Página exclusiva para o produto que mais vende",
-           "Conteúdo que responde a objeção de compra",
-           "Prova social e comparativo",
-           "Feita para funcionar no celular primeiro"],
-    cta:"Quero uma página de produto exclusiva" },
 
   { aba:"Site", nome:"Landing page",
     dor:"Preciso de uma página para captar cliente",

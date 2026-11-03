@@ -457,10 +457,10 @@ const SERVICOS = [
     cta:"Quero migrar minha loja" },
 
   /* na primeira aba desde 03/11/2026, a pedido (antes ficava em Otimização) */
-  { aba:"Loja virtual", nome:"Página de produto de best seller",
-    dor:"Meu produto campeão tem a mesma página de todos os outros",
-    itens:["Página exclusiva para o produto que mais vende",
-           "Conteúdo que responde a objeção de compra",
+  { aba:"Loja virtual", nome:"Páginas de produto para best sellers",
+    dor:"Meus produtos que mais vendem têm a mesma página de todos os outros",
+    itens:["Uma página exclusiva para cada best seller",
+           "Conteúdo que responde à objeção de compra",
            "Prova social e comparativo",
            "Feita para funcionar no celular primeiro"],
     cta:"Quero uma página exclusiva" },

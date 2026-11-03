@@ -963,7 +963,7 @@
 
     /* os rabiscos desenhados do site não respondem ao mouse (pointer-events:
        none) e o elementFromPoint não os vê: vão à parte, pela caixa */
-    var desenhos = document.querySelectorAll('.riscos, .rabisco');
+    var desenhos = document.querySelectorAll('.riscos');
     function pertoDeDesenho(x, y) {
       for (var i = 0; i < desenhos.length; i++) {
         var b = desenhos[i].getBoundingClientRect();

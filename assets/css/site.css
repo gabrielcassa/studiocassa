@@ -352,7 +352,6 @@
    partir de 760px (quem escolhe é o <picture>). O alt "Studio Cassa" do
    <img> entra no texto do <h1>, junto com a frase. */
 .hero__marca{
-  position: relative;
   display: block;
   width: min(86vw, 360px);
   margin-inline: auto;
@@ -366,7 +365,7 @@
   max-width: 12em;
   margin-inline: auto;
   text-wrap: balance;
-  margin-top: clamp(30px, 3.6vw, 52px);   /* o sublinhado amarelo mora neste vão */
+  margin-top: clamp(20px, 2.4vw, 36px);   /* abaixo do puxador, que fica pendurado */
   font-family: var(--fonte-texto);
   font-size: var(--t-lead);
   font-weight: 400;
@@ -374,13 +373,6 @@
   line-height: 1.4;
   color: var(--tinta);
 }
-
-/* O rabisco do logo: o sublinhado amarelo, em % da caixa do logo. Fica no
-   vão entre o logo e a frase, longe do puxador, e nunca por cima da frase,
-   que é parte do H1. */
-.rabisco{ position: absolute; height: auto; pointer-events: none; overflow: visible; }
-/* celular: embaixo do C e do A da compacta */
-.rabisco--traco  { left: 1%; top: 100%; width: 40%; height: clamp(16px, 2.6vw, 34px); margin-top: 2px; }
 
 .hero__canto{
   position: absolute;
@@ -444,13 +436,6 @@
 .js .hero__canto{ animation-delay: calc(var(--atraso-hero, .1s) + .3s); }
 .js .hero__acoes{ animation-delay: calc(var(--atraso-hero, .1s) + .38s); }
 .abrindo .hero{ --atraso-hero: .9s; }
-
-.js .hero__marca .risco{
-  animation: desenhar 1s var(--sai-forte) forwards;
-  animation-delay: calc(var(--atraso-hero, .1s) + .55s);
-}
-.js .rabisco--traco .risco{ animation-delay: calc(var(--atraso-hero, .1s) + .75s); }
-.js .rabisco--traco .risco + .risco{ animation-delay: calc(var(--atraso-hero, .1s) + .9s); }
 
 @keyframes subir{
   from{ opacity: 0; transform: translateY(32px); }
@@ -2124,8 +2109,6 @@
 
   .hero__marca{ width: clamp(480px, 56vw, 860px); }
   .hero__linha{ max-width: none; }
-  /* a horizontal: o sublinhado vai do "studio" até antes do puxador */
-  .rabisco--traco  { width: 60%; }
 
   .evidencia__topo{ flex-wrap: nowrap; }
   .evidencia__dica span{ display: inline; }

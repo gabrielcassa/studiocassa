@@ -536,7 +536,7 @@ O que decide a velocidade do site são as **imagens**, não o código.
 
 | item | hoje | teto |
 |---|---|---|
-| CSS + JS (soma dos gzip) | 72,77 KB | 45 KB, informativo |
+| CSS + JS (soma dos gzip) | 72,52 KB | 45 KB, informativo |
 | cada capa | 85 a 187 KB | **200 KB** |
 | primeira dobra | ~243 KB | 600 KB |
 | cada parte da prévia no celular | até 162 KB, só ao chegar nela | **200 KB** |

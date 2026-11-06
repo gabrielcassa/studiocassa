@@ -306,11 +306,12 @@ const PROJETOS = [
      tema "Speed"). Home recapturada em 28/10/2026, já com a Black Friday,
      no primeiro slide do carrossel do topo. Projeto ativo: a Black Friday é
      ajuste do próprio estúdio (confirmado em 31/10/2026), não alteração do
-     cliente. */
+     cliente. Recapturada de novo em 06/11/2026, a pedido, depois de ele
+     atualizar a loja (home com layout novo). */
   { id:"vital", nome:"VITAL", tipo:"Otimização", status:"concluido", exibicao:"outras", emDestaque:true,
     plataforma:"Shopify", tema:"", segmento:"Suplementos", ano:"",
     url:"https://bevital.com.br/", capa:"", logo:"",
-    previa:{data:"2026-10-31",paginas:[{nome:"Início",arquivo:"inicio",url:"/",celular:7,computador:4}]},
+    previa:{data:"2026-11-06",paginas:[{nome:"Início",arquivo:"inicio",url:"/",celular:7,computador:4}]},
     resumo:"", desafio:"", entrega:[], resultado:"", imagens:[], depoimento:{autor:"",texto:""} },
 
   /* A prévia no computador passa do teto de 350 KB por parte: sai com

@@ -185,6 +185,20 @@ async function preparaPagina(page) {
       } catch (e) { /* carrossel sem instância útil: fica como está */ }
     });
 
+    /* carrossel de tema Shopify que não é Swiper (o Impact, da VITAL): o elemento
+       tem select() e um player do giro. Sem isto, a foto do celular de 06/11/2026
+       saiu no segundo slide. Com animate:false o tema solta um erro de animação
+       depois de trocar o slide; a troca vale, e o erro fica no catch. */
+    document.querySelectorAll('slideshow-carousel, effect-carousel').forEach(c => {
+      try {
+        if (c.player) (c.player.stop || c.player.pause).call(c.player);
+        if (typeof c.select === 'function' && c.selectedIndex) {
+          const p = c.select(0, { animate: false });
+          if (p && p.catch) p.catch(() => {});
+        }
+      } catch (e) { /* carrossel sem select útil: fica como está */ }
+    });
+
     /* vídeo da própria loja: fica no quadro em que está, para a emenda não pegar dois */
     document.querySelectorAll('video').forEach(v => { try { v.pause(); } catch (e) { /* segue */ } });
   });
